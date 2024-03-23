@@ -5,6 +5,7 @@ import axios from "axios";
 import YouTube from "react-youtube";
 import styled from "styled-components";
 import youtubeLogo from "../../assets/logo/youtubeLogo.png";
+import { TEMPAPI } from "../../apis/temporary";
 
 const ImageBanner = styled.div`
   display: flex;
@@ -41,7 +42,6 @@ const DetailsOverlay = styled.div`
   }
 `;
 
-
 const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -68,7 +68,7 @@ const InfoContainer = styled.div`
   align-items: center;
   justify-content: center;
   min-height: 600px;
-  background-color: #FFE9D2;
+  background-color: #ffe9d2;
 `;
 
 const LinkButton = styled.a`
@@ -98,132 +98,144 @@ const TextInfoContainer = styled.div`
   }
 `;
 const ContentDetailPage = () => {
-    const { id } = useParams();
-    const [detail, setDetail] = useState({
-        imageUrlList: [], // 초기값으로 빈 배열 설정
-    });
-    const [imageList, setImageList] = useState([]);
-    const [youtubePlayer, setYoutubePlayer] = useState(null);
-    const [youtubeId, setYoutubeId] = useState("");
+  const { id } = useParams();
+  const [detail, setDetail] = useState({
+    imageUrlList: [], // 초기값으로 빈 배열 설정
+  });
+  const [imageList, setImageList] = useState([]);
+  const [youtubePlayer, setYoutubePlayer] = useState(null);
+  const [youtubeId, setYoutubeId] = useState("");
 
-    const APIKey = "AIzaSyATe0kMwS3Z5fMM01lAA5kfR2olHS9EK44";
+  const APIKey = "AIzaSyATe0kMwS3Z5fMM01lAA5kfR2olHS9EK44";
 
-    useEffect(() => {
-        getDetails(id);
-    }, [id]);
+  useEffect(() => {
+    getDetails(id);
+  }, [id]);
 
-    const getDetails = (id) => {
-        axios
-            .get(`https://port-0-promoationpage-server-12fhqa2blnlum4de.sel5.cloudtype.app/api/projects/${id}`)
-            .then((response) => {
-                const data = response.data;
-                const content = {
-                    category: data.data.category,
-                    client: data.data.client,
-                    date: data.data.date,
-                    department: data.data.department,
-                    id: data.data.id,
-                    imageUrlList: data.data.imageUrlList,
-                    isPosted: data.data.isPosted,
-                    link: data.data.link,
-                    name: data.data.name,
-                    overView: data.data.overView,
-                };
-                setImageList(data.data.imageUrlList);
-                setDetail(content);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    };
+  const getDetails = (id) => {
+    axios
+      .get(`${TEMPAPI}/api/projects/${id}`)
+      .then((response) => {
+        const data = response.data;
+        const content = {
+          category: data.data.category,
+          client: data.data.client,
+          date: data.data.date,
+          department: data.data.department,
+          id: data.data.id,
+          imageUrlList: data.data.imageUrlList,
+          isPosted: data.data.isPosted,
+          link: data.data.link,
+          name: data.data.name,
+          overView: data.data.overView,
+        };
+        setImageList(data.data.imageUrlList);
+        setDetail(content);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
-    const imageBanner = imageList.map((image, index) => (
-        <div key={index}>
-            <img src={image} alt={`Slide ${index}`} />
-        </div>
-    ));
+  const imageBanner = imageList.map((image, index) => (
+    <div key={index}>
+      <img src={image} alt={`Slide ${index}`} />
+    </div>
+  ));
 
+  const onReady = (event) => {
+    // event.target is the YouTube player that gets passed by react-youtube
+    setYoutubePlayer(event.target);
+  };
 
-    const onReady = (event) => {
-        // event.target is the YouTube player that gets passed by react-youtube
-        setYoutubePlayer(event.target);
-    };
+  const renderVideoPlayer = () => {
+    if (youtubePlayer && youtubePlayer.internalPlayer && detail.link) {
+      youtubePlayer.internalPlayer.loadVideoById(detail.link);
+    }
+  };
 
-    const renderVideoPlayer = () => {
-        if (youtubePlayer && youtubePlayer.internalPlayer && detail.link) {
-            youtubePlayer.internalPlayer.loadVideoById(detail.link);
+  useEffect(() => {
+    determineVideoType();
+  }, [detail.link]);
+
+  const determineVideoType = async () => {
+    try {
+      if (detail.link) {
+        if (detail.link.includes("/@")) {
+          // 채널의 가장 최근 영상
+          const channelUsername = detail.link.split("/@")[1];
+          const channelIdResponse = await axios.get(
+            `https://www.googleapis.com/youtube/v3/channels?key=${APIKey}&forUsername=${channelUsername}&part=id`
+          );
+          const channelId = channelIdResponse.data.items[0].id;
+          const latestVideoResponse = await axios.get(
+            `https://www.googleapis.com/youtube/v3/search?key=${APIKey}&channelId=${channelId}&part=id&order=date&type=video`
+          );
+          const latestVideoId = latestVideoResponse.data.items[0].id.videoId;
+          setYoutubeId(latestVideoId);
+        } else if (detail.link.includes("/playlist?list=")) {
+          // 재생목록의 첫 번째 영상
+          const playlistId = detail.link.split("list=")[1];
+          const playlistResponse = await axios.get(
+            `https://www.googleapis.com/youtube/v3/playlistItems?key=${APIKey}&playlistId=${playlistId}&part=snippet&maxResults=1`
+          );
+          const firstVideoId =
+            playlistResponse.data.items[0].snippet.resourceId.videoId;
+          setYoutubeId(firstVideoId);
+        } else if (detail.link.includes("/user/")) {
+          // 채널의 가장 최근 영상
+          const channelUsername = detail.link.split("/user/")[1];
+          const channelIdResponse = await axios.get(
+            `https://www.googleapis.com/youtube/v3/channels?key=${APIKey}&forUsername=${channelUsername}&part=id`
+          );
+          const channelId = channelIdResponse.data.items[0].id;
+          const latestVideoResponse = await axios.get(
+            `https://www.googleapis.com/youtube/v3/search?key=${APIKey}&channelId=${channelId}&part=id&order=date&type=video`
+          );
+          const latestVideoId = latestVideoResponse.data.items[0].id.videoId;
+          setYoutubeId(latestVideoId);
+        } else if (detail.link.includes("youtu.be")) {
+          // 동영상 주소
+          const videoId = detail.link.split("youtu.be/")[1];
+          setYoutubeId(videoId);
         }
-    };
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    useEffect(() => {
-        determineVideoType();
-    }, [detail.link]);
-
-    const determineVideoType = async () => {
-        try {
-            if (detail.link) {
-                if (detail.link.includes("/@")) {
-                    // 채널의 가장 최근 영상
-                    const channelUsername = detail.link.split("/@")[1];
-                    const channelIdResponse = await axios.get(`https://www.googleapis.com/youtube/v3/channels?key=${APIKey}&forUsername=${channelUsername}&part=id`);
-                    const channelId = channelIdResponse.data.items[0].id;
-                    const latestVideoResponse = await axios.get(`https://www.googleapis.com/youtube/v3/search?key=${APIKey}&channelId=${channelId}&part=id&order=date&type=video`);
-                    const latestVideoId = latestVideoResponse.data.items[0].id.videoId;
-                    setYoutubeId(latestVideoId);
-                } else if (detail.link.includes("/playlist?list=")) {
-                    // 재생목록의 첫 번째 영상
-                    const playlistId = detail.link.split("list=")[1];
-                    const playlistResponse = await axios.get(`https://www.googleapis.com/youtube/v3/playlistItems?key=${APIKey}&playlistId=${playlistId}&part=snippet&maxResults=1`);
-                    const firstVideoId = playlistResponse.data.items[0].snippet.resourceId.videoId;
-                    setYoutubeId(firstVideoId);
-                } else if (detail.link.includes("/user/")) {
-                    // 채널의 가장 최근 영상
-                    const channelUsername = detail.link.split("/user/")[1];
-                    const channelIdResponse = await axios.get(`https://www.googleapis.com/youtube/v3/channels?key=${APIKey}&forUsername=${channelUsername}&part=id`);
-                    const channelId = channelIdResponse.data.items[0].id;
-                    const latestVideoResponse = await axios.get(`https://www.googleapis.com/youtube/v3/search?key=${APIKey}&channelId=${channelId}&part=id&order=date&type=video`);
-                    const latestVideoId = latestVideoResponse.data.items[0].id.videoId;
-                    setYoutubeId(latestVideoId);
-                } else if (detail.link.includes("youtu.be")) {
-                    // 동영상 주소
-                    const videoId = detail.link.split("youtu.be/")[1];
-                    setYoutubeId(videoId);
-                }
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    return (
-        <Body>
-            <ImageBanner>
-                <img src={detail.imageUrlList[0]} alt="Banner" />
-                <Title>{detail.name}</Title>
-                <DetailsOverlay>
-                    <p>Date: {detail.date}</p>
-                    <p>Client: {detail.client}</p>
-                    <p>Category: {detail.category}</p>
-                </DetailsOverlay>
-            </ImageBanner>
-            <DetailContainer>
-                <YoutubeContainer>
-                    {detail.link && (
-                        <YouTube videoId={youtubeId} opts={{ width: "640", height: "390" }} onReady={onReady} />
-                    )}
-                </YoutubeContainer>
-                <InfoContainer>
-                    <TextInfoContainer>
-                    {detail.overView}
-                    </TextInfoContainer>
-                    <LinkButton href={detail.link} target="_blank">
-                        <img src={youtubeLogo} alt="YouTube Logo" />
-                        MORE
-                    </LinkButton>
-                </InfoContainer>
-            </DetailContainer>
-        </Body>
-    );
+  return (
+    <Body>
+      <ImageBanner>
+        <img src={detail.imageUrlList[0]} alt="Banner" />
+        <Title>{detail.name}</Title>
+        <DetailsOverlay>
+          <p>Date: {detail.date}</p>
+          <p>Client: {detail.client}</p>
+          <p>Category: {detail.category}</p>
+        </DetailsOverlay>
+      </ImageBanner>
+      <DetailContainer>
+        <YoutubeContainer>
+          {detail.link && (
+            <YouTube
+              videoId={youtubeId}
+              opts={{ width: "640", height: "390" }}
+              onReady={onReady}
+            />
+          )}
+        </YoutubeContainer>
+        <InfoContainer>
+          <TextInfoContainer>{detail.overView}</TextInfoContainer>
+          <LinkButton href={detail.link} target="_blank">
+            <img src={youtubeLogo} alt="YouTube Logo" />
+            MORE
+          </LinkButton>
+        </InfoContainer>
+      </DetailContainer>
+    </Body>
+  );
 };
 
 export default ContentDetailPage;

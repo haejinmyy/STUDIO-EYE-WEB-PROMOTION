@@ -1,72 +1,71 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Body from "../../Components/Common/AdminBody";
 import styled from "styled-components";
-import {motion} from "framer-motion";
+import { motion } from "framer-motion";
 import EditAboutModal from "./Component/EditAboutModal";
 import PlusAboutModal from "./Component/PlusAboutModal";
-import {AiFillDelete} from "react-icons/ai";
-import {IoMdArrowRoundBack} from "react-icons/io";
-import {IoMdAddCircleOutline} from "react-icons/io";
-import {useNavigate} from "react-router-dom";
-
+import { AiFillDelete } from "react-icons/ai";
+import { IoMdArrowRoundBack } from "react-icons/io";
+import { IoMdAddCircleOutline } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
+import { TEMPAPI } from "../../apis/temporary";
 
 const BoxContainer = styled(motion.div)`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column; 
-    width: 100%; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
 `;
 
 const AdminDiv = styled(motion.div)`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    width: 100%;
-    position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  position: relative;
 `;
 const Delete = styled(motion(AiFillDelete))`
-  font-size: 2.25rem; 
+  font-size: 2.25rem;
   cursor: pointer;
 `;
 
 const Back = styled(motion(IoMdArrowRoundBack))`
-  font-size: 40.5px; 
+  font-size: 40.5px;
   cursor: pointer;
 `;
 const Add = styled(motion(IoMdAddCircleOutline))`
-  font-size:  40.5px; 
+  font-size: 40.5px;
   cursor: pointer;
 `;
 
 const Button = styled(motion.button)`
-    background: none;
-    border: none;
-    font-size: 1rem;
-    font-weight: 400;
-    margin: 0.25rem 0;
-    position: absolute;
-    left: 1rem;
-    
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 400;
+  margin: 0.25rem 0;
+  position: absolute;
+  left: 1rem;
 `;
 const Buttong = styled(motion.button)`
-    background: none;
-    border: none;
-    font-size: 1rem;
-    font-weight: 400;
-    margin: 0.25rem 0;
-    position: absolute;
-    right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 400;
+  margin: 0.25rem 0;
+  position: absolute;
+  right: 1rem;
 `;
 
 const Text = styled(motion.text)`
-    font-size: 54px;
-    font-weight: 750;
-    color: #FF530E;
-    letter-spacing: 2px;
-    text-align: center;
+  font-size: 54px;
+  font-weight: 750;
+  color: #ff530e;
+  letter-spacing: 2px;
+  text-align: center;
 `;
 
 const StyledTable = styled.table`
@@ -74,7 +73,6 @@ const StyledTable = styled.table`
   border-collapse: separate;
   border-spacing: 0 16px;
   text-align: center;
-  
 
   th,
   td {
@@ -97,145 +95,145 @@ const StyledTable = styled.table`
 `;
 
 const Img = styled.img`
-    width: 20%;
+  width: 20%;
 `;
 
 function DataTable({ data, onEdit, deleteProject }) {
-    return (
-        <StyledTable>
-            <thead>
-            <tr>
-                <th>번호</th>
-                <th>이미지</th>
-                <th>삭제</th>
-            </tr>
-            </thead>
-            <tbody>
-            {data.map((item) => (
-                <tr key={item.id}>
-                    <td>{item.id}</td>
-                    <td><Img src={item.logoImageUrl} /></td>
-                    <td>
-                        <Delete onClick={() => onEdit(item)}></Delete>
-                    </td>
-                </tr>
-            ))}
-            </tbody>
-        </StyledTable>
-    );
+  return (
+    <StyledTable>
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>이미지</th>
+          <th>삭제</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((item) => (
+          <tr key={item.id}>
+            <td>{item.id}</td>
+            <td>
+              <Img src={item.logoImageUrl} />
+            </td>
+            <td>
+              <Delete onClick={() => onEdit(item)}></Delete>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </StyledTable>
+  );
 }
 
 const AdminEditPage = () => {
+  const AdminEditPageContent = () => {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const navigate = useNavigate();
+    const [data, setData] = useState([]);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingItem, setEditingItem] = useState(null);
+    const [isPlus, setIsPlus] = useState(false);
 
-    const AdminEditPageContent=()=>{
-        const [isLoggedIn, setIsLoggedIn] = useState(false);
-        const navigate = useNavigate();
-        const [data, setData] = useState([]);
-        const [isEditing, setIsEditing] = useState(false);
-        const [editingItem, setEditingItem] = useState(null);
-        const [isPlus, setIsPlus] = useState(false);
+    const handleEdit = (item) => {
+      setEditingItem(item);
+      setIsEditing(true);
+    };
 
-        const handleEdit = (item) => {
-            setEditingItem(item);
-            setIsEditing(true);
-        };
+    const BackAbout = () => {
+      navigate(`/admin`);
+    };
+    const AddAbout = () => {
+      setIsPlus(true);
+    };
 
-        const BackAbout = () => {
-            navigate(`/admin`);
-        };
-        const AddAbout = () => {
-            setIsPlus(true);
-        };
+    const handleCancel = () => {
+      setIsEditing(false);
+      setIsPlus(false);
+    };
 
+    useEffect(() => {
+      fetchData();
+    }, []);
 
-        const handleCancel = () => {
-            setIsEditing(false);
-            setIsPlus(false);
-        };
+    useEffect(() => {
+      const token = sessionStorage.getItem("login-token");
+      if (token) {
+        setIsLoggedIn(true);
+      }
+    }, []);
 
-        useEffect(() => {
-            fetchData();
-        }, []);
+    const fetchData = () => {
+      axios
+        .get(`${TEMPAPI}/api/partners`)
 
-        useEffect(() => {
-            const token = sessionStorage.getItem("login-token");
-            if (token) {
-                setIsLoggedIn(true);
+        .then((response) => {
+          const data = response.data;
+          console.log(data);
+          console.log(data.data[0]);
+          const objects = [];
+
+          for (let i = 0; i < data.data.length; i++) {
+            if (data.data[i].is_main) {
+              const obj = {
+                id: data.data[i].id,
+                logoImageUrl: data.data[i].logoImageUrl,
+                link: data.data[i].link,
+                is_main: "Main CoOp.",
+              };
+
+              console.log("여기");
+              console.log(obj);
+              objects.push(obj);
+            } else {
+              const obj = {
+                id: data.data[i].id,
+                logoImageUrl: data.data[i].logoImageUrl,
+                link: data.data[i].link,
+                is_main: "Sub CoOp.",
+              };
+
+              console.log("여기22");
+              console.log(obj);
+              objects.push(obj);
             }
-        }, []);
+          }
+          setData(objects);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
 
-        const fetchData = () => {
+    return (
+      <>
+        {isLoggedIn ? (
+          <BoxContainer>
+            <AdminDiv>
+              <Button onClick={BackAbout}>
+                <Back />
+              </Button>
+              <Text>협력사 목록</Text>
+              <Buttong onClick={AddAbout}>
+                <Add />
+              </Buttong>
+            </AdminDiv>
+            <DataTable data={data} onEdit={handleEdit} />
+            {isEditing && (
+              <EditAboutModal item={editingItem} onCancel={handleCancel} />
+            )}
+            {isPlus && <PlusAboutModal onCancel={handleCancel} />}
+          </BoxContainer>
+        ) : (
+          <></>
+        )}
+      </>
+    );
+  };
 
-            axios.get('https://port-0-promoationpage-server-12fhqa2blnlum4de.sel5.cloudtype.app/api/partners')
-
-                .then(response => {
-                    const data = response.data;
-                    console.log(data);
-                    console.log(data.data[0]);
-                    const objects = [];
-
-                    for(let i = 0; i < data.data.length; i++) {
-
-                        if(data.data[i].is_main){
-                            const obj = {
-                                id: data.data[i].id,
-                                logoImageUrl: data.data[i].logoImageUrl,
-                                link: data.data[i].link,
-                                is_main: "Main CoOp."
-                            };
-
-                            console.log("여기");
-                            console.log(obj);
-                            objects.push(obj);
-                        }
-                        else {
-                            const obj = {
-                                id: data.data[i].id,
-                                logoImageUrl: data.data[i].logoImageUrl,
-                                link: data.data[i].link,
-                                is_main: "Sub CoOp."
-                            };
-
-                            console.log("여기22");
-                            console.log(obj);
-                            objects.push(obj);
-                        }
-                    }
-                    setData(objects);
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-        };
-
-        return (
-            <>
-                {isLoggedIn ? (
-                <BoxContainer>
-                    <AdminDiv>
-                        <Button onClick={BackAbout}><Back/></Button>
-                        <Text>협력사 목록</Text>
-                        <Buttong onClick={AddAbout}><Add/></Buttong>
-                    </AdminDiv>
-                    <DataTable data={data} onEdit={handleEdit}/>
-                    {isEditing && (
-                        <EditAboutModal item={editingItem} onCancel={handleCancel}/>
-                    )}
-                    {isPlus && (
-                        <PlusAboutModal onCancel={handleCancel}/>
-                    )}
-
-                </BoxContainer>)
-                    :(<></>)}
-            </>
-        )
-    }
-
-
-    return(
-        <Body>
-            <AdminEditPageContent/>
-        </Body>
-    )
-}
+  return (
+    <Body>
+      <AdminEditPageContent />
+    </Body>
+  );
+};
 export default AdminEditPage;

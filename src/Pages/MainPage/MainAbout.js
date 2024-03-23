@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Carousel from "./Components/Carousel";
 import axios from "axios";
 import styled from "styled-components";
+import { TEMPAPI } from "../../apis/temporary";
 
 const MainAbout = () => {
   const [images, setImages] = useState([]);
@@ -12,7 +13,7 @@ const MainAbout = () => {
 
   const fetchData = () => {
     axios
-      .get("http://3.36.117.230:8080/api/projects")
+      .get(`${TEMPAPI}/api/projects`)
       .then((response) => {
         const data = response.data;
         const urlList = [];

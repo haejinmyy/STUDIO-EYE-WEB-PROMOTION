@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import MainIMG from "../../assets/images/MainIMG.png";
+import { TEMPAPI } from "../../apis/temporary";
 
 const BoxContainer = styled(motion.div)`
   display: flex;
@@ -91,7 +92,7 @@ const ArtworkMainpage = () => {
 
     useEffect(() => {
       axios
-        .get(`http://3.36.117.230:8080/api/projects`)
+        .get(`${TEMPAPI}/api/projects`)
 
         .then((response) => {
           const data = response.data;

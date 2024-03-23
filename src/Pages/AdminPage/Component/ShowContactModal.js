@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import axios from "axios";
+import { TEMPAPI } from "../../../apis/temporary";
 
 const ModalBackground = styled.div`
   position: fixed;
@@ -26,111 +27,112 @@ const ModalContent = styled.div`
 `;
 
 const Div = styled.div`
-    height: 40%;
-    padding: 2%;
-    overflow: auto;
-    margin: 1% 0;
-    border: 0.5px solid black;
+  height: 40%;
+  padding: 2%;
+  overflow: auto;
+  margin: 1% 0;
+  border: 0.5px solid black;
 `;
 
 const FileDiv = styled.div`
-    height: 20%;
-    padding: 2%;
-    overflow: auto;
-    margin: 1% 0;
-    border: 0.5px solid black;
+  height: 20%;
+  padding: 2%;
+  overflow: auto;
+  margin: 1% 0;
+  border: 0.5px solid black;
 `;
 
 const StyledButton = styled.button`
-    background-color: #FFA900;
-    color: #fff;
-    padding: 10px 15px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-right: 10px;
+  background-color: #ffa900;
+  color: #fff;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
 
-    &:hover {
-        background-color: #FFD500;
-    }
+  &:hover {
+    background-color: #ffd500;
+  }
 `;
 
 const ButtonContainer = styled.div`
-    text-align: right;
-    margin-top: 10px;  // 버튼과의 간격 조절을 위해 추가
+  text-align: right;
+  margin-top: 10px; // 버튼과의 간격 조절을 위해 추가
 `;
 
 function ShowContactModal({ item, onClose, onDelete }) {
-    const [fileList, setFileList] = useState([]);
+  const [fileList, setFileList] = useState([]);
 
-    useEffect(() => {
-        if (item.fileUrlList && item.fileUrlList.length > 0) {
-            setFileList(item.fileUrlList);
-        }
-    }, [item.fileUrlList]);
+  useEffect(() => {
+    if (item.fileUrlList && item.fileUrlList.length > 0) {
+      setFileList(item.fileUrlList);
+    }
+  }, [item.fileUrlList]);
 
-    const downloadFile = (url) => {
-        const anchor = document.createElement('a');
-        anchor.href = url;
-        anchor.target = '_blank';
+  const downloadFile = (url) => {
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.target = "_blank";
 
-        const fileName = url.substring(url.lastIndexOf('/') + 1);
+    const fileName = url.substring(url.lastIndexOf("/") + 1);
 
-        anchor.download = fileName;
+    anchor.download = fileName;
 
-        document.body.appendChild(anchor);
-        anchor.click();
-        document.body.removeChild(anchor);
-    };
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+  };
 
-    const deleteContact = () => {
-        const shouldDelete = window.confirm("정말 삭제하시겠습니까?");
+  const deleteContact = () => {
+    const shouldDelete = window.confirm("정말 삭제하시겠습니까?");
 
-        if (shouldDelete) {
-            axios.delete(`https://port-0-promoationpage-server-12fhqa2blnlum4de.sel5.cloudtype.app/api/requests/${item.id}`)
-                .then((response) => {
-                    onDelete(item.id);
-                    onClose();
-                    alert("삭제되었습니다.");
-                })
-                .catch((error) => {
-                    console.error('Error deleting contact:', error);
-                });
-        }
-    };
+    if (shouldDelete) {
+      axios
+        .delete(`${TEMPAPI}/api/requests/${item.id}`)
+        .then((response) => {
+          onDelete(item.id);
+          onClose();
+          alert("삭제되었습니다.");
+        })
+        .catch((error) => {
+          console.error("Error deleting contact:", error);
+        });
+    }
+  };
 
-    return (
-        <ModalBackground>
-            <ModalContent>
-                <h2>문의사항</h2>
-                <Div>
-                    <p>{item.description}</p>
-                </Div>
-                <FileDiv>
-                    {fileList.map((file, index) => (
-                        <div key={index}>
-                            {file.toLowerCase().endsWith('.png') && (
-                                <div>
-                                    <img src={file} alt={`Image ${index}`} />
-                                </div>
-                            )}
-                            <div>
-                                <a href={file} target="_blank" rel="noreferrer">
-                                    {file.substring(file.lastIndexOf('/') + 1)}
-                                </a>
-                                <button onClick={() => downloadFile(file)}>Download</button>
-                            </div>
-                        </div>
-                    ))}
-                </FileDiv>
-                <ButtonContainer>
-                    <StyledButton onClick={deleteContact}>삭제</StyledButton>
-                    <StyledButton onClick={onClose}>닫기</StyledButton>
-                </ButtonContainer>
-            </ModalContent>
-        </ModalBackground>
-    );
+  return (
+    <ModalBackground>
+      <ModalContent>
+        <h2>문의사항</h2>
+        <Div>
+          <p>{item.description}</p>
+        </Div>
+        <FileDiv>
+          {fileList.map((file, index) => (
+            <div key={index}>
+              {file.toLowerCase().endsWith(".png") && (
+                <div>
+                  <img src={file} alt={`Image ${index}`} />
+                </div>
+              )}
+              <div>
+                <a href={file} target="_blank" rel="noreferrer">
+                  {file.substring(file.lastIndexOf("/") + 1)}
+                </a>
+                <button onClick={() => downloadFile(file)}>Download</button>
+              </div>
+            </div>
+          ))}
+        </FileDiv>
+        <ButtonContainer>
+          <StyledButton onClick={deleteContact}>삭제</StyledButton>
+          <StyledButton onClick={onClose}>닫기</StyledButton>
+        </ButtonContainer>
+      </ModalContent>
+    </ModalBackground>
+  );
 }
 
 export default ShowContactModal;

@@ -4,9 +4,10 @@ import axios from "axios";
 import Data from "bootstrap/js/src/dom/data";
 import Body from "../../Components/Common/AdminBody";
 import ShowContactModal from "./Component/ShowContactModal";
-import {motion} from "framer-motion";
-import {useNavigate} from "react-router-dom";
-import {IoMdArrowRoundBack} from "react-icons/io";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { IoMdArrowRoundBack } from "react-icons/io";
+import { TEMPAPI } from "../../apis/temporary";
 
 const StyledTable = styled.table`
   width: 100%;
@@ -33,161 +34,164 @@ const StyledTable = styled.table`
   }
 `;
 const Back = styled(motion(IoMdArrowRoundBack))`
-  font-size: 40.5px; 
+  font-size: 40.5px;
   cursor: pointer;
 `;
 const AdminDiv = styled(motion.div)`
-    background: none;
-    border: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    width: 100%;
-    position: relative;
+  background: none;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  position: relative;
 `;
 const Button = styled(motion.button)`
-    background: none;
-    border: none;
-    font-size: 1rem;
-    font-weight: 400;
-    margin: 0.25rem 0;
-    position: absolute;
-    left: 1rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 400;
+  margin: 0.25rem 0;
+  position: absolute;
+  left: 1rem;
 `;
 const Text = styled(motion.text)`
-    font-size: 54px;
-    font-weight: 750;
-    color: #FF530E;
-    letter-spacing: 2px;
-    text-align: center;
+  font-size: 54px;
+  font-weight: 750;
+  color: #ff530e;
+  letter-spacing: 2px;
+  text-align: center;
 `;
 
-function DataTable({data, onEdit}){
-    return(
-        <StyledTable>
-            <thead>
-            <tr>
-                <th>번호</th>
-                <th>카테고리</th>
-                <th>고객이름</th>
-                <th>소속</th>
-                <th>연락처</th>
-                <th>이메일</th>
-                <th>지위</th>
-            </tr>
-            </thead>
-            <tbody>
-            {data.map((item) => (
-                <tr key={item.id} onClick={() => onEdit(item)}>
-                    <td>{item.id}</td>
-                    <td>{item.category}</td>
-                    <td>{item.clientName}</td>
-                    <td>{item.organization}</td>
-                    <td>{item.contact}</td>
-                    <td>{item.email}</td>
-                    <td>{item.position}</td>
-                </tr>
-            ))}
-            </tbody>
-
-        </StyledTable>
-    );
+function DataTable({ data, onEdit }) {
+  return (
+    <StyledTable>
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>카테고리</th>
+          <th>고객이름</th>
+          <th>소속</th>
+          <th>연락처</th>
+          <th>이메일</th>
+          <th>지위</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((item) => (
+          <tr key={item.id} onClick={() => onEdit(item)}>
+            <td>{item.id}</td>
+            <td>{item.category}</td>
+            <td>{item.clientName}</td>
+            <td>{item.organization}</td>
+            <td>{item.contact}</td>
+            <td>{item.email}</td>
+            <td>{item.position}</td>
+          </tr>
+        ))}
+      </tbody>
+    </StyledTable>
+  );
 }
 
 const ContactEditPage = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const navigate = useNavigate();
-    const [data, setData] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
-    const [editingItem, setEditingItem] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  const [data, setData] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
+  const [editingItem, setEditingItem] = useState(null);
 
-    useEffect(() => {
-        const token = sessionStorage.getItem("login-token");
-        if (token) {
-            setIsLoggedIn(true);
-        }
-    }, []);
-
-    const GoBack = () => {
-        navigate(`/admin`);
-    };
-
-    const handleEdit = (item) => {
-        setEditingItem(item);
-        setIsModalOpen(true); // 모달 열기
-    };
-
-    const handleCloseModal = () => {
-        fecthData();
-        setIsModalOpen(false);
-    };
-
-    useEffect(() => {
-        fecthData();
-    }, []);
-
-    const fecthData = () => {
-        axios
-            .get('https://port-0-promoationpage-server-12fhqa2blnlum4de.sel5.cloudtype.app/api/requests')
-            .then((response) => {
-                const data = response.data;
-
-                console.log(data.data[1]);
-                const objects = [];
-                const imgObjects = [];
-
-                for (let i = 0; i < data.data.length; i++) {
-                    const obj = {
-                        category: data.data[i].category,
-                        clientName: data.data[i].clientName,
-                        organization: data.data[i].organization,
-                        contact: data.data[i].contact,
-                        id: data.data[i].id,
-                        email: data.data[i].email,
-                        position: data.data[i].position,
-                        description: data.data[i].description,
-                        fileUrlList: data.data[i].fileUrlList,
-                    };
-
-                    objects.push(obj);
-                }
-                setData(objects);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+  useEffect(() => {
+    const token = sessionStorage.getItem("login-token");
+    if (token) {
+      setIsLoggedIn(true);
     }
+  }, []);
 
-    const handleDeleteContact = (deletedContactId) => {
-        // Update the data state by filtering out the deleted contact
-        setData((prevData) => prevData.filter((contact) => contact.id !== deletedContactId));
-    };
+  const GoBack = () => {
+    navigate(`/admin`);
+  };
 
-    return(
-        <>
-            {isLoggedIn ? (
-        <Body>
-            <div>
-                <AdminDiv>
-                    <Button onClick={GoBack}><Back/></Button>
-                    <Text>문의 목록</Text>
-                </AdminDiv>
-                <DataTable data={data} onEdit={handleEdit}></DataTable>
-                {isModalOpen && (
-                    <ShowContactModal
-                        item={editingItem}
-                        onClose={handleCloseModal}
-                        onDelete={handleDeleteContact}
-                    />
-                )}
-            </div>
-        </Body>
-                )
-                :(<></>)}
-        </>
+  const handleEdit = (item) => {
+    setEditingItem(item);
+    setIsModalOpen(true); // 모달 열기
+  };
+
+  const handleCloseModal = () => {
+    fecthData();
+    setIsModalOpen(false);
+  };
+
+  useEffect(() => {
+    fecthData();
+  }, []);
+
+  const fecthData = () => {
+    axios
+      .get(`${TEMPAPI}/api/requests`)
+      .then((response) => {
+        const data = response.data;
+
+        console.log(data.data[1]);
+        const objects = [];
+        const imgObjects = [];
+
+        for (let i = 0; i < data.data.length; i++) {
+          const obj = {
+            category: data.data[i].category,
+            clientName: data.data[i].clientName,
+            organization: data.data[i].organization,
+            contact: data.data[i].contact,
+            id: data.data[i].id,
+            email: data.data[i].email,
+            position: data.data[i].position,
+            description: data.data[i].description,
+            fileUrlList: data.data[i].fileUrlList,
+          };
+
+          objects.push(obj);
+        }
+        setData(objects);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const handleDeleteContact = (deletedContactId) => {
+    // Update the data state by filtering out the deleted contact
+    setData((prevData) =>
+      prevData.filter((contact) => contact.id !== deletedContactId)
     );
+  };
 
-}
+  return (
+    <>
+      {isLoggedIn ? (
+        <Body>
+          <div>
+            <AdminDiv>
+              <Button onClick={GoBack}>
+                <Back />
+              </Button>
+              <Text>문의 목록</Text>
+            </AdminDiv>
+            <DataTable data={data} onEdit={handleEdit}></DataTable>
+            {isModalOpen && (
+              <ShowContactModal
+                item={editingItem}
+                onClose={handleCloseModal}
+                onDelete={handleDeleteContact}
+              />
+            )}
+          </div>
+        </Body>
+      ) : (
+        <></>
+      )}
+    </>
+  );
+};
 
 export default ContactEditPage;
