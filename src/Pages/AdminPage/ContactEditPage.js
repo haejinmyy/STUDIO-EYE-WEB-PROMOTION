@@ -7,7 +7,6 @@ import ShowContactModal from "./Component/ShowContactModal";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import { TEMPAPI } from "../../apis/temporary";
 
 const StyledTable = styled.table`
   width: 100%;
@@ -129,7 +128,7 @@ const ContactEditPage = () => {
 
   const fecthData = () => {
     axios
-      .get(`${TEMPAPI}/api/requests`)
+      .get(`/api/requests`)
       .then((response) => {
         const data = response.data;
 

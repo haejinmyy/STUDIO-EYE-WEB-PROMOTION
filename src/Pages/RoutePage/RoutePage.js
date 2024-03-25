@@ -4,30 +4,25 @@ import Body from "../../Components/Common/Body";
 import { motion, Variants } from "framer-motion";
 
 const MainBody = styled.div`
-    display : flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    text-align: center;
-    background-color: black;
-    height: 110vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  background-color: black;
+  height: 110vh;
 `;
 
 const Video = styled.video`
-    width: 80vw;
+  width: 80vw;
 `;
 
-
-
 const RoutePage = () => {
-
-    return (
-        <>
-            <MainBody>
-                aaa
-            </MainBody>
-        </>
-    )
-}
+  return (
+    <>
+      <MainBody>aaa</MainBody>
+    </>
+  );
+};
 
 export default RoutePage;

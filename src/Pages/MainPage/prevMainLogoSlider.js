@@ -5,7 +5,6 @@ import corpLogo from "../../assets/logo/Logo.png";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { TEMPAPI } from "../../apis/temporary";
 
 const Wrapper = styled.div`
   height: 28vh;
@@ -74,7 +73,7 @@ const MainLogoSlider = () => {
 
   useEffect(() => {
     axios
-      .get(`${TEMPAPI}/api/partners`)
+      .get(`/api/partners`)
       .then((response) => {
         const data = response.data;
         const objects = [];

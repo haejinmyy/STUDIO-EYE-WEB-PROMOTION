@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import Modal from "./Components/Modal";
 import Select from "react-select";
-import { TEMPAPI } from "../../apis/temporary";
 
 const Wrapper = styled.div`
   display: flex;
@@ -370,7 +369,7 @@ const ContactPage = (e) => {
       requestData.append("files", file);
     });
     axios
-      .post(`${TEMPAPI}/api/requests`, requestData)
+      .post(`/api/requests`, requestData)
       .then((response) => {
         console.log(response.data, "임다. ");
         setIsModalOpen(true);

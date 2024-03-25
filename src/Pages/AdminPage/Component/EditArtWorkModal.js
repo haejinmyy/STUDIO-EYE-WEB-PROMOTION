@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
-import { TEMPAPI } from "../../../apis/temporary";
 
 const ModalContainer = styled.div`
   position: fixed;
@@ -129,7 +128,7 @@ function EditArtWorkModal({ item, onSave, onCancel }) {
     });
 
     axios
-      .put(`${TEMPAPI}/api/projects`, formData, {
+      .put(`/api/projects`, formData, {
         headers: { "Content-Type": "multipart/form-data", charset: "utf-8" },
       })
       .then((response) => {
@@ -146,7 +145,7 @@ function EditArtWorkModal({ item, onSave, onCancel }) {
       const projectId = editedItem.id;
 
       axios
-        .delete(`${TEMPAPI}/api/projects/${projectId}`)
+        .delete(`/api/projects/${projectId}`)
         .then((response) => {
           console.log("프로젝트가 삭제되었습니다.", response);
           onCancel();

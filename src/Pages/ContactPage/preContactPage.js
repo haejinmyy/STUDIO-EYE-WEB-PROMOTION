@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import LetterAnimation from "../../Components/Common/LetterAnimation";
 import Modal from "./Components/Modal";
-import { TEMPAPI } from "../../apis/temporary";
+
 // 이메일이랑 번호
 
 const FormBlock = styled.form`
@@ -282,7 +282,7 @@ const preContactPage = () => {
       requestData.append("files", file);
     });
     axios
-      .post(`${TEMPAPI}/api/requests`, requestData)
+      .post(`/api/requests`, requestData)
       .then((response) => {
         console.log(response.data, "임다. ");
         setIsModalOpen(true);

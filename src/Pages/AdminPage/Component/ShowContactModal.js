@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import { TEMPAPI } from "../../../apis/temporary";
 
 const ModalBackground = styled.div`
   position: fixed;
@@ -90,7 +89,7 @@ function ShowContactModal({ item, onClose, onDelete }) {
 
     if (shouldDelete) {
       axios
-        .delete(`${TEMPAPI}/api/requests/${item.id}`)
+        .delete(`/api/requests/${item.id}`)
         .then((response) => {
           onDelete(item.id);
           onClose();

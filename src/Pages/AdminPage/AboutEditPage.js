@@ -9,7 +9,6 @@ import { AiFillDelete } from "react-icons/ai";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { TEMPAPI } from "../../apis/temporary";
 
 const BoxContainer = styled(motion.div)`
   display: flex;
@@ -164,7 +163,7 @@ const AdminEditPage = () => {
 
     const fetchData = () => {
       axios
-        .get(`${TEMPAPI}/api/partners`)
+        .get(`/api/partners`)
 
         .then((response) => {
           const data = response.data;

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
-import { TEMPAPI } from "../../../apis/temporary";
 
 const ModalContainer = styled.div`
   position: fixed;
@@ -114,7 +113,7 @@ function PlusArtworkModal({ onSave, onCancel }) {
     });
 
     axios
-      .post(`${TEMPAPI}/api/projects`, formData)
+      .post(`/api/projects`, formData)
       .then((response) => {
         console.log("등록되었습니다.", response);
         onSave();

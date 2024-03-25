@@ -5,7 +5,6 @@ import axios from "axios";
 import YouTube from "react-youtube";
 import styled from "styled-components";
 import youtubeLogo from "../../assets/logo/youtubeLogo.png";
-import { TEMPAPI } from "../../apis/temporary";
 
 const ImageBanner = styled.div`
   display: flex;
@@ -114,7 +113,7 @@ const ContentDetailPage = () => {
 
   const getDetails = (id) => {
     axios
-      .get(`${TEMPAPI}/api/projects/${id}`)
+      .get(`/api/projects/${id}`)
       .then((response) => {
         const data = response.data;
         const content = {

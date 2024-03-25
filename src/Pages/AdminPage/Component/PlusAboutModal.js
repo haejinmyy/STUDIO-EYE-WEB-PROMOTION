@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
-import { TEMPAPI } from "../../../apis/temporary";
 
 const ModalContainer = styled.div`
   position: fixed;
@@ -115,7 +114,7 @@ function PlusAboutModal({ onCancel }) {
       }
 
       axios
-        .post(`${TEMPAPI}/api/partners`, formData)
+        .post(`/api/partners`, formData)
         .then((response) => {
           console.log("등록되었습니다.", response);
           onCancel(); // 삭제가 완료되면 취소 함수를 호출하여 모달을 닫습니다.

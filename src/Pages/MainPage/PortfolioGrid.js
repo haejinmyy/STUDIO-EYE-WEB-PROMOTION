@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 import LetterAnimation from "../../Components/Common/LetterAnimation";
 import axios from "axios";
-import { TEMPAPI } from "../../apis/temporary";
 
 const ArrowImg = styled.img`
   width: 60px;
@@ -92,7 +91,7 @@ const PortfolioGrid = () => {
 
   useEffect(() => {
     axios
-      .get(`${TEMPAPI}/api/projects`)
+      .get(`/api/projects`)
       .then((response) => {
         const data = response.data;
         console.log(data);

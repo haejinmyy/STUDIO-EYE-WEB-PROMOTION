@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { TEMPAPI } from "../../apis/temporary";
 
 const Wrapper = styled.div`
   background-color: #f3f4f8;
@@ -128,7 +127,7 @@ const MainContents = () => {
 
   useEffect(() => {
     axios
-      .get(`${TEMPAPI}/api/projects`)
+      .get(`/api/projects`)
       .then((response) => {
         const data = response.data;
         console.log(data);

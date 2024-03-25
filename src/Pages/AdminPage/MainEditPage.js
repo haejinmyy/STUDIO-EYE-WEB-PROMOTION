@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { FaRegEdit } from "react-icons/fa";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import EditMainModal from "./Component/EditMainModal";
-import { TEMPAPI } from "../../apis/temporary";
 
 const StyledTable = styled.table`
   width: 100%;
@@ -136,7 +135,7 @@ const MainEditPage = () => {
 
   const fetchData = () => {
     axios
-      .get(`${TEMPAPI}/api/projects`)
+      .get(`/api/projects`)
       .then((response) => {
         const data = response.data;
         const objects = [];

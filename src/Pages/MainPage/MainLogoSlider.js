@@ -1,7 +1,6 @@
 import React, { Component, useState, useEffect } from "react";
 import axios from "axios";
 import styled, { keyframes } from "styled-components";
-import { TEMPAPI } from "../../apis/temporary";
 
 // @keyframes slide {
 //     from { left: 0 }
@@ -115,7 +114,7 @@ const MainLogoSlider = () => {
 
   useEffect(() => {
     axios
-      .get(`${TEMPAPI}/api/partners`)
+      .get(`/api/partners`)
       .then((response) => {
         const data = response.data;
         const objects = [];

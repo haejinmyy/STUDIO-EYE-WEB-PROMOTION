@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import Accordion from "react-bootstrap/Accordion";
 import MyAccordion from "./Components/MyAccordion";
-import { TEMPAPI } from "../../apis/temporary";
 
 const BoxContainer = styled(motion.div)`
   display: flex;
@@ -59,7 +58,7 @@ const NoticeMainpage = () => {
 
     useEffect(() => {
       axios
-        .get(`${TEMPAPI}/api/notice-board`)
+        .get(`/api/notice-board`)
 
         .then((response) => {
           const data = response.data;
