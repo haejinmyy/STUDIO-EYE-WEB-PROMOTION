@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import styled from "styled-components";
 
@@ -55,48 +55,48 @@ const Input = styled.input`
     width: 70%;
 `;
 
-function AdminModal({onCancel}) {
+function AdminModal({ onCancel }) {
 
-        const navigate = useNavigate();
+    const navigate = useNavigate();
 
-        const [formData, setFormData] = useState({
-            email: "",
-            pwd: "",
-        });
+    const [formData, setFormData] = useState({
+        email: "",
+        pwd: "",
+    });
 
-        const handleChange = (e) => {
-            const { name, value } = e.target;
-            setFormData((prevData) => ({
-                ...prevData,
-                [name]: value,
-            }));
-        };
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
 
-        const handleLogin = () => {
-            axios.post(`/user-service/login`, formData)
-                .then((response) => {
-                    // const accessToken = response.data.accessToken;
-                    // axios.defaults.headers.common["Authorization"] =
-                    //     "Bearer " + accessToken; // 토큰을 HTTP 헤더에 포함
-                    // sessionStorage.setItem("login-token", accessToken);
+    const handleLogin = () => {
+        axios.post(`/user-service/login`, formData)
+            .then((response) => {
+                // const accessToken = response.data.accessToken;
+                // axios.defaults.headers.common["Authorization"] =
+                //     "Bearer " + accessToken; // 토큰을 HTTP 헤더에 포함
+                // sessionStorage.setItem("login-token", accessToken);
 
-                    alert("로그인 성공");
-                    navigate("/admin");
-                })
-                .catch((error) => {
-                    alert("로그인 실패");
-                    if (error.response) {
-                        // 서버에서 응답을 받은 경우 (상태 코드가 설정된 경우)
-                        console.error('Response Error:', error.response.status, error.response.data);
-                    } else if (error.request) {
-                        // 서버로 요청이 전송되지 않은 경우
-                        console.error('Request Error:', error.request);
-                    } else {
-                        // 그 외의 에러
-                        console.error('Error:', error.message);
-                    }
-                });
-        };
+                alert("로그인 성공");
+                navigate("/admin");
+            })
+            .catch((error) => {
+                alert("로그인 실패");
+                if (error.response) {
+                    // 서버에서 응답을 받은 경우 (상태 코드가 설정된 경우)
+                    console.error('Response Error:', error.response.status, error.response.data);
+                } else if (error.request) {
+                    // 서버로 요청이 전송되지 않은 경우
+                    console.error('Request Error:', error.request);
+                } else {
+                    // 그 외의 에러
+                    console.error('Error:', error.message);
+                }
+            });
+    };
 
 
     return (
@@ -121,8 +121,8 @@ function AdminModal({onCancel}) {
                     />
                 </Div>
                 <div>
-                <Button onClick={() => handleLogin()}>확인</Button>
-                <Button onClick={onCancel}>취소</Button>
+                    <Button onClick={() => handleLogin()}>확인</Button>
+                    <Button onClick={onCancel}>취소</Button>
                 </div>
             </Modal>
         </ModalContainer>

@@ -1,7 +1,7 @@
-import React, {useRef} from "react";
+import React, { useRef } from "react";
 import Body from "../../Components/Common/Body";
-import styled, {keyframes} from "styled-components";
-import { motion, AnimatePresence} from "framer-motion";
+import styled, { keyframes } from "styled-components";
+import { motion, AnimatePresence } from "framer-motion";
 import MainAnimation from "../MainPage/MainAnimation";
 import DetailTransition from "../../Components/Common/DetailTransition";
 import YouTube from "react-youtube";
@@ -59,12 +59,12 @@ const DetailBox = styled.div`
     align-items: center;
     
 `;
-const DetailTitle =styled.div`
+const DetailTitle = styled.div`
     margin-top: 50px;
     font-size: 40px;
     font-weight: 600;
 `
-const DetailContent =styled.div`
+const DetailContent = styled.div`
     margin-top: 20px;
     font-size: 20px;
     width: 70%;
@@ -76,14 +76,14 @@ const DetailPage = () => {
         width: "640",
         height: "360",
         playerVars: {
-          autoplay: 0, // 자동 재생
-          controls: 1, // 재생 컨트롤 표시
+            autoplay: 0, // 자동 재생
+            controls: 1, // 재생 컨트롤 표시
         },
     };
-    return(
+    return (
         <Body>
             {/* <DetailTransition/> */}
-            <AnimatePresence/>
+            <AnimatePresence />
             <MainSection>
                 <BasicInfo>
                     <ProjTitle>
@@ -97,17 +97,17 @@ const DetailPage = () => {
                     </ProductionTeam>
                 </BasicInfo>
                 <VideoWrapper>
-                    <YouTube videoId="bcOO4bu7Alc" opts={options}/>
+                    <YouTube videoId="bcOO4bu7Alc" opts={options} />
                 </VideoWrapper>
             </MainSection>
             <DetailSection>
                 <DetailBox><DetailTitle>Category</DetailTitle><DetailContent>Entertainment</DetailContent></DetailBox>
                 <DetailBox><DetailTitle>Client</DetailTitle><DetailContent>(주)엘지유플러스</DetailContent></DetailBox>
                 <DetailBox><DetailTitle>Overview</DetailTitle><DetailContent>개그맨 황제성이 출연해 다양한 소재에 대한 궁금증을 해결하기 위해 백과사전 속으로 떠나는 탐험!
-                DK백과사전 기반 필수 지식을 알기 쉽고 재미있게 풀어낸 어린이 지식 충전 예능 콘텐츠</DetailContent></DetailBox>
+                    DK백과사전 기반 필수 지식을 알기 쉽고 재미있게 풀어낸 어린이 지식 충전 예능 콘텐츠</DetailContent></DetailBox>
             </DetailSection>
-        </Body>      
-        
+        </Body>
+
 
     )
 }

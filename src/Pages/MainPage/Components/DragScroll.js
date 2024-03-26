@@ -33,51 +33,51 @@ const Scroll = styled.div`
   }
 `;
 
-const DragScroll = ({images}) => {
-    const [isDown, setIsDown] = useState(false);
-    const [startX, setStartX] = useState(0);
-    const [scrollLeft, setScrollLeft] = useState(0);
+const DragScroll = ({ images }) => {
+  const [isDown, setIsDown] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
-    const handleMouseDown = (e) => {
-        setIsDown(true);
-        setStartX(e.pageX - e.currentTarget.offsetLeft);
-        setScrollLeft(e.currentTarget.scrollLeft);
-    };
+  const handleMouseDown = (e) => {
+    setIsDown(true);
+    setStartX(e.pageX - e.currentTarget.offsetLeft);
+    setScrollLeft(e.currentTarget.scrollLeft);
+  };
 
-    const handleMouseLeave = () => {
-        setIsDown(false);
-    };
+  const handleMouseLeave = () => {
+    setIsDown(false);
+  };
 
-    const handleMouseUp = () => {
-        setIsDown(false);
-    };
+  const handleMouseUp = () => {
+    setIsDown(false);
+  };
 
-    const handleMouseMove = (e) => {
-        if (!isDown) return;
-        e.preventDefault();
-        const x = e.pageX - e.currentTarget.offsetLeft;
-        const walk = x - startX;
-        e.currentTarget.scrollLeft = scrollLeft - walk;
-    };
+  const handleMouseMove = (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - e.currentTarget.offsetLeft;
+    const walk = x - startX;
+    e.currentTarget.scrollLeft = scrollLeft - walk;
+  };
 
-    return (
-        <Container>
-        <Scroll
-            className="items"
-            onMouseDown={handleMouseDown}
-            onMouseLeave={handleMouseLeave}
-            onMouseUp={handleMouseUp}
-            onMouseMove={handleMouseMove}
-        >
-            {images.map((image, index) => (
-                <img
-                    key={index}
-                    src={image}
-                />
-            ))}
-        </Scroll>
-        </Container>
-    );
+  return (
+    <Container>
+      <Scroll
+        className="items"
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+      >
+        {images.map((image, index) => (
+          <img
+            key={index}
+            src={image}
+          />
+        ))}
+      </Scroll>
+    </Container>
+  );
 };
 
-export default DragScroll;
+// export default DragScroll;
