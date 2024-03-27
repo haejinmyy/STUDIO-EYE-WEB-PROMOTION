@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Responsive from './responsive';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import studioi from "../../assets/logo/mainLogo.png";
 
 const Block = styled.div`
@@ -94,11 +94,11 @@ const Footer = () => {
                         <Text>서울시 성동구 광나루로 162 BS성수타워 5층 5F, 162, Gwangnaru-ro, Seongdong-gu, Seoul, Korea</Text>
                     </AdDiv>
                     <Div>
-                        <Img src={studioi} alt='logo image'/>
+                        <Img src={studioi} alt='logo image' />
                         <Sub>
-                        <Text>T. 02-2038-2663</Text>
-                            <Margin/>
-                        <Text>F. 070-7549-2443</Text>
+                            <Text>T. 02-2038-2663</Text>
+                            <Margin />
+                            <Text>F. 070-7549-2443</Text>
                         </Sub>
                     </Div>
                 </Wrapper>

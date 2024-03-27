@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Header from "./header";
 import Footer from "./Footer";
@@ -39,28 +39,28 @@ const Spacer = styled.div`
 const bodyChange = {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
-    out: {opacity: 0 },
+    out: { opacity: 0 },
 };
 
 const headermotion = {
     initial: { y: 20, opacity: 0 },
-    animate: { y:0, opacity: 1, transition:{delay: 0.5, duration: 1 }},
-    out: {opacity: 0, transition: { duration: 1 } },
+    animate: { y: 0, opacity: 1, transition: { delay: 0.5, duration: 1 } },
+    out: { opacity: 0, transition: { duration: 1 } },
 };
 
 const sidebarmotion = {
     initial: { opacity: 0 },
-    animate: { opacity: 1, transition:{delay: 0.5, duration: 1 }},
-    out: {opacity: 0, transition: { duration: 1 } },
+    animate: { opacity: 1, transition: { delay: 0.5, duration: 1 } },
+    out: { opacity: 0, transition: { duration: 1 } },
 };
 
 const bodymotion = {
     initial: { opacity: 0 },
-    animate: { opacity: 1, transition:{delay: 0.1, duration: 1 }},
-    out: {opacity: 0, transition: { duration: 1 } },
+    animate: { opacity: 1, transition: { delay: 0.1, duration: 1 } },
+    out: { opacity: 0, transition: { duration: 1 } },
 };
 
-const AdminBody = function({children}) {
+const AdminBody = function ({ children }) {
     const [additionalWidth, setAdditionalWidth] = useState(0);
     const [mainWidth, setMainWidth] = useState(0);
     const [mainHeight, setMainHeight] = useState(0);
@@ -73,7 +73,7 @@ const AdminBody = function({children}) {
             const screenHeight = window.innerHeight;
             if (screenWidth > 1180) {
                 // 추가 너비를 설정
-                setAdditionalWidth((screenWidth - 1180)/2);
+                setAdditionalWidth((screenWidth - 1180) / 2);
                 setMainWidth(1180);
 
             } else {
@@ -95,50 +95,50 @@ const AdminBody = function({children}) {
 
     }, []);
 
-  return (
-    <>
-    <motion.div
-        variants={bodyChange}
-        initial="initial"
-        animate="animate"
-        exit="out"
-    >
-        <motion.div
-            variants={headermotion}
-            initial="initial"
-            animate="animate"
-            exit="out"
-        >
-            <Header />
-        </motion.div>
-        <ScrollDiv>
-            <Spacer />
-        <PageBody>
-            <SideDiv additionalWidth={additionalWidth}/>
+    return (
+        <>
             <motion.div
-                variants={bodymotion}
+                variants={bodyChange}
                 initial="initial"
                 animate="animate"
                 exit="out"
             >
-            <RealBody mainWidth={mainWidth}>
-                {children}
-            </RealBody>
+                <motion.div
+                    variants={headermotion}
+                    initial="initial"
+                    animate="animate"
+                    exit="out"
+                >
+                    <Header />
+                </motion.div>
+                <ScrollDiv>
+                    <Spacer />
+                    <PageBody>
+                        <SideDiv additionalWidth={additionalWidth} />
+                        <motion.div
+                            variants={bodymotion}
+                            initial="initial"
+                            animate="animate"
+                            exit="out"
+                        >
+                            <RealBody mainWidth={mainWidth}>
+                                {children}
+                            </RealBody>
+                        </motion.div>
+                        <SideDiv additionalWidth={additionalWidth} />
+                    </PageBody>
+                    <motion.div
+                        variants={sidebarmotion}
+                        initial="initial"
+                        animate="animate"
+                        exit="out"
+                    >
+                        <Footer />
+                    </motion.div>
+                </ScrollDiv>
             </motion.div>
-            <SideDiv additionalWidth={additionalWidth}/>
-        </PageBody>
-            <motion.div
-                variants={sidebarmotion}
-                initial="initial"
-                animate="animate"
-                exit="out"
-            >
-                <Footer />
-            </motion.div>
-        </ScrollDiv>
-    </motion.div>
-    </>
-  );
+        </>
+    );
 };
 
 export default AdminBody;

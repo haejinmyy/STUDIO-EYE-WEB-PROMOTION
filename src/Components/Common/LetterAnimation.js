@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import styled, {css} from "styled-components";
+import styled, { css } from "styled-components";
 import { useAnimation, motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 
@@ -77,14 +77,14 @@ const characterAnimation = {
 };
 
 
-export default function LetterAnimation({ text, customEase, ...props }) {  
+function LetterAnimation({ text, customEase, ...props }) {
   const ctrls = useAnimation();
-  
+
   const { ref, inView } = useInView({
     threshold: 0.5,
     triggerOnce: true,
   });
-  
+
   useEffect(() => {
     if (inView) {
       ctrls.start("visible");
@@ -102,7 +102,7 @@ export default function LetterAnimation({ text, customEase, ...props }) {
     visible: {},
   };
 
-  
+
   return (
     <Title {...props} aria-label={text} role="heading">
       {text.split(" ").map((word, index) => {
@@ -136,3 +136,5 @@ export default function LetterAnimation({ text, customEase, ...props }) {
     </Title>
   );
 }
+
+export default LetterAnimation
