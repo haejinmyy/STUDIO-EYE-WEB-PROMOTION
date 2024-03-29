@@ -11,6 +11,7 @@ import ContactEditPage from "./Pages/AdminPage/ContactEditPage";
 import MainEditPage from "./Pages/AdminPage/MainEditPage";
 import ContactPage from "./Pages/ContactPage/ContactPage";
 import LoginPage from "./Pages/LoginPage/LoginMainPage";
+import ContactPage2 from "./Pages/ContactPage/ContactPage2";
 
 const router = createBrowserRouter([
   {
@@ -58,8 +59,12 @@ const router = createBrowserRouter([
         element: <MainEditPage />,
       },
       {
-        path: "/contact",
+        path: "/contact2",
         element: <ContactPage />,
+      },
+      {
+        path: "/contact",
+        element: <ContactPage2 />,
       },
     ],
   },
