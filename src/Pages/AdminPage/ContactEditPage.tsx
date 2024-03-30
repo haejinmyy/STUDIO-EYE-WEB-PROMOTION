@@ -167,7 +167,7 @@ const ContactEditPage = () => {
 
   return (
     <>
-      {isLoggedIn || test ? (
+      {isLoggedIn ? (
         <Body>
           <div>
             <AdminDiv>
