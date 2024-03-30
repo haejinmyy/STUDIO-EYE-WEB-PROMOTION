@@ -166,7 +166,7 @@ const MainEditPage = () => {
   };
   return (
     <>
-      {isLoggedIn || test ? (
+      {isLoggedIn ? (
         <Body>
           <AdminDiv>
             <Button onClick={GoBack}>
