@@ -269,11 +269,11 @@ interface IFormData {
 }
 
 const ContactPage = (e: any) => {
-  const textareaRef = useRef(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const closeModal = () => setIsModalOpen(false);
-  const [fileList, setFileList] = useState([]);
-  const FileTextRef = useRef(null);
+  const [fileList, setFileList] = useState<File[]>([]);
+  const FileTextRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState<IFormData>({
     category: "Entertainment",
     clientName: "",
@@ -315,18 +315,23 @@ const ContactPage = (e: any) => {
       category: e.value,
     });
   };
-  const handleFileChange = (e: any) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
-    // if (selectedFiles.length > 0) {
-    //   // 선택된 파일 multiple 일 경우
-    //   const fileNames = Array.from(selectedFiles)
-    //     .map((file: any) => file.name)
-    //     .join(", ");
-    //   FileTextRef.current.value = fileNames;
-    // } else {
-    //   FileTextRef.current.value = ""; //파일 선택되지 않았을 경우 입력 내용 지우기
-    // }
-    // setFileList([...fileList, ...selectedFiles]);
+    if (selectedFiles) {
+      setFileList([...fileList, ...Array.from(selectedFiles)]);
+      if (selectedFiles.length > 0) {
+        const fileNames = Array.from(selectedFiles)
+          .map((file) => file.name)
+          .join(", ");
+        if (FileTextRef.current) {
+          FileTextRef.current.value = fileNames;
+        }
+      } else {
+        if (FileTextRef.current) {
+          FileTextRef.current.value = "";
+        }
+      }
+    }
   };
   // textarea 입력값에 따른 높이 조절
   const handleTextAreaDataChange = (e: any) => {
@@ -379,7 +384,7 @@ const ContactPage = (e: any) => {
       requestData.append("files", file);
     });
     axios
-      .post(`/api/requests`, requestData)
+      .post(`http://3.35.54.100:8080/api/requests`, requestData)
       .then((response) => {
         console.log(response.data, "임다. ");
         setIsModalOpen(true);
@@ -439,7 +444,7 @@ const ContactPage = (e: any) => {
               classNamePrefix="Select"
               options={categories}
               defaultValue={categories[0]}
-              onChange={(e) => handleCategoryChange(e)}
+              onChange={(e: any) => handleCategoryChange(e)}
             />
           </InputWrapper>
           <RowWrapper map>

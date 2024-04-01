@@ -91,7 +91,7 @@ const ArtworkMainpage = () => {
 
     useEffect(() => {
       axios
-        .get(`/api/projects`)
+        .get(`http://3.35.54.100:8080/api/projects`)
 
         .then((response) => {
           const data = response.data;
