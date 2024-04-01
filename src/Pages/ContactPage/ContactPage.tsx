@@ -379,7 +379,7 @@ const ContactPage = (e: any) => {
       requestData.append("files", file);
     });
     axios
-      .post(`/api/requests`, requestData)
+      .post(`http://3.35.54.100:8080/api/requests`, requestData, {})
       .then((response) => {
         console.log(response.data, "임다. ");
         setIsModalOpen(true);
@@ -439,7 +439,7 @@ const ContactPage = (e: any) => {
               classNamePrefix="Select"
               options={categories}
               defaultValue={categories[0]}
-              onChange={(e) => handleCategoryChange(e)}
+              onChange={(e: any) => handleCategoryChange(e)}
             />
           </InputWrapper>
           <RowWrapper map>
