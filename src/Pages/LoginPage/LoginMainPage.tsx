@@ -97,7 +97,7 @@ function LoginPage() {
 
   const handleLogin = () => {
     axios
-      .post("/user-service/login", formData)
+      .post("http://43.203.217.95:8080/login", formData)
       .then((response) => {
         const accessToken = response.data.accessToken;
         axios.defaults.headers.common["Authorization"] =
