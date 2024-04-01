@@ -84,7 +84,7 @@ function ContactPage2() {
     console.log("formdata: ", formData);
 
     axios
-      .post(`api/requests`, formData)
+      .post(`http://3.35.54.100:8080/api/requests`, formData, {})
       .then((response) => {
         console.log("제출", response);
         setValue("category", "Entertainment");

@@ -59,13 +59,13 @@ const router = createBrowserRouter([
         element: <MainEditPage />,
       },
       {
-        path: "/contact2",
+        path: "/contact",
         element: <ContactPage />,
       },
-      {
-        path: "/contact",
-        element: <ContactPage2 />,
-      },
+      // {
+      //   path: "/contact",
+      //   element: <ContactPage2 />,
+      // },
     ],
   },
 ]);
