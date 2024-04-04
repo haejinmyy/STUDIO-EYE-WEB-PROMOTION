@@ -114,8 +114,6 @@ function DataTable({ data, onEdit, deleteProject }: any) {
 }
 
 const ArtworkEditPage = () => {
-  const test = useState(true); // 임시로 렌더링 확인하기 위한 변수, 추후에 삭제해야 함
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -191,7 +189,7 @@ const ArtworkEditPage = () => {
   };
   return (
     <>
-      {isLoggedIn || test ? (
+      {isLoggedIn ? (
         <Body>
           <AdminDiv>
             <Button onClick={GoBack}>

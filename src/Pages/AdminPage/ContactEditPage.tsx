@@ -95,9 +95,7 @@ function DataTable({ data, onEdit }: any) {
 }
 
 const ContactEditPage = () => {
-  const test = useState(true); // 임시로 렌더링 확인하기 위한 변수, 추후에 삭제해야 함
-
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
