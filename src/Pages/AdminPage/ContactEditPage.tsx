@@ -3,7 +3,7 @@ import styled from "styled-components";
 import axios from "axios";
 // import Data from "bootstrap/js/src/dom/data";
 import Body from "../../components/Common/AdminBody";
-import ShowContactModal from "./Component/ShowContactModal";
+import ShowContactModal from "./component/ShowContactModal";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { IoMdArrowRoundBack } from "react-icons/io";
