@@ -40,6 +40,7 @@ const Wrapper = styled(Responsive)`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  
 
   .logo {
     font-weight: 600;
