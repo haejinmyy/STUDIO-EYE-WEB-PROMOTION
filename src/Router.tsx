@@ -12,6 +12,9 @@ import MainEditPage from "./pages/AdminPage/MainEditPage";
 import ContactPage from "./pages/ContactPage/ContactPage";
 import LoginPage from "./pages/LoginPage/LoginMainPage";
 import ContactPage2 from "./pages/ContactPage/ContactPage2";
+import FAQMainPage from "./pages/PromotionAdmin/FAQPage/FAQMainPage";
+import FAQWritePage from "./pages/PromotionAdmin/FAQPage/FAQWritePage";
+import FAQManagePage from "./pages/PromotionAdmin/FAQPage/FAQManagePage";
 
 const router = createBrowserRouter([
   {
@@ -66,6 +69,24 @@ const router = createBrowserRouter([
       //   path: "/contact",
       //   element: <ContactPage2 />,
       // },
+      {
+        path: "/admin/faq",
+        element: <FAQMainPage />,
+        children: [
+          {
+            path: "",
+            element: <FAQManagePage />,
+          },
+          {
+            path: "/admin/faq/write/:faqId",
+            element: <FAQManagePage />,
+          },
+          {
+            path: "/admin/faq/write",
+            element: <FAQWritePage />,
+          },
+        ],
+      },
     ],
   },
 ]);
