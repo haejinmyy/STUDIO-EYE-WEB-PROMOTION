@@ -319,13 +319,13 @@ function FAQManagePage() {
                   onClick={() => {
                     !editMode && navigator(`/admin/faq/write/${faq.id}`);
                     setId(faq.id + "");
-                    window.location.reload();
                   }}
                 >
                   {editMode && (
                     <DeleteButton
                       onClick={() => {
                         handleDelete(faq.id);
+                        window.location.reload();
                       }}
                     >
                       <svg
