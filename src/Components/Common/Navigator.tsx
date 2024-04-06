@@ -530,8 +530,15 @@ const categories = [
 
 function Navigator() {
   const location = useLocation();
-  const [selectedMenu, setSelectedMenu] = useState(location.pathname);
+
+  const [selectedMenu, setSelectedMenu] = useState(
+    location.pathname.split("/")[2]
+  );
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setSelectedMenu(location.pathname.split("/")[2]);
+  }, [location]);
 
   return (
     <Wrapper>
@@ -541,7 +548,7 @@ function Navigator() {
             key={index}
             onClick={() => {
               navigate(`${category.path}`);
-              setSelectedMenu(category.path);
+              setSelectedMenu(location.pathname.split("/")[2]);
             }}
             selected={category.path.includes(selectedMenu) ? true : false}
           >
