@@ -1,68 +1,97 @@
-import React from 'react'
+import React from 'react';
 import styled from 'styled-components';
-import { ReactComponent as Home } from '@/assets/images/PA-Navigation/home.svg'; 
-import { ReactComponent as Request } from '@/assets/images/PA-Navigation/request.svg'; 
-import { ReactComponent as Artwork } from '@/assets/images/PA-Navigation/artwork.svg'; 
-import { ReactComponent as PageEdit } from '@/assets/images/PA-Navigation/pageEdit.svg'; 
-import { ReactComponent as Statistics } from '@/assets/images/PA-Navigation/statistics.svg'; 
-import { ReactComponent as Setting } from '@/assets/images/PA-Navigation/setting.svg'; 
-import { ReactComponent as Faq } from '@/assets/images/PA-Navigation/faq.svg'; 
-import Links from './Links';
+import { ReactComponent as Home } from '@/assets/images/PA-Navigation/home.svg';
+import { ReactComponent as Request } from '@/assets/images/PA-Navigation/request.svg';
+import { ReactComponent as Artwork } from '@/assets/images/PA-Navigation/artwork.svg';
+import { ReactComponent as PageEdit } from '@/assets/images/PA-Navigation/pageEdit.svg';
+import { ReactComponent as Statistics } from '@/assets/images/PA-Navigation/statistics.svg';
+import { ReactComponent as Setting } from '@/assets/images/PA-Navigation/setting.svg';
+import { ReactComponent as Faq } from '@/assets/images/PA-Navigation/faq.svg';
+import PALogo from '@/assets/images/PA-Navigation/pa-logo.png';
+import NavBtn from './NavBtn';
+import Logout from './Logout';
+import { PA_ROUTES } from '@/constants/routerConstants';
 
 const linksData = [
-    {
-        path: '/pa-home-test',
-        pathName: 'Home',
-        svgComponent: <Home />
-    },
-    {
-        path: '/pa-request-test',
-        pathName: 'Request',
-        svgComponent: <Request />
-    },
-    {
-        path: '/pa-artwork-test',
-        pathName: 'Artwork',
-        svgComponent: <Artwork />
-    },
-    {
-        path: '/pa-pageEdit-test',
-        pathName: 'Page Edit',
-        svgComponent: <PageEdit />
-    },
-    {
-        path: '/pa-statistics-test',
-        pathName: 'Statistics',
-        svgComponent: <Statistics />
-    },
-    {
-        path: '/pa-faq-test',
-        pathName: 'Faq',
-        svgComponent: <Faq />
-    },
-    {
-        path: '/pa-setting-test',
-        pathName: 'Setting',
-        svgComponent: <Setting />
-    }
+  {
+    path: PA_ROUTES.HOME,
+    pathName: 'Home',
+    svgComponent: <Home width={20} height={20} />,
+  },
+  {
+    path: PA_ROUTES.REQUEST,
+    pathName: 'Request',
+    svgComponent: <Request width={20} height={20} />,
+  },
+  {
+    path: PA_ROUTES.ARTWORK,
+    pathName: 'Artwork',
+    svgComponent: <Artwork width={20} height={20} />,
+  },
+  {
+    path: PA_ROUTES.PAGE_EDIT,
+    pathName: 'Page Edit',
+    svgComponent: <PageEdit width={20} height={20} />,
+  },
+  {
+    path: PA_ROUTES.STATISTICS,
+    pathName: 'Statistics',
+    svgComponent: <Statistics width={20} height={20} />,
+  },
+  {
+    path: PA_ROUTES.FAQ,
+    pathName: 'Faq',
+    svgComponent: <Faq width={20} height={20} />,
+  },
+  {
+    path: PA_ROUTES.SETTING,
+    pathName: 'Setting',
+    svgComponent: <Setting width={20} height={20} />,
+  },
 ];
-
 
 const index = () => {
   return (
-    <div>
-        <div>회사 로고</div>
-        <LinksContainer>
-                {linksData.map((link, index) => (
-                    <Links key={index} path={link.path} pathName={link.pathName} svgComponent={link.svgComponent} />
-                ))}
-        </LinksContainer>
-    </div>
-  )
-}
+    <Container>
+      <LogoImg src={PALogo} alt='pa-logo' />
+      <NavWrapper>
+        {linksData.map((link, index) => (
+          <NavBtn key={index} path={link.path} pathName={link.pathName} svgComponent={link.svgComponent} />
+        ))}
+      </NavWrapper>
+      <LogoutWrapper>
+        <Logout />
+      </LogoutWrapper>
+    </Container>
+  );
+};
 
 export default index;
 
-const LinksContainer = styled.div`
-    /* 링크 컨테이너에 대한 스타일을 여기에 추가합니다. */
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 127px;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  z-index: 30;
+  background-color: #fbfbfb;
+  box-shadow: 0px 0px 20px #00000025;
+`;
+
+const LogoImg = styled.img`
+  width: 99px;
+  height: 33px;
+  object-fit: contain;
+  padding-top: 33px;
+`;
+
+const NavWrapper = styled.div``;
+
+const LogoutWrapper = styled.div`
+  width: 100%;
+  height: fit-content;
 `;

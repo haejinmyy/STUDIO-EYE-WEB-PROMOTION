@@ -17,7 +17,7 @@ const root = createRoot(element as Element);
 root.render(
   // <React.StrictMode>
   <QueryClientProvider client={client}>
-       <GlobalStyle />
+    <GlobalStyle />
     <ThemeProvider theme={theme}>
       <RouterProvider router={router} />
     </ThemeProvider>

@@ -11,8 +11,15 @@ import ContactEditPage from "./pages/AdminPage/ContactEditPage";
 import MainEditPage from "./pages/AdminPage/MainEditPage";
 import ContactPage from "./pages/ContactPage/ContactPage";
 import LoginPage from "./pages/LoginPage/LoginMainPage";
-import ContactPage2 from "./pages/ContactPage/ContactPage2";
-import PAHome from '@/components/PromotionAdmin/Navigation/index'
+import PAHomePage from '@/pages/PromotionAdmin/HomePage/index';
+import PARequestPage from '@/pages/PromotionAdmin/RequestPage/index';
+import PAArtworkPage from '@/pages/PromotionAdmin/ArtworkPage/index';
+import PAPageEditPage from '@/pages/PromotionAdmin/PageEditPage/index';
+import PAStatisticsPage from '@/pages/PromotionAdmin/StatisticsPage/index';
+import PAFaqPage from '@/pages/PromotionAdmin/FaqPage/index';
+import PASettingPage from '@/pages/PromotionAdmin/SettingPage/index';
+import AdminLayout from '@/components/PromotionAdmin/Layout/index'
+import { PA_ROUTES_CHILD } from "./constants/routerConstants";
 
 
 const router = createBrowserRouter([
@@ -23,79 +30,88 @@ const router = createBrowserRouter([
       {
         path: "",
         element: <PromotionMainpage />,
-      },
-      {
-        path: "/about",
-        element: <AboutMainpage />,
-      },
-      {
-        path: "/contents",
-        element: <ArtworkMainpage />,
-      },
-      {
-        path: "/detail/:detailId",
-        element: <ContentDetailPage />,
-      },
-      {
-        path: "/login",
-        element: <LoginPage />,
-      },
+        children: [
+          {
+            path: "about",
+            element: <AboutMainpage />,
+          },
+          {
+            path: "contents",
+            element: <ArtworkMainpage />,
+          },
+          {
+            path: "detail/:detailId",
+            element: <ContentDetailPage />,
+          },
+          {
+            path: "login",
+            element: <LoginPage />,
+          },
+         
+          {
+            path: "contact",
+            element: <ContactPage />,
+          },
+        ]
+      },   
       {
         path: "/admin",
         element: <AdminMainPage />,
+        children: [
+          {
+            path: "admin/about",
+            element: <AdminEditPage />,
+          },
+          {
+            path: "admin/artwork",
+            element: <ArtworkEditPage />,
+          },
+          {
+            path: "admin/contact",
+            element: <ContactEditPage />,
+          },
+          {
+            path: "admin/mainpage",
+            element: <MainEditPage />,
+          },
+        
+        ]
       },
       {
-        path: "/admin/about",
-        element: <AdminEditPage />,
+        path:'/pa-test',
+        element: <AdminLayout />,
+        children: [
+          {
+            path: PA_ROUTES_CHILD.HOME,
+            element: <PAHomePage />
+          },
+          {
+            path: PA_ROUTES_CHILD.REQUEST,
+            element: <PARequestPage />
+          },
+          {
+            path: PA_ROUTES_CHILD.ARTWORK,
+            element: <PAArtworkPage />
+          },
+          {
+            path: PA_ROUTES_CHILD.PAGE_EDIT,
+            element: <PAPageEditPage />
+          },
+          {
+            path: PA_ROUTES_CHILD.STATISTICS,
+            element: <PAStatisticsPage />
+          },
+          {
+            path: PA_ROUTES_CHILD.FAQ,
+            element: <PAFaqPage />
+          },    
+          {
+            path: PA_ROUTES_CHILD.SETTING,
+            element: <PASettingPage />
+          },
+        ]
       },
-      {
-        path: "/admin/artwork",
-        element: <ArtworkEditPage />,
-      },
-      {
-        path: "/admin/contact",
-        element: <ContactEditPage />,
-      },
-      {
-        path: "/admin/mainpage",
-        element: <MainEditPage />,
-      },
-      {
-        path: "/contact",
-        element: <ContactPage />,
-      },
-      // {
-      //   path: "/contact",
-      //   element: <ContactPage2 />,
-      // },
-      {
-        path:'/pa-home-test',
-        element: <PAHome />
-      },
-      {
-        path:'/pa-request-test',
-        element: <ContactEditPage />
-      },
-      {
-        path:'/pa-artwork-test',
-        element: <ContactEditPage />
-      },
-      {
-        path:'/pa-pageEdit-test',
-        element: <ContactEditPage />
-      },
-      {
-        path:'/pa-statistics-test',
-        element: <ContactEditPage />
-      },
-      {
-        path:'/pa-faq-test',
-        element: <ContactEditPage />
-      },    
-      {
-        path:'/pa-setting-test',
-        element: <ContactEditPage />
-      },
+   
     ],
   },
 ]);
