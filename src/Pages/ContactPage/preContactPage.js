@@ -1,9 +1,9 @@
 // import React, { useEffect, useRef, useState } from "react";
 // import styled from "styled-components";
-// import Body from "../../components/Common/Body";
+// import Body from "../../Components/Common/Body";
 // import { motion } from "framer-motion";
 // import axios from "axios";
-// import LetterAnimation from "../../components/Common/LetterAnimation";
+// import LetterAnimation from "../../Components/Common/LetterAnimation";
 // import Modal from "./Components/Modal";
 
 // // 이메일이랑 번호
