@@ -1,5 +1,5 @@
 import { Outlet, useMatch, useNavigate } from "react-router-dom";
-import Navigator from "../../../components/Common/Navigator";
+import Navigator from "../../../Components/Common/Navigator";
 import DetailNavigator from "./Components/DetailNavigator";
 import styled from "styled-components";
 import { ContentBox } from "./Components/ContentBox";

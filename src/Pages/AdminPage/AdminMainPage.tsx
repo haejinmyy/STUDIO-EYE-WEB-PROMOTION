@@ -1,4 +1,4 @@
-import Body from "../../components/Common/AdminBody";
+import Body from "../../Components/Common/Body";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { motion } from "framer-motion";
