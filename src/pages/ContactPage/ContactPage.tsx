@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-import Body from "../../components/Common/Body";
-import { motion } from "framer-motion";
-import axios from "axios";
-import Modal from "./Components/Modal";
-import Select from "react-select";
+import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+import Body from '../../Components/Common/Body';
+import { motion } from 'framer-motion';
+import axios from 'axios';
+import Modal from './Components/Modal';
+import Select from 'react-select';
 
 const Wrapper = styled.div`
   display: flex;
@@ -35,8 +35,7 @@ const SubContent = styled.div`
   text-align: center;
   margin-bottom: 20px;
 `;
-const address =
-  "서울시 성동구 광나루로 162 BS성수타워 5F \n 5F, 162, Gwangnaru-ro, Seondong-gu, Seoul, Korea";
+const address = '서울시 성동구 광나루로 162 BS성수타워 5F \n 5F, 162, Gwangnaru-ro, Seondong-gu, Seoul, Korea';
 const MapButton = styled.button`
   color: #ff530e;
   border: none;
@@ -61,14 +60,14 @@ const MapLink = styled.a``;
 // ];
 
 const categories = [
-  { value: "Entertainment", label: "Entertainment" },
-  { value: "Drama", label: "Drama" },
-  { value: "Documentary", label: "Documentary" },
-  { value: "Channel Operating", label: "Channel Operating" },
-  { value: "Branded", label: "Branded" },
-  { value: "Motion Graphic", label: "Motion Graphic" },
-  { value: "Animation", label: "Animation" },
-  { value: "Live Commerce", label: "Live Commerce" },
+  { value: 'Entertainment', label: 'Entertainment' },
+  { value: 'Drama', label: 'Drama' },
+  { value: 'Documentary', label: 'Documentary' },
+  { value: 'Channel Operating', label: 'Channel Operating' },
+  { value: 'Branded', label: 'Branded' },
+  { value: 'Motion Graphic', label: 'Motion Graphic' },
+  { value: 'Animation', label: 'Animation' },
+  { value: 'Live Commerce', label: 'Live Commerce' },
 ];
 
 const StyledSelect = styled(Select)`
@@ -120,8 +119,8 @@ const StyledSelect = styled(Select)`
   }
   .Select__option {
     height: 40px;
-    display: "flex";
-    align-items: "center";
+    display: 'flex';
+    align-items: 'center';
     padding: 9px 0px 9px 15px;
     background-color: rgb(255, 169, 0, 0.4);
     &--is-selected {
@@ -143,7 +142,7 @@ const FormContainer = styled.form`
 `;
 const RowWrapper = styled.div<{ map: boolean }>`
   display: flex;
-  ${(props) => (props.map ? "gap: 0px;" : "gap: 80px;")};
+  ${(props) => (props.map ? 'gap: 0px;' : 'gap: 80px;')};
   align-items: center;
 `;
 // const StyledSelect = styled.select`
@@ -247,7 +246,7 @@ const FileLabel = styled.label`
   cursor: pointer;
 `;
 
-const FileUploadInput = styled.input.attrs({ type: "file" })`
+const FileUploadInput = styled.input.attrs({ type: 'file' })`
   position: absolute;
   width: 1px;
   height: 1px;
@@ -275,19 +274,18 @@ const ContactPage = (e: any) => {
   const [fileList, setFileList] = useState<File[]>([]);
   const FileTextRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState<IFormData>({
-    category: "Entertainment",
-    clientName: "",
-    organization: "",
-    email: "",
-    contact: "",
-    description: "",
-    position: "default",
+    category: 'Entertainment',
+    clientName: '',
+    organization: '',
+    email: '',
+    contact: '',
+    description: '',
+    position: 'default',
   });
   const emailCheck = (email: any) => {
-    const emailRegEx =
-      /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/;
+    const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/;
     if (!emailRegEx.test(email)) {
-      alert("이메일 형식이 올바르지 않습니다. 다시 입력해주세요.");
+      alert('이메일 형식이 올바르지 않습니다. 다시 입력해주세요.');
       return false;
     }
     return true; //형식에 맞을 경우, true 리턴
@@ -295,7 +293,7 @@ const ContactPage = (e: any) => {
   const telCheck = (tel: any) => {
     const telRegEx = /^[0-9\b -]{0,13}$/;
     if (!telRegEx.test(tel)) {
-      alert("연락처 형식이 올바르지 않습니다. 다시 입력해주세요.");
+      alert('연락처 형식이 올바르지 않습니다. 다시 입력해주세요.');
       return false;
     }
     return true; //형식에 맞을 경우, true 리턴
@@ -322,13 +320,13 @@ const ContactPage = (e: any) => {
       if (selectedFiles.length > 0) {
         const fileNames = Array.from(selectedFiles)
           .map((file) => file.name)
-          .join(", ");
+          .join(', ');
         if (FileTextRef.current) {
           FileTextRef.current.value = fileNames;
         }
       } else {
         if (FileTextRef.current) {
-          FileTextRef.current.value = "";
+          FileTextRef.current.value = '';
         }
       }
     }
@@ -350,11 +348,11 @@ const ContactPage = (e: any) => {
   const handleSubmit = (e: any) => {
     e.preventDefault();
     const emptyData: any = {
-      organization: "소속",
-      email: "이메일 주소",
-      clientName: "이름",
-      contact: "연락처",
-      description: "프로젝트 내용",
+      organization: '소속',
+      email: '이메일 주소',
+      clientName: '이름',
+      contact: '연락처',
+      description: '프로젝트 내용',
     };
     for (const key in formData) {
       // if (formData[key] === "") {
@@ -376,36 +374,33 @@ const ContactPage = (e: any) => {
 
     //5초 후 홈으로 이동 setTimeout할지말지
     const requestData = new FormData();
-    requestData.append(
-      "request",
-      new Blob([JSON.stringify(formData)], { type: "application/json" })
-    );
+    requestData.append('request', new Blob([JSON.stringify(formData)], { type: 'application/json' }));
     fileList.forEach((file) => {
-      requestData.append("files", file);
+      requestData.append('files', file);
     });
     axios
       .post(`http://3.35.54.100:8080/api/requests`, requestData, {})
       .then((response) => {
-        console.log(response.data, "임다. ");
+        console.log(response.data, '임다. ');
         setIsModalOpen(true);
         setFormData({
           // 폼 데이터 초기화
-          category: "Entertainment",
+          category: 'Entertainment',
           //초기화 설정..
-          clientName: "",
-          organization: "",
-          email: "",
-          contact: "",
-          description: "",
-          position: "default",
+          clientName: '',
+          organization: '',
+          email: '',
+          contact: '',
+          description: '',
+          position: 'default',
         });
         setFileList([]);
         // FileTextRef.current.value = ""; // 파일 입력
-        console.log(formData, "제출");
+        console.log(formData, '제출');
       })
 
       .catch((error) => {
-        console.error("에러 발생", error);
+        console.error('에러 발생', error);
       });
   };
   return (
@@ -415,7 +410,7 @@ const ContactPage = (e: any) => {
         <SubTitle>ADDRESS</SubTitle>
         <RowWrapper map>
           <SubContent>{address}</SubContent>
-          <MapLink href="https://naver.me/xJqS8qd3" target="_blank">
+          <MapLink href='https://naver.me/xJqS8qd3' target='_blank'>
             <MapButton>MAP</MapButton>
           </MapLink>
         </RowWrapper>
@@ -441,7 +436,7 @@ const ContactPage = (e: any) => {
                             ))}
                         </StyledSelect> */}
             <StyledSelect
-              classNamePrefix="Select"
+              classNamePrefix='Select'
               options={categories}
               defaultValue={categories[0]}
               onChange={(e: any) => handleCategoryChange(e)}
@@ -450,19 +445,14 @@ const ContactPage = (e: any) => {
           <RowWrapper map>
             <InputWrapper>
               <Label>이름</Label>
-              <UnderlinedInput
-                type="text"
-                value={formData.clientName}
-                name="clientName"
-                onChange={handleDataChange}
-              />
+              <UnderlinedInput type='text' value={formData.clientName} name='clientName' onChange={handleDataChange} />
             </InputWrapper>
             <InputWrapper>
               <Label>소속</Label>
               <UnderlinedInput
-                type="text"
+                type='text'
                 value={formData.organization}
-                name="organization"
+                name='organization'
                 onChange={handleDataChange}
               />
             </InputWrapper>
@@ -470,20 +460,15 @@ const ContactPage = (e: any) => {
           <RowWrapper map>
             <InputWrapper>
               <Label>이메일</Label>
-              <UnderlinedInput
-                type="email"
-                value={formData.email}
-                name="email"
-                onChange={handleDataChange}
-              />
+              <UnderlinedInput type='email' value={formData.email} name='email' onChange={handleDataChange} />
             </InputWrapper>
             <InputWrapper>
               <Label>연락처</Label>
               <UnderlinedInput
-                type="text"
-                placeholder="ex) 010-1234-5678"
+                type='text'
+                placeholder='ex) 010-1234-5678'
                 value={formData.contact}
-                name="contact"
+                name='contact'
                 onChange={handleDataChange}
               />
             </InputWrapper>
@@ -494,9 +479,9 @@ const ContactPage = (e: any) => {
 
             <UnderlinedTextarea
               ref={textareaRef}
-              autoComplete="off"
+              autoComplete='off'
               value={formData.description}
-              name="description"
+              name='description'
               onChange={handleTextAreaDataChange}
             />
           </InputWrapper>
@@ -506,25 +491,19 @@ const ContactPage = (e: any) => {
             <FileUploadContainer>
               <FileText
                 ref={FileTextRef}
-                type="text"
+                type='text'
                 // readOnly="readonly"
               ></FileText>
-              <FileUploadInput
-                id="uploadfile"
-                type="file"
-                accept="*/*"
-                multiple
-                onChange={handleFileChange}
-              />
-              <FileLabel htmlFor="uploadfile">upload</FileLabel>
+              <FileUploadInput id='uploadfile' type='file' accept='*/*' multiple onChange={handleFileChange} />
+              <FileLabel htmlFor='uploadfile'>upload</FileLabel>
             </FileUploadContainer>
           </InputFileContainer>
 
           <SubmitButton
-            type="submit"
+            type='submit'
             onClick={handleSubmit}
             whileHover={{ scale: 1.04 }}
-            transition={{ ease: "easeInOut", stiffness: 200, damping: 5 }}
+            transition={{ ease: 'easeInOut', stiffness: 200, damping: 5 }}
           >
             문의하기
           </SubmitButton>

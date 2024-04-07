@@ -18,13 +18,13 @@ import PAPageEditPage from './pages/PromotionAdmin/PageEditPage/index';
 import PAStatisticsPage from './pages/PromotionAdmin/StatisticsPage/index';
 import PAFaqPage from './pages/PromotionAdmin/FaqPage/index';
 import PASettingPage from './pages/PromotionAdmin/SettingPage/index';
-import AdminLayout from './components/PromotionAdmin/Layout/index';
+import AdminLayout from './Components/PromotionAdmin/Layout/index';
 import { PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import FaqPage from './pages/FaqPage/FaqPAge';
 import FaqDetailPage from './pages/DetailPage/FaqDetailPage';
-import FAQMainPage from './pages/PromotionAdmin/FAQPage/FAQMainPage';
-import FAQWritePage from './pages/PromotionAdmin/FAQPage/FAQWritePage';
-import FAQManagePage from './pages/PromotionAdmin/FAQPage/FAQManagePage';
+import FAQMainPage from './pages/PromotionAdmin/FaqPage/FAQMainPage';
+import FAQWritePage from './pages/PromotionAdmin/FaqPage/FAQWritePage';
+import FAQManagePage from './pages/PromotionAdmin/FaqPage/FAQManagePage';
 
 const router = createBrowserRouter([
   {
@@ -58,28 +58,28 @@ const router = createBrowserRouter([
           },
         ],
       },
-      {
-        path: '/admin',
-        element: <AdminMainPage />,
-        children: [
-          {
-            path: 'admin/about',
-            element: <AdminEditPage />,
-          },
-          {
-            path: 'admin/artwork',
-            element: <ArtworkEditPage />,
-          },
-          {
-            path: 'admin/contact',
-            element: <ContactEditPage />,
-          },
-          {
-            path: 'admin/mainpage',
-            element: <MainEditPage />,
-          },
-        ],
-      },
+      // {
+      //   path: '/admin',
+      //   element: <AdminMainPage />,
+      //   children: [
+      //     {
+      //       path: 'admin/about',
+      //       element: <AdminEditPage />,
+      //     },
+      //     {
+      //       path: 'admin/artwork',
+      //       element: <ArtworkEditPage />,
+      //     },
+      //     {
+      //       path: 'admin/contact',
+      //       element: <ContactEditPage />,
+      //     },
+      //     {
+      //       path: 'admin/mainpage',
+      //       element: <MainEditPage />,
+      //     },
+      //   ],
+      // },
       {
         path: '/pa-test',
         element: <AdminLayout />,
