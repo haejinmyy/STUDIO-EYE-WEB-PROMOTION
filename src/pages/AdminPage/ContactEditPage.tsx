@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import axios from 'axios';
 // import Data from "bootstrap/js/src/dom/data";
-import Body from "../../components/Common/AdminBody";
-import ShowContactModal from "./Component/ShowContactModal";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { IoMdArrowRoundBack } from "react-icons/io";
+import Body from '../../components/Common/AdminBody';
+import ShowContactModal from './Component/ShowContactModal';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { IoMdArrowRoundBack } from 'react-icons/io';
 
 const StyledTable = styled.table`
   width: 100%;
@@ -102,7 +102,7 @@ const ContactEditPage = () => {
   const [editingItem, setEditingItem] = useState(null);
 
   useEffect(() => {
-    const token = sessionStorage.getItem("login-token");
+    const token = sessionStorage.getItem('login-token');
     if (token) {
       setIsLoggedIn(true);
     }
@@ -160,9 +160,7 @@ const ContactEditPage = () => {
 
   const handleDeleteContact = (deletedContactId: any) => {
     // Update the data state by filtering out the deleted contact
-    setData((prevData) =>
-      prevData.filter((contact: any) => contact.id !== deletedContactId)
-    );
+    setData((prevData) => prevData.filter((contact: any) => contact.id !== deletedContactId));
   };
 
   return (
@@ -178,11 +176,7 @@ const ContactEditPage = () => {
             </AdminDiv>
             <DataTable data={data} onEdit={handleEdit}></DataTable>
             {isModalOpen && (
-              <ShowContactModal
-                item={editingItem}
-                onClose={handleCloseModal}
-                onDelete={handleDeleteContact}
-              />
+              <ShowContactModal item={editingItem} onClose={handleCloseModal} onDelete={handleDeleteContact} />
             )}
           </div>
         </Body>
