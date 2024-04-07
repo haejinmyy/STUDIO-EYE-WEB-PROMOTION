@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import Responsive from "./responsive";
-import { HiMenu, HiX } from "react-icons/hi";
-import Offcanvas from "react-bootstrap/Offcanvas";
-import { motion } from "framer-motion";
-import { Variants } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import studioi from "../../assets/logo/mainLogo.png";
-import PlusAboutModal from "../../Pages/AdminPage/Component/PlusAboutModal";
-import AdminModal from "./AdminModal";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import Responsive from './responsive';
+import { HiMenu, HiX } from 'react-icons/hi';
+import Offcanvas from 'react-bootstrap/Offcanvas';
+import { motion } from 'framer-motion';
+import { Variants } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import studioi from '../../assets/logo/mainLogo.png';
+import PlusAboutModal from '../../pages/AdminPage/Component/PlusAboutModal';
+import AdminModal from './AdminModal';
 
 const HeaderBlock = styled.div`
   position: fixed;
@@ -86,7 +86,7 @@ const MenuButtons = ({ children }: any) => {
   const navigate = useNavigate();
 
   const goToAbout = (go: any) => {
-    console.log("이동");
+    console.log('이동');
     navigate(`/${go}`);
   };
 
@@ -96,12 +96,12 @@ const MenuButtons = ({ children }: any) => {
       opacity: 1,
       x: 40,
       y: 0,
-      transition: { type: "spring", duration: 1, bounce: 0.5 },
+      transition: { type: 'spring', duration: 1, bounce: 0.5 },
     },
     hover: {
       scale: 1,
-      color: "black",
-      transition: { type: "spring", duration: 1, bounce: 0.5 },
+      color: 'black',
+      transition: { type: 'spring', duration: 1, bounce: 0.5 },
     },
   };
 
@@ -109,10 +109,10 @@ const MenuButtons = ({ children }: any) => {
     <MenuButton
       onClick={() => goToAbout(children)}
       variants={buttonVariants}
-      initial="initial"
-      animate="animate"
+      initial='initial'
+      animate='animate'
       // transition="transition"
-      whileHover="hover"
+      whileHover='hover'
     >
       {children}
     </MenuButton>
@@ -131,7 +131,7 @@ const canvasanimation = {
     opacity: 1,
     x: 0,
     y: 0,
-    transition: { type: "spring", duration: 1, bounce: 0.5 },
+    transition: { type: 'spring', duration: 1, bounce: 0.5 },
   },
 };
 
@@ -145,7 +145,7 @@ const Header = () => {
   const handleShow = () => setShow(true);
 
   const goMain = () => {
-    console.log("이동");
+    console.log('이동');
     navigate(`/`);
   };
 
@@ -157,20 +157,15 @@ const Header = () => {
     setIsAdmin(false);
   };
 
-  const text = "STUDIO I";
+  const text = 'STUDIO I';
   return (
     <>
       <HeaderBlock>
         <Wrapper>
-          <div className="logo">
-            <Img
-              src={studioi}
-              alt="logo image"
-              className="SocoaLogo"
-              onClick={goMain}
-            />
+          <div className='logo'>
+            <Img src={studioi} alt='logo image' className='SocoaLogo' onClick={goMain} />
           </div>
-          <div className="menu">
+          <div className='menu'>
             <MenuButtons>ABOUT</MenuButtons>
             <MenuButtons>CONTENTS</MenuButtons>
             <MenuButtons>CONTACT</MenuButtons>

@@ -17,15 +17,10 @@
     "isolatedModules": true,
     "noEmit": true,
     "typeRoots": ["types"],
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
-      "@public/*": ["../public/*"],
-      "@components/*": ["components/*"],
-      "@pages/*": ["pages/*"],
-      "@apis/*": ["apis/*"],
-      "@hooks/*": ["hooks/*"],
-      "@types/*": ["types/*"]
+      "@/*": ["src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "custom.d.ts"]
 }
