@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import slogan from '@/assets/images/PA-Header/slogan.png';
 import isNewIcon from '@/assets/images/PA-Header/isNewIcon.png';
 import defaultIcon from '@/assets/images/PA-Header/defaultIcon.png';
@@ -6,44 +6,125 @@ import userIcon from '@/assets/images/PA-Header/userIcon.png';
 import openIcon from '@/assets/images/PA-Header/openIcon.png';
 import CircleBtn from './CircleBtn';
 import styled from 'styled-components';
+import { fetchNotifications, updateNotification } from '@/apis/PromotionAdmin/notification';
+import { Notification } from '@/types/notification';
+import { fetchRequests } from '@/apis/PromotionAdmin/request';
+import { Request } from '@/types/request';
+import NotificationList from './NotificationList';
 
-const circleBtns = [
+const CircleBtns = [
   {
-      id:1,
-      defaultIcon: defaultIcon,
-      isNewIcon: isNewIcon,
-      iconStatus: true,
+    id: 'notification',
+    defaultIcon: defaultIcon,
+    isNewIcon: isNewIcon,
   },
   {
-    id:2,
+    id: 'user',
     defaultIcon: userIcon,
-    isNewIcon: userIcon,
-    iconStatus: true,
-},
-]
+  },
+];
 
-const index = () => {
+const Index = () => {
+  const [iconStatus, setIconStatus] = useState<boolean>(false);
+  const [isNotiOpened, setIsNotiOpened] = useState<boolean>(false);
+  const [sortedNotifications, setSortedNotifications] = useState<Notification[]>([]);
+  const [requests, setRequests] = useState<Request[]>([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (isNotiOpened) {
+      fetchData();
+    }
+  }, [isNotiOpened]);
+
+  const fetchData = async () => {
+    try {
+      const notifications: Notification[] = await fetchNotifications();
+      const unreadNotificationsExist: boolean = notifications.some((notification) => !notification.isRead);
+      setIconStatus(unreadNotificationsExist);
+      setSortedNotifications(notifications);
+
+      const requestsPromise = notifications.map(async (notification) => {
+        const response = await fetchRequests({ requestId: notification.requestId });
+        return response;
+      });
+
+      const resolvedRequests = await Promise.all(requestsPromise);
+      setRequests(resolvedRequests);
+    } catch (error) {
+      console.error('[❌Error fetching notifications or requests]', error);
+    }
+  };
+
+  // const sortNotifications = (notifications: Notification[]): Notification[] => {
+  //   const unreadNotifications = notifications.filter((notification) => !notification.isRead);
+  //   const readNotifications = notifications.filter((notification) => notification.isRead);
+  //   const sortedUnreadNotifications = unreadNotifications.sort((a, b) => a.id - b.id);
+  //   const sortedReadNotifications = readNotifications.sort((a, b) => a.id - b.id);
+  //   return sortedUnreadNotifications.concat(sortedReadNotifications);
+  // };
+
+  const handleNotificationClick = async (notificationId: number) => {
+    try {
+      await updateNotification(notificationId);
+      fetchData();
+      console.log('됨');
+    } catch (error) {
+      console.error('[❌Error updating notification]', error);
+    }
+  };
+
   return (
     <Container>
       <LeftWrapper>
         <img src={slogan} alt='pa-header-slogan' />
-        <h1>오늘도 스튜디오 아이와 함께 좋은 하루 되세요, ㅇㅇㅇ님!</h1>
+        <h1>오늘도 스튜디오 아이와 함께 좋은 하루 되세요, 엉금엉금님!</h1>
       </LeftWrapper>
       <RightWrapper>
-        <OpenLinkWrapper href='http://ec2-3-35-22-220.ap-northeast-2.compute.amazonaws.com/' target='_blank'> <img src={openIcon} alt='pa-header-open' /> <span>Open Promotion Page</span></OpenLinkWrapper>
+        <OpenLinkWrapper href='http://ec2-3-35-22-220.ap-northeast-2.compute.amazonaws.com/' target='_blank'>
+          <img src={openIcon} alt='pa-header-open' /> <span>Open Promotion Page</span>
+        </OpenLinkWrapper>
         <CircleBtnWrapper>
-          {circleBtns.map((i,index) => (
-            <ul key={index}>
-            <CircleBtn defaultIcon={i.defaultIcon} isNewIcon={i.isNewIcon} />
-         </ul>
-         ))}
+          {CircleBtns.map((item, index) => (
+            <button key={index}>
+              <CircleBtn
+                id={item.id}
+                defaultIcon={item.defaultIcon}
+                isNewIcon={
+                  sortedNotifications.some((notification) => !notification.isRead) ? item.isNewIcon : item.defaultIcon
+                }
+                iconStatus={iconStatus}
+                isNotiOpened={isNotiOpened}
+                setIsNotiOpened={setIsNotiOpened}
+              />
+            </button>
+          ))}
         </CircleBtnWrapper>
       </RightWrapper>
+      {isNotiOpened && (
+        <NotiContainer>
+          <h1>Notification</h1>
+          {requests.map((request, index) => (
+            <li key={index}>
+              <NotificationList
+                clientName={request.clientName}
+                description={request.description}
+                category={request.category}
+                onClick={() => handleNotificationClick(sortedNotifications[index].id)}
+                isRead={sortedNotifications[index].isRead}
+              />
+            </li>
+          ))}
+        </NotiContainer>
+      )}
     </Container>
-  )
-}
+  );
+};
 
-export default index
+export default Index;
 
 const Container = styled.div`
   display: flex;
@@ -54,9 +135,8 @@ const Container = styled.div`
   box-shadow: 0px 0px 20px #00000025;
   position: fixed;
   top: 0;
-  left:0;
+  left: 0;
   z-index: 20;
-  padding-left: 151px;
 `;
 
 const LeftWrapper = styled.div`
@@ -68,7 +148,7 @@ const LeftWrapper = styled.div`
 const RightWrapper = styled.div`
   display: flex;
   align-items: center;
-`
+`;
 
 const OpenLinkWrapper = styled.a`
   display: flex;
@@ -78,6 +158,7 @@ const OpenLinkWrapper = styled.a`
   height: 36px;
   box-shadow: 0px 0px 10px #00000030;
   border-radius: 10px;
+
   img {
     width: 20px;
     height: 20px;
@@ -95,4 +176,36 @@ const CircleBtnWrapper = styled.div`
   ul {
     margin-right: 40px;
   }
-`
+  button {
+    border: none;
+    background-color: inherit;
+    cursor: pointer;
+  }
+`;
+
+const NotiContainer = styled.div`
+  // 임시로 abosolute 해둔 것
+  position: absolute;
+  top: 80px;
+  right: 0px;
+  margin-right: 100px;
+  width: 507px;
+  height: 500px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  backdrop-filter: blur(3px);
+  padding: 25px;
+  box-sizing: border-box;
+  overflow-y: scroll;
+  li {
+    margin-bottom: 10px;
+    list-style: none;
+  }
+
+  h1 {
+    color: #969696;
+    font-family: 'pretendard-semibold';
+    font-size: 16px;
+    margin-bottom: 23px;
+  }
+`;

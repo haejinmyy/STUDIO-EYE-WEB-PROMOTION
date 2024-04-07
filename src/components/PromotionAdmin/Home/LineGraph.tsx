@@ -7,7 +7,7 @@ type LineGraphProps = {
 
 const LineGraph = ({ data }: LineGraphProps) => {
   return (
-    <div style={{ height: '400px' }}>
+    <div style={{ height: '400px', width: '700px' }}>
       <ResponsiveLine
         data={[{ id: 'views', data }]}
         margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
@@ -20,12 +20,14 @@ const LineGraph = ({ data }: LineGraphProps) => {
           reverse: false,
         }}
         yFormat=' >-.2f'
-        curve='natural'
+        curve='cardinal'
+        axisTop={null}
+        axisRight={null}
         axisBottom={{
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
-          legend: 'transportation',
+          legend: '',
           legendOffset: 36,
           legendPosition: 'middle',
           truncateTickAt: 0,
@@ -34,22 +36,20 @@ const LineGraph = ({ data }: LineGraphProps) => {
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
-          legend: 'count',
+          legend: '',
           legendOffset: -40,
           legendPosition: 'middle',
           truncateTickAt: 0,
         }}
-        colors={{ scheme: 'category10' }}
+        enablePoints={false}
         pointSize={10}
         pointColor={{ theme: 'background' }}
         pointBorderWidth={2}
         pointBorderColor={{ from: 'serieColor' }}
         pointLabelYOffset={-12}
+        enableArea={true}
         enableTouchCrosshair={true}
         useMesh={true}
-        enableGridX={true} // Add enableGridX prop
-        enableGridY={true} // Add enableGridY prop
-        layers={['grid', 'markers', 'axes', 'lines', 'slices', 'mesh', 'legends']} // Add layers prop
         legends={[
           {
             anchor: 'bottom-right',
