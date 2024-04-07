@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import Body from "../../components/Common/Body";
+import Body from "../../Components/Common/Body";
 import { motion } from "framer-motion";
 import axios from "axios";
 import Accordion from "react-bootstrap/Accordion";
