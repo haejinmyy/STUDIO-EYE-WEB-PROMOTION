@@ -20,11 +20,11 @@ import PAFaqPage from './pages/PromotionAdmin/FaqPage/index';
 import PASettingPage from './pages/PromotionAdmin/SettingPage/index';
 import AdminLayout from './components/PromotionAdmin/Layout/index';
 import { PA_ROUTES_CHILD } from '@/constants/routerConstants';
-import FaqPage from './Pages/FaqPage/FaqPAge';
-import FaqDetailPage from './Pages/DetailPage/FaqDetailPage';
-import FAQMainPage from './Pages/PromotionAdmin/FAQPage/FAQMainPage';
-import FAQWritePage from './Pages/PromotionAdmin/FAQPage/FAQWritePage';
-import FAQManagePage from './Pages/PromotionAdmin/FAQPage/FAQManagePage';
+import FaqPage from './pages/FaqPage/FaqPAge';
+import FaqDetailPage from './pages/DetailPage/FaqDetailPage';
+import FAQMainPage from './pages/PromotionAdmin/FAQPage/FAQMainPage';
+import FAQWritePage from './pages/PromotionAdmin/FAQPage/FAQWritePage';
+import FAQManagePage from './pages/PromotionAdmin/FAQPage/FAQManagePage';
 
 const router = createBrowserRouter([
   {
