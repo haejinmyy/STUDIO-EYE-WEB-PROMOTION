@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import axios from "axios";
-import Body from "../../components/Common/AdminBody";
-import PlusArtworkModal from "./Component/PlusArtworkModal";
-import EditArtWorkModal from "./Component/EditArtWorkModal";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { FaRegEdit } from "react-icons/fa";
-import { IoMdArrowRoundBack } from "react-icons/io";
-import { IoMdAddCircleOutline } from "react-icons/io";
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import axios from 'axios';
+import Body from '../../components/Common/AdminBody';
+import PlusArtworkModal from './Component/PlusArtworkModal';
+import EditArtWorkModal from './Component/EditArtWorkModal';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { FaRegEdit } from 'react-icons/fa';
+import { IoMdArrowRoundBack } from 'react-icons/io';
+import { IoMdAddCircleOutline } from 'react-icons/io';
 
 const StyledTable = styled.table`
   width: 100%;
@@ -123,7 +123,7 @@ const ArtworkEditPage = () => {
   const [editingItem, setEditingItem] = useState(null);
 
   useEffect(() => {
-    const token = sessionStorage.getItem("login-token");
+    const token = sessionStorage.getItem('login-token');
     if (token) {
       setIsLoggedIn(true);
     }
@@ -201,16 +201,8 @@ const ArtworkEditPage = () => {
             </Buttong>
           </AdminDiv>
           <DataTable data={data} onEdit={handleEdit} />
-          {isEditing && (
-            <EditArtWorkModal
-              item={editingItem}
-              onSave={handleSave}
-              onCancel={handleCancel}
-            />
-          )}
-          {isCreating && (
-            <PlusArtworkModal onSave={handleSave} onCancel={handleCancel} />
-          )}
+          {isEditing && <EditArtWorkModal item={editingItem} onSave={handleSave} onCancel={handleCancel} />}
+          {isCreating && <PlusArtworkModal onSave={handleSave} onCancel={handleCancel} />}
         </Body>
       ) : (
         <></>
