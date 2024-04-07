@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import Body from "../../components/Common/AdminBody";
-import PlusArtworkModal from "./component/PlusArtworkModal";
-import EditArtWorkModal from "./component/EditArtWorkModal";
+import Body from "../../Components/Common/AdminBody";
+import PlusArtworkModal from "./Component/PlusArtworkModal";
+import EditArtWorkModal from "./Component/EditArtWorkModal";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { FaRegEdit } from "react-icons/fa";
