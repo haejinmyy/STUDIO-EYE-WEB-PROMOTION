@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 type Props = {
@@ -8,9 +9,10 @@ type Props = {
   category: string;
   isRead: boolean;
   onClick: () => void;
+  requestId: number;
 };
 
-const NotificationList = ({ onClick, isRead, clientName, description, category }: Props) => {
+const NotificationList = ({ requestId, onClick, isRead, clientName, description, category }: Props) => {
   return (
     <Container onClick={onClick} isRead={isRead}>
       <ContentWrapper>
@@ -18,6 +20,7 @@ const NotificationList = ({ onClick, isRead, clientName, description, category }
           <div>새로운 의뢰가 등록됐어요.</div>
           <div>{isRead ? <IsReaded>읽음</IsReaded> : <IsNotReaded>안읽음</IsNotReaded>}</div>
         </TitleWrapper>
+
         <DetailWrapper>
           <div>
             <h2>{clientName}</h2>
@@ -28,6 +31,7 @@ const NotificationList = ({ onClick, isRead, clientName, description, category }
           </div>
         </DetailWrapper>
       </ContentWrapper>
+      <DetailLinkWrapper to={`/PA-TEST/request/${requestId}`}>이동</DetailLinkWrapper>
     </Container>
   );
 };
@@ -36,7 +40,8 @@ export default NotificationList;
 
 const Container = styled.div<{ isRead: boolean }>`
   display: flex;
-
+  flex-direction: column;
+  justify-content: space-between;
   padding: 20px 30px;
   width: 439px;
   height: 120px;
@@ -91,4 +96,11 @@ const IsReaded = styled.div`
 const IsNotReaded = styled.div`
   font-size: 16px;
   font-family: 'pretendard-regular';
+`;
+const DetailLinkWrapper = styled(Link)`
+  color: black;
+  &:hover {
+    color: #595959;
+  }
+  transition: all ease-in-out 300ms;
 `;

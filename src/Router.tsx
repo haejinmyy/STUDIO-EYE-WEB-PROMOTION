@@ -25,6 +25,7 @@ import FaqDetailPage from './pages/DetailPage/FaqDetailPage';
 import FAQMainPage from './pages/PromotionAdmin/FaqPage/FAQMainPage';
 import FAQWritePage from './pages/PromotionAdmin/FaqPage/FAQWritePage';
 import FAQManagePage from './pages/PromotionAdmin/FaqPage/FAQManagePage';
+import PARequestDetailPage from '@/pages/PromotionAdmin/RequestPage/RequestDetailPage/RequestDetailPage';
 
 const router = createBrowserRouter([
   {
@@ -91,6 +92,10 @@ const router = createBrowserRouter([
           {
             path: PA_ROUTES_CHILD.REQUEST,
             element: <PARequestPage />,
+          },
+          {
+            path: PA_ROUTES_CHILD.REQUEST_DETAIL,
+            element: <PARequestDetailPage />,
           },
           {
             path: PA_ROUTES_CHILD.ARTWORK,

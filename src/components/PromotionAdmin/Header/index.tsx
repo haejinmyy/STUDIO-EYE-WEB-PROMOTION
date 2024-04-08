@@ -110,6 +110,7 @@ const Index = () => {
           {requests.map((request, index) => (
             <li key={index}>
               <NotificationList
+                requestId={request.id}
                 clientName={request.clientName}
                 description={request.description}
                 category={request.category}
