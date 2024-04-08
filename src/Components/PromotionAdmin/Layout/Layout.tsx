@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import Header from '../Header'
 import Navigation from '../Navigation'
 
-const index = () => {
+const Layout = () => {
   return (
     <>
      <Navigation />
@@ -16,7 +16,7 @@ const index = () => {
   )
 }
 
-export default index
+export default Layout
 
 const BodyWrapper = styled.div`
   padding-left: 157px;
