@@ -79,5 +79,6 @@
     "@types/react-slick": "^0.23.13",
     "customize-cra": "^1.0.0",
     "react-app-rewired": "^2.2.1"
-  }
+  },
+  "proxy": "http://3.35.54.100:8080"
 }
