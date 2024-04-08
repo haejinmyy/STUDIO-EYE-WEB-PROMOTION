@@ -1,7 +1,7 @@
-import React from "react";
-import styled from "styled-components";
-import Body from "../../Components/Common/Body";
-import { motion, Variants } from "framer-motion";
+import React from 'react';
+import styled from 'styled-components';
+import Body from '../../components/Common/Body';
+import { motion, Variants } from 'framer-motion';
 
 const MainBody = styled.div`
   display: flex;
@@ -21,7 +21,7 @@ const InsertPage = () => {
   return (
     <>
       <MainBody>
-        <Video src="/videos/text_2.mp4" autoPlay muted />
+        <Video src='/videos/text_2.mp4' autoPlay muted />
       </MainBody>
     </>
   );

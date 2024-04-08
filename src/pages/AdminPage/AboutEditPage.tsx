@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import Body from "../../Components/Common/AdminBody";
-import styled from "styled-components";
-import { motion } from "framer-motion";
-import EditAboutModal from "./Component/EditAboutModal";
-import PlusAboutModal from "./Component/PlusAboutModal";
-import { AiFillDelete } from "react-icons/ai";
-import { IoMdArrowRoundBack } from "react-icons/io";
-import { IoMdAddCircleOutline } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import Body from '../../components/Common/AdminBody';
+import styled from 'styled-components';
+import { motion } from 'framer-motion';
+import EditAboutModal from './Component/EditAboutModal';
+import PlusAboutModal from './Component/PlusAboutModal';
+import { AiFillDelete } from 'react-icons/ai';
+import { IoMdArrowRoundBack } from 'react-icons/io';
+import { IoMdAddCircleOutline } from 'react-icons/io';
+import { useNavigate } from 'react-router-dom';
 
 const BoxContainer = styled(motion.div)`
   display: flex;
@@ -155,7 +155,7 @@ const AdminEditPage = () => {
     }, []);
 
     useEffect(() => {
-      const token = sessionStorage.getItem("login-token");
+      const token = sessionStorage.getItem('login-token');
       if (token) {
         setIsLoggedIn(true);
       }
@@ -177,10 +177,10 @@ const AdminEditPage = () => {
                 id: data.data[i].id,
                 logoImageUrl: data.data[i].logoImageUrl,
                 link: data.data[i].link,
-                is_main: "Main CoOp.",
+                is_main: 'Main CoOp.',
               };
 
-              console.log("여기");
+              console.log('여기');
               console.log(obj);
               objects.push(obj);
             } else {
@@ -188,10 +188,10 @@ const AdminEditPage = () => {
                 id: data.data[i].id,
                 logoImageUrl: data.data[i].logoImageUrl,
                 link: data.data[i].link,
-                is_main: "Sub CoOp.",
+                is_main: 'Sub CoOp.',
               };
 
-              console.log("여기22");
+              console.log('여기22');
               console.log(obj);
               objects.push(obj);
             }
@@ -217,9 +217,7 @@ const AdminEditPage = () => {
               </Buttong>
             </AdminDiv>
             <DataTable data={data} onEdit={handleEdit} />
-            {isEditing && (
-              <EditAboutModal item={editingItem} onCancel={handleCancel} />
-            )}
+            {isEditing && <EditAboutModal item={editingItem} onCancel={handleCancel} />}
             {isPlus && <PlusAboutModal onCancel={handleCancel} />}
           </BoxContainer>
         ) : (

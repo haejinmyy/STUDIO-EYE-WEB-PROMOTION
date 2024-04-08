@@ -1,10 +1,10 @@
-import React, { useRef } from "react";
-import Body from "../../Components/Common/Body";
-import styled, { keyframes } from "styled-components";
-import { motion, AnimatePresence } from "framer-motion";
-import MainAnimation from "../MainPage/MainAnimation";
-import DetailTransition from "../../Components/Common/DetailTransition";
-import YouTube from "react-youtube";
+import React, { useRef } from 'react';
+import Body from '../../components/Common/Body';
+import styled, { keyframes } from 'styled-components';
+import { motion, AnimatePresence } from 'framer-motion';
+import MainAnimation from '../MainPage/MainAnimation';
+import DetailTransition from '../../components/Common/DetailTransition';
+import YouTube from 'react-youtube';
 
 //지금은 안쓰는 임시 js 파일
 const VideoWrapper = styled.div`
@@ -69,8 +69,8 @@ const DetailContent = styled.div`
 
 const DetailPage = () => {
   const options = {
-    width: "640",
-    height: "360",
+    width: '640',
+    height: '360',
     playerVars: {
       autoplay: 0, // 자동 재생
       controls: 1, // 재생 컨트롤 표시
@@ -87,7 +87,7 @@ const DetailPage = () => {
           <ProductionTeam>2023.3</ProductionTeam>
         </BasicInfo>
         <VideoWrapper>
-          <YouTube videoId="bcOO4bu7Alc" opts={options} />
+          <YouTube videoId='bcOO4bu7Alc' opts={options} />
         </VideoWrapper>
       </MainSection>
       <DetailSection>
@@ -102,9 +102,8 @@ const DetailPage = () => {
         <DetailBox>
           <DetailTitle>Overview</DetailTitle>
           <DetailContent>
-            개그맨 황제성이 출연해 다양한 소재에 대한 궁금증을 해결하기 위해
-            백과사전 속으로 떠나는 탐험! DK백과사전 기반 필수 지식을 알기 쉽고
-            재미있게 풀어낸 어린이 지식 충전 예능 콘텐츠
+            개그맨 황제성이 출연해 다양한 소재에 대한 궁금증을 해결하기 위해 백과사전 속으로 떠나는 탐험! DK백과사전
+            기반 필수 지식을 알기 쉽고 재미있게 풀어낸 어린이 지식 충전 예능 콘텐츠
           </DetailContent>
         </DetailBox>
       </DetailSection>

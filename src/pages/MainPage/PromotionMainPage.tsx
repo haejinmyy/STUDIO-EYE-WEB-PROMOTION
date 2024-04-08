@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
-import styled, { keyframes } from "styled-components";
-import Body from "../../Components/Common/Body";
-import PortfolioGrid from "./PortfolioGrid";
-import { motion, useScroll, useSpring } from "framer-motion";
-import MainLogoAnimation from "./MainLogoAnimation";
-import MainCEO from "./MainCEO";
-import MainContents from "./MainContents";
-import MainLogoSlider from "./MainLogoSlider";
-import MainAbout from "./MainAbout";
+import React, { useEffect, useState } from 'react';
+import styled, { keyframes } from 'styled-components';
+import Body from '../../components/Common/Body';
+import PortfolioGrid from './PortfolioGrid';
+import { motion, useScroll, useSpring } from 'framer-motion';
+import MainLogoAnimation from './MainLogoAnimation';
+import MainCEO from './MainCEO';
+import MainContents from './MainContents';
+import MainLogoSlider from './MainLogoSlider';
+import MainAbout from './MainAbout';
 
 const ProgressBar = styled(motion.div)`
   position: fixed;

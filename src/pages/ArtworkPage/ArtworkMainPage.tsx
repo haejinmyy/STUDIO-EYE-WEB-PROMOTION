@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-import Body from "../../Components/Common/Body";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import MainIMG from "../../assets/images/MainIMG.png";
+import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+import Body from '../../components/Common/Body';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import MainIMG from '../../assets/images/MainIMG.png';
 
 const BoxContainer = styled(motion.div)`
   display: flex;
@@ -16,12 +16,7 @@ const BoxContainer = styled(motion.div)`
 const Background = styled.div<{ mainWidth: number }>`
   position: absolute;
   bottom: 0;
-  background: linear-gradient(
-      to bottom,
-      rgba(243, 244, 248, 1),
-      rgba(243, 244, 248, 0.5)
-    ),
-    url(${MainIMG});
+  background: linear-gradient(to bottom, rgba(243, 244, 248, 1), rgba(243, 244, 248, 0.5)), url(${MainIMG});
   background-position: bottom center;
   background-size: cover;
   width: ${(props) => props.mainWidth}px;
@@ -95,7 +90,7 @@ const ArtworkMainpage = () => {
 
         .then((response) => {
           const data = response.data;
-          console.log("dkjhkfhgkfhgkjhfg", data);
+          console.log('dkjhkfhgkfhgkjhfg', data);
           const objects: any = [];
 
           for (let i = data.data.length - 1; i >= 0; i--) {
@@ -127,11 +122,11 @@ const ArtworkMainpage = () => {
 
       // 초기 로드와 화면 크기 변경 시에도 적용
       handleResize();
-      window.addEventListener("resize", handleResize);
+      window.addEventListener('resize', handleResize);
 
       // 컴포넌트 언마운트 시 리스너 해제
       return () => {
-        window.removeEventListener("resize", handleResize);
+        window.removeEventListener('resize', handleResize);
       };
     }, []);
 
@@ -139,20 +134,11 @@ const ArtworkMainpage = () => {
       <>
         <BoxContainer>
           <Text>CONTENTS</Text>
-          <ContContainer
-            variants={CategoryVariants}
-            initial="initial"
-            animate="animate"
-            ref={contContainerRef}
-          >
+          <ContContainer variants={CategoryVariants} initial='initial' animate='animate' ref={contContainerRef}>
             {testData}
             {data.map((item: any, i) => (
               <Div>
-                <Content
-                  onClick={() => goToDetail(item.id)}
-                  key={item.id}
-                  src={item.img}
-                />
+                <Content onClick={() => goToDetail(item.id)} key={item.id} src={item.img} />
                 <div>
                   <Client>{item.client}</Client>
                 </div>

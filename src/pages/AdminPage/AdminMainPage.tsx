@@ -1,11 +1,11 @@
-import Body from "../../Components/Common/Body";
-import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import { motion } from "framer-motion";
-import { GrContact } from "react-icons/gr";
-import { AiFillYoutube } from "react-icons/ai";
-import { BsFillInfoCircleFill, BsFillPatchQuestionFill } from "react-icons/bs";
-import { useEffect, useState } from "react";
+import Body from '../../components/Common/Body';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import { motion } from 'framer-motion';
+import { GrContact } from 'react-icons/gr';
+import { AiFillYoutube } from 'react-icons/ai';
+import { BsFillInfoCircleFill, BsFillPatchQuestionFill } from 'react-icons/bs';
+import { useEffect, useState } from 'react';
 
 const BoxContainer = styled(motion.div)`
   display: flex;
@@ -57,7 +57,7 @@ const AdminMainPage = () => {
   //   }
 
   useEffect(() => {
-    const token = sessionStorage.getItem("login-token");
+    const token = sessionStorage.getItem('login-token');
     if (token) {
       setIsLoggedIn(true);
     }
@@ -70,7 +70,7 @@ const AdminMainPage = () => {
           <BoxContainer>
             <Div
               onClick={() => {
-                navigate("/admin/about");
+                navigate('/admin/about');
               }}
             >
               <AboutLogo />
@@ -78,7 +78,7 @@ const AdminMainPage = () => {
             </Div>
             <Div
               onClick={() => {
-                navigate("/admin/artwork");
+                navigate('/admin/artwork');
               }}
             >
               <ArtworkLogo />
@@ -86,7 +86,7 @@ const AdminMainPage = () => {
             </Div>
             <Div
               onClick={() => {
-                navigate("/admin/mainpage");
+                navigate('/admin/mainpage');
               }}
             >
               <NoticeLogo />
@@ -94,7 +94,7 @@ const AdminMainPage = () => {
             </Div>
             <Div
               onClick={() => {
-                navigate("/admin/contact");
+                navigate('/admin/contact');
               }}
             >
               <ContactLogo />

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import Body from "../../Components/Common/Body";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { motion } from "framer-motion";
-import { FaSearch } from "react-icons/fa";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import Body from '../../components/Common/Body';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { motion } from 'framer-motion';
+import { FaSearch } from 'react-icons/fa';
 
 const Wrapper = styled.div`
   display: flex;
@@ -130,7 +130,7 @@ const ShowAllFaqButton = styled(motion.button)`
 
 const FaqPage = (e: any) => {
   const [data, setData] = useState([]);
-  const [faqTitle, setFaqTitle] = useState("");
+  const [faqTitle, setFaqTitle] = useState('');
   const [showAllFaq, setShowAllFaq] = useState(false);
   const navigate = useNavigate();
 
@@ -139,7 +139,7 @@ const FaqPage = (e: any) => {
       .get(`http://3.35.54.100:8080/api/faq`)
       .then((response) => {
         const data = response.data;
-        console.log("faq Data : ", data);
+        console.log('faq Data : ', data);
         const objects: any = [];
 
         for (let i = data.data.length - 1; i >= 0; i--) {
@@ -161,7 +161,7 @@ const FaqPage = (e: any) => {
     setFaqTitle(e.target.value);
   };
   const handleSearch = () => {
-    console.log("Button clicked!");
+    console.log('Button clicked!');
   };
   const goToDetail = (id: number) => {
     navigate(`/faq/detail/${id}`);
@@ -174,30 +174,24 @@ const FaqPage = (e: any) => {
     <Body>
       <Wrapper>
         <Title>FAQ</Title>
-        <SubContent>
-          이곳에 자주 묻는 질문들에 대한 답변을 모아 놓았어요.
-        </SubContent>
+        <SubContent>이곳에 자주 묻는 질문들에 대한 답변을 모아 놓았어요.</SubContent>
         <InputWrapper>
           <Label>자주 묻는 질문 검색</Label>
           <SearchWrapper>
-            {faqTitle === "" ? (
+            {faqTitle === '' ? (
               <SearchFaqTitle
-                placeholder="검색 예시: 컨텐츠 문의, 회사 위치 등"
-                autoComplete="off"
-                name="searchingfaqtitle"
+                placeholder='검색 예시: 컨텐츠 문의, 회사 위치 등'
+                autoComplete='off'
+                name='searchingfaqtitle'
                 value={faqTitle}
                 onChange={handleTextAreaDataChange}
               />
             ) : (
               <>
-                <SearchFaqTitle
-                  autoComplete="off"
-                  name="searchingfaqtitle"
-                  onChange={handleTextAreaDataChange}
-                />{" "}
+                <SearchFaqTitle autoComplete='off' name='searchingfaqtitle' onChange={handleTextAreaDataChange} />{' '}
                 <SearchButton
                   whileHover={{ scale: 1.04 }}
-                  transition={{ ease: "easeInOut", stiffness: 200, damping: 5 }}
+                  transition={{ ease: 'easeInOut', stiffness: 200, damping: 5 }}
                   onClick={handleSearch}
                 >
                   <FaSearch size={24} />
@@ -208,28 +202,24 @@ const FaqPage = (e: any) => {
         </InputWrapper>
         <InputWrapper>
           <FaqList>
-            {data
-              .slice(0, showAllFaq === false ? 4 : undefined)
-              .map((item: any) => (
-                <FaqDetailButton
-                  key={item.id}
-                  whileHover={{ scale: 1.04 }}
-                  transition={{ ease: "easeInOut", stiffness: 200, damping: 5 }}
-                  onClick={() => goToDetail(item.id)}
-                >
-                  <FaqDetailTitle>{item.title}</FaqDetailTitle>
-                  <FaqDetailContent>
-                    {item.content.length >= 100
-                      ? item.content.substring(0, 70) + "..."
-                      : item.content}
-                  </FaqDetailContent>
-                </FaqDetailButton>
-              ))}
+            {data.slice(0, showAllFaq === false ? 4 : undefined).map((item: any) => (
+              <FaqDetailButton
+                key={item.id}
+                whileHover={{ scale: 1.04 }}
+                transition={{ ease: 'easeInOut', stiffness: 200, damping: 5 }}
+                onClick={() => goToDetail(item.id)}
+              >
+                <FaqDetailTitle>{item.title}</FaqDetailTitle>
+                <FaqDetailContent>
+                  {item.content.length >= 100 ? item.content.substring(0, 70) + '...' : item.content}
+                </FaqDetailContent>
+              </FaqDetailButton>
+            ))}
           </FaqList>
         </InputWrapper>
         <ShowAllFaqButton
           whileHover={{ scale: 1.04 }}
-          transition={{ ease: "easeInOut", stiffness: 200, damping: 5 }}
+          transition={{ ease: 'easeInOut', stiffness: 200, damping: 5 }}
           onClick={handleShowAllFaq}
         >
           <SubTitle>모두 보기</SubTitle>
