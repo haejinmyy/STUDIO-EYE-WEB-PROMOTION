@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-import Header from "./header";
-import Footer from "./Footer";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+import Header from './Header';
+import Footer from './Footer';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // const Spacer = styled.div`
 //   height: 4rem;
@@ -85,50 +85,30 @@ const AdminBody = function ({ children }: any) {
 
     // 초기 로드와 화면 크기 변경 시에도 적용
     handleResize();
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
 
     // 컴포넌트 언마운트 시 리스너 해제
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
   return (
     <>
-      <motion.div
-        variants={bodyChange}
-        initial="initial"
-        animate="animate"
-        exit="out"
-      >
-        <motion.div
-          variants={headermotion}
-          initial="initial"
-          animate="animate"
-          exit="out"
-        >
+      <motion.div variants={bodyChange} initial='initial' animate='animate' exit='out'>
+        <motion.div variants={headermotion} initial='initial' animate='animate' exit='out'>
           <Header />
         </motion.div>
         <ScrollDiv>
           <Spacer />
           <PageBody>
             <SideDiv additionalWidth={additionalWidth} />
-            <motion.div
-              variants={bodymotion}
-              initial="initial"
-              animate="animate"
-              exit="out"
-            >
+            <motion.div variants={bodymotion} initial='initial' animate='animate' exit='out'>
               <RealBody mainWidth={mainWidth}>{children}</RealBody>
             </motion.div>
             <SideDiv additionalWidth={additionalWidth} />
           </PageBody>
-          <motion.div
-            variants={sidebarmotion}
-            initial="initial"
-            animate="animate"
-            exit="out"
-          >
+          <motion.div variants={sidebarmotion} initial='initial' animate='animate' exit='out'>
             <Footer />
           </motion.div>
         </ScrollDiv>
