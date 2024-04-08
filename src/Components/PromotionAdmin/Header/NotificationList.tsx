@@ -14,7 +14,7 @@ type Props = {
 
 const NotificationList = ({ requestId, onClick, isRead, clientName, description, category }: Props) => {
   return (
-    <Container onClick={onClick} isRead={isRead}>
+    <Container to={`/PA-TEST/request/${requestId}`} onClick={onClick} isRead={isRead}>
       <ContentWrapper>
         <TitleWrapper>
           <div>새로운 의뢰가 등록됐어요.</div>
@@ -31,14 +31,15 @@ const NotificationList = ({ requestId, onClick, isRead, clientName, description,
           </div>
         </DetailWrapper>
       </ContentWrapper>
-      <DetailLinkWrapper to={`/PA-TEST/request/${requestId}`}>이동</DetailLinkWrapper>
     </Container>
   );
 };
 
 export default NotificationList;
 
-const Container = styled.div<{ isRead: boolean }>`
+const Container = styled(Link)<{ isRead: boolean }>`
+  text-decoration: none;
+  color: inherit;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -96,11 +97,4 @@ const IsReaded = styled.div`
 const IsNotReaded = styled.div`
   font-size: 16px;
   font-family: 'pretendard-regular';
-`;
-const DetailLinkWrapper = styled(Link)`
-  color: black;
-  &:hover {
-    color: #595959;
-  }
-  transition: all ease-in-out 300ms;
 `;
