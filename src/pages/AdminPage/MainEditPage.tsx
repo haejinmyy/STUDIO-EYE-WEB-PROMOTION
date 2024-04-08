@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import axios from "axios";
-import Body from "../../Components/Common/AdminBody";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { FaRegEdit } from "react-icons/fa";
-import { IoMdArrowRoundBack } from "react-icons/io";
-import EditMainModal from "./Component/EditMainModal";
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import axios from 'axios';
+import Body from '../../components/Common/AdminBody';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { FaRegEdit } from 'react-icons/fa';
+import { IoMdArrowRoundBack } from 'react-icons/io';
+import EditMainModal from './Component/EditMainModal';
 
 const StyledTable = styled.table`
   width: 100%;
@@ -79,7 +79,7 @@ function DataTable({ data, onEdit }: any) {
               <td>{item.name}</td>
               <td>{item.client}</td>
               <td>{item.overView}</td>
-              <td>{item.isPosted ? "O" : "X"}</td>
+              <td>{item.isPosted ? 'O' : 'X'}</td>
               <td>
                 <button onClick={() => onEdit(item)}>
                   <FaRegEdit />
@@ -102,7 +102,7 @@ const MainEditPage = () => {
   const [editingItemId, setEditingItemId] = useState(null);
 
   useEffect(() => {
-    const token = sessionStorage.getItem("login-token");
+    const token = sessionStorage.getItem('login-token');
     if (token) {
       setIsLoggedIn(true);
     }
@@ -174,12 +174,7 @@ const MainEditPage = () => {
           </AdminDiv>
           <DataTable data={data} onEdit={handleEdit} />
           {isEditing && (
-            <EditMainModal
-              item={editingItem}
-              id={editingItemId}
-              onSave={handleSave}
-              onCancel={handleCancel}
-            />
+            <EditMainModal item={editingItem} id={editingItemId} onSave={handleSave} onCancel={handleCancel} />
           )}
         </Body>
       ) : (

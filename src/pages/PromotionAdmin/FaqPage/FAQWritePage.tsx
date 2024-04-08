@@ -1,12 +1,12 @@
-import styled from "styled-components";
-import { ContentBox } from "./Components/ContentBox";
-import { Editor } from "react-draft-wysiwyg";
-import { useState } from "react";
-import { EditorState, convertToRaw } from "draft-js";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { IEditorData, IFAQData } from "../../../types/PromotionAdmin/faq";
-import { useForm } from "react-hook-form";
-import axios from "axios";
+import styled from 'styled-components';
+import { ContentBox } from './Components/ContentBox';
+import { Editor } from 'react-draft-wysiwyg';
+import { useState } from 'react';
+import { EditorState, convertToRaw } from 'draft-js';
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import { IEditorData, IFAQData } from '../../../types/PromotionAdmin/faq';
+import { useForm } from 'react-hook-form';
+import axios from 'axios';
 
 const Wrapper = styled.div``;
 const Icon = styled.div`
@@ -79,7 +79,7 @@ function FAQWritePage() {
   };
 
   const uploadCallback = () => {
-    console.log("이미지 업로드");
+    console.log('이미지 업로드');
   };
 
   const {
@@ -92,7 +92,7 @@ function FAQWritePage() {
   } = useForm<IFAQData>();
 
   const onValid = (data: IFAQData) => {
-    const text = blocks.map((arr) => `${arr.text}\n`).join("");
+    const text = blocks.map((arr) => `${arr.text}\n`).join('');
     const formData = {
       title: data.question,
       content: text,
@@ -100,9 +100,9 @@ function FAQWritePage() {
     axios
       .post(`http://3.35.54.100:8080/api/faq`, formData)
       .then((response) => {
-        console.log("제출", response);
-        setValue("question", "");
-        setValue("answer", "");
+        console.log('제출', response);
+        setValue('question', '');
+        setValue('answer', '');
       })
       .catch((error) => console.log(error));
 
@@ -114,18 +114,12 @@ function FAQWritePage() {
       <ContentBox>
         <TitleWrapper>
           <Icon>
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 14 14"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+            <svg width='20' height='20' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'>
               <path
-                d="M5 12.2399L0.5 13.4999L1.76 8.9999L10 0.799898C10.0931 0.704652 10.2044 0.628973 10.3271 0.577306C10.4499 0.525638 10.5818 0.499023 10.715 0.499023C10.8482 0.499023 10.9801 0.525638 11.1029 0.577306C11.2256 0.628973 11.3369 0.704652 11.43 0.799898L13.2 2.5799C13.2937 2.67286 13.3681 2.78347 13.4189 2.90532C13.4697 3.02718 13.4958 3.15789 13.4958 3.2899C13.4958 3.42191 13.4697 3.55262 13.4189 3.67448C13.3681 3.79634 13.2937 3.90694 13.2 3.9999L5 12.2399Z"
-                stroke="#FFA900"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                d='M5 12.2399L0.5 13.4999L1.76 8.9999L10 0.799898C10.0931 0.704652 10.2044 0.628973 10.3271 0.577306C10.4499 0.525638 10.5818 0.499023 10.715 0.499023C10.8482 0.499023 10.9801 0.525638 11.1029 0.577306C11.2256 0.628973 11.3369 0.704652 11.43 0.799898L13.2 2.5799C13.2937 2.67286 13.3681 2.78347 13.4189 2.90532C13.4697 3.02718 13.4958 3.15789 13.4958 3.2899C13.4958 3.42191 13.4697 3.55262 13.4189 3.67448C13.3681 3.79634 13.2937 3.90694 13.2 3.9999L5 12.2399Z'
+                stroke='#FFA900'
+                stroke-linecap='round'
+                stroke-linejoin='round'
               />
             </svg>
           </Icon>
@@ -139,10 +133,10 @@ function FAQWritePage() {
               Question
             </Title>
             <QuestionInput
-              {...register("question", {
-                required: "질문을 입력해주세요",
+              {...register('question', {
+                required: '질문을 입력해주세요',
               })}
-              placeholder="질문을 입력해주세요"
+              placeholder='질문을 입력해주세요'
             />
           </Content>
 
@@ -157,22 +151,22 @@ function FAQWritePage() {
               })}
             /> */}
             <Editor
-              placeholder="답변을 작성해주세요"
+              placeholder='답변을 작성해주세요'
               editorState={editorState}
               onEditorStateChange={updateTextDescription}
               toolbar={{
                 image: { uploadCallback: uploadCallback },
               }}
-              localization={{ locale: "ko" }}
+              localization={{ locale: 'ko' }}
               editorStyle={{
-                height: "20rem",
-                width: "100%",
-                border: "3px solid lightgray",
-                padding: "20px",
+                height: '20rem',
+                width: '100%',
+                border: '3px solid lightgray',
+                padding: '20px',
               }}
             />
             <ButtonWrapper>
-              <Button type="submit">등록하기</Button>
+              <Button type='submit'>등록하기</Button>
             </ButtonWrapper>
           </Content>
           {/* <Button onClick={() => navigator("/admin/faq")}>나가기</Button> */}

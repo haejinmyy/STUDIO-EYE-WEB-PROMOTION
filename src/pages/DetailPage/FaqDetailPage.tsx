@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import Body from "../../Components/Common/Body";
-import { useParams } from "react-router-dom";
-import axios from "axios";
-import styled from "styled-components";
+import React, { useEffect, useState } from 'react';
+import Body from '../../components/Common/Body';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import styled from 'styled-components';
 
 const Wrapper = styled.div`
   display: flex;
@@ -39,7 +39,7 @@ const SubContent = styled.div`
 
 const FaqDetailPage = () => {
   const { detailId } = useParams();
-  const [data, setData] = useState({ id: "", title: "", content: "" });
+  const [data, setData] = useState({ id: '', title: '', content: '' });
 
   useEffect(() => {
     axios
@@ -52,7 +52,7 @@ const FaqDetailPage = () => {
           content: data.data.content,
         };
         setData(object);
-        console.log("detailPage data : ", data);
+        console.log('detailPage data : ', data);
       })
       .catch((error) => {
         console.error(error);

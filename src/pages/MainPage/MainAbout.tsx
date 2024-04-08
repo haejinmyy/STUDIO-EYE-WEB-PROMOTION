@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import Carousel from "./Components/Carousel";
-import axios from "axios";
-import styled from "styled-components";
+import React, { useState, useEffect } from 'react';
+import Carousel from './Components/Carousel';
+import axios from 'axios';
+import styled from 'styled-components';
 
 const MainAbout = () => {
   const [images, setImages] = useState([]);

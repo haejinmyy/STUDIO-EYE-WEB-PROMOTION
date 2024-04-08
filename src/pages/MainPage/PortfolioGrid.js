@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-import { motion, useTransform } from "framer-motion";
-import { Link } from "react-router-dom";
-import { useInView } from "react-intersection-observer";
-import LetterAnimation from "../../Components/Common/LetterAnimation";
-import axios from "axios";
+import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+import { motion, useTransform } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { useInView } from 'react-intersection-observer';
+import LetterAnimation from '../../components/Common/LetterAnimation';
+import axios from 'axios';
 
 const ArrowImg = styled.img`
   width: 60px;
@@ -127,7 +127,7 @@ const PortfolioGrid = () => {
     <>
       <Section ref={ref}>
         <Featuredprojects>
-          <LetterAnimation text="Our Projects"></LetterAnimation>
+          <LetterAnimation text='Our Projects'></LetterAnimation>
         </Featuredprojects>
 
         {data.map((item, i) => (
@@ -135,8 +135,8 @@ const PortfolioGrid = () => {
             <Link to={`/detail/${item.id}`}>
               <ThumbnailImage
                 variants={thumbnailvariants}
-                initial="hidden"
-                animate={inView ? "visible" : "hidden"}
+                initial='hidden'
+                animate={inView ? 'visible' : 'hidden'}
                 transition={{ duration: 1 }}
                 src={item.img}
               />
@@ -144,8 +144,8 @@ const PortfolioGrid = () => {
             {/* <InfoContainer> */}
             <BasicInfo
               variants={infovariants}
-              initial="hidden"
-              animate={inView ? "visible" : "hidden"}
+              initial='hidden'
+              animate={inView ? 'visible' : 'hidden'}
               transition={{ duration: 1 }}
             >
               {item.overView}
