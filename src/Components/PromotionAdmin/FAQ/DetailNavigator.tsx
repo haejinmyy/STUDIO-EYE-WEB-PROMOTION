@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import { theme } from "../../../../styles/theme";
+import { theme } from '@/styles/theme';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 
 const Wrapper = styled.div`
   display: flex;
@@ -27,8 +27,7 @@ const CategoryWrapper = styled.div<{ selected: boolean }>`
   justify-content: center;
   align-items: center;
   height: 2.5rem;
-  background-color: ${({ selected }) =>
-    selected ? theme.color.yellow.light : "none"};
+  background-color: ${({ selected }) => (selected ? theme.color.yellow.light : 'none')};
 `;
 
 const Category = styled.div`
@@ -39,8 +38,8 @@ const Category = styled.div`
 `;
 
 enum Categories {
-  "FAQ_등록하기" = "FAQ 등록하기",
-  "FAQ_관리하기" = "FAQ 관리하기",
+  'FAQ_등록하기' = 'FAQ 등록하기',
+  'FAQ_관리하기' = 'FAQ 관리하기',
 }
 
 const categories = [

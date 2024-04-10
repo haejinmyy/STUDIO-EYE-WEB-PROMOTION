@@ -1,12 +1,12 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const ContentBox = styled.div`
   position: fixed;
-  left: 25rem;
-  top: 10rem;
+  left: 10rem;
+  top: 8rem;
   border-radius: 1rem;
   background-color: ${(props) => props.theme.color.white.bold};
-  width: 45%;
+  border: 0.5px solid ${(props) => props.theme.color.black.light};
+  width: 700px;
   height: 80%;
-  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
 `;
