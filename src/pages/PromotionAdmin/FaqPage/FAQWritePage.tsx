@@ -1,77 +1,22 @@
 import styled from 'styled-components';
-import { ContentBox } from './Components/ContentBox';
-import { Editor } from 'react-draft-wysiwyg';
 import { useState } from 'react';
-import { EditorState, convertToRaw } from 'draft-js';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import { IEditorData, IFAQData } from '../../../types/PromotionAdmin/faq';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 
-const Wrapper = styled.div``;
-const Icon = styled.div`
-  padding-left: 1rem;
-  padding-right: 0.8rem;
-`;
-const TitleWrapper = styled.div`
-  display: flex;
-  border-bottom: 1px solid #f1f1f1;
-  align-items: center;
-`;
+import { ContentBox } from '@/components/PromotionAdmin/FAQ/ContentBox';
+import { IEditorData, IFAQData } from '../../../types/PromotionAdmin/faq';
+import { PA_ROUTES } from '@/constants/routerConstants';
 
-const Title = styled.div`
-  display: flex;
-  align-items: center;
-  height: 4rem;
-  font-size: 1.3rem;
-`;
-
-const QAIcon = styled.div`
-  background-color: ${(props) => props.theme.color.yellow.light};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 1.8rem;
-  height: 1.8rem;
-  border-radius: 100%;
-  font-size: 1.1rem;
-  margin-right: 0.5rem;
-`;
-
-const Content = styled.div`
-  margin-left: 2rem;
-  margin-right: 2rem;
-`;
-
-const QuestionInput = styled.input`
-  padding-left: 1.3rem;
-  border: none;
-  width: 100%;
-  height: 2rem;
-  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
-`;
-
-const AnswerInput = styled.input``;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  padding-top: 3rem;
-  width: 100%;
-  justify-content: flex-end;
-`;
-
-const Button = styled.button`
-  border: none;
-  background-color: ${(props) => props.theme.color.white.bold};
-  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
-  padding: 0.4rem 1.4rem;
-  border-radius: 0.2rem;
-`;
-const FormContainer = styled.form``;
+import { Editor } from 'react-draft-wysiwyg';
+import { EditorState, convertToRaw } from 'draft-js';
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import draftToHtml from 'draftjs-to-html';
 
 function FAQWritePage() {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [blocks, setBlocks] = useState<IEditorData[]>([]);
+  const navigator = useNavigate();
 
   const updateTextDescription = async (state: any) => {
     await setEditorState(state);
@@ -92,21 +37,17 @@ function FAQWritePage() {
   } = useForm<IFAQData>();
 
   const onValid = (data: IFAQData) => {
-    const text = blocks.map((arr) => `${arr.text}\n`).join('');
     const formData = {
       title: data.question,
-      content: text,
+      content: draftToHtml(convertToRaw(editorState.getCurrentContent())),
     };
     axios
       .post(`http://3.35.54.100:8080/api/faq`, formData)
       .then((response) => {
-        console.log('제출', response);
-        setValue('question', '');
-        setValue('answer', '');
+        alert('FAQ가 등록되었습니다.');
+        navigator(`${PA_ROUTES.FAQ}`);
       })
       .catch((error) => console.log(error));
-
-    setEditorState(EditorState.createEmpty());
   };
 
   return (
@@ -169,7 +110,6 @@ function FAQWritePage() {
               <Button type='submit'>등록하기</Button>
             </ButtonWrapper>
           </Content>
-          {/* <Button onClick={() => navigator("/admin/faq")}>나가기</Button> */}
         </FormContainer>
       </ContentBox>
     </Wrapper>
@@ -177,3 +117,64 @@ function FAQWritePage() {
 }
 
 export default FAQWritePage;
+
+const Wrapper = styled.div``;
+const Icon = styled.div`
+  padding-left: 1rem;
+  padding-right: 0.8rem;
+`;
+const TitleWrapper = styled.div`
+  display: flex;
+  border-bottom: 1px solid #f1f1f1;
+  align-items: center;
+`;
+
+const Title = styled.div`
+  display: flex;
+  align-items: center;
+  height: 4rem;
+  font-size: 1.3rem;
+`;
+
+const QAIcon = styled.div`
+  background-color: ${(props) => props.theme.color.yellow.light};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 100%;
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+`;
+
+const Content = styled.div`
+  margin-left: 2rem;
+  margin-right: 2rem;
+`;
+
+const QuestionInput = styled.input`
+  padding-left: 1.3rem;
+  border: none;
+  width: 100%;
+  height: 2rem;
+  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+`;
+
+const AnswerInput = styled.input``;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  padding-top: 3rem;
+  width: 100%;
+  justify-content: flex-end;
+`;
+
+const Button = styled.button`
+  border: none;
+  background-color: ${(props) => props.theme.color.white.bold};
+  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+  padding: 0.4rem 1.4rem;
+  border-radius: 0.2rem;
+`;
+const FormContainer = styled.form``;

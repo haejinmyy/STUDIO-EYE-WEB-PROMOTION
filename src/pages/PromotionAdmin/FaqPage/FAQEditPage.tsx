@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { ContentBox } from './Components/ContentBox';
 import { Editor } from 'react-draft-wysiwyg';
 import { useState } from 'react';
 import { EditorState, convertToRaw, ContentState } from 'draft-js';
@@ -9,70 +8,23 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { IFAQ } from '../../../apis/PromotionAdmin/faq';
-
-const Wrapper = styled.div``;
-const Icon = styled.div`
-  padding-left: 1rem;
-  padding-right: 0.8rem;
-`;
-const TitleWrapper = styled.div`
-  display: flex;
-  border-bottom: 1px solid #f1f1f1;
-  align-items: center;
-`;
-
-const Title = styled.div`
-  display: flex;
-  align-items: center;
-  height: 4rem;
-  font-size: 1.3rem;
-`;
-
-const QAIcon = styled.div`
-  background-color: ${(props) => props.theme.color.yellow.light};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 1.8rem;
-  height: 1.8rem;
-  border-radius: 100%;
-  font-size: 1.1rem;
-  margin-right: 0.5rem;
-`;
-
-const Content = styled.div`
-  margin-left: 2rem;
-  margin-right: 2rem;
-`;
-
-const QuestionInput = styled.input`
-  padding-left: 1.3rem;
-  border: none;
-  width: 100%;
-  height: 2rem;
-  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  padding-top: 1rem;
-  justify-content: space-between;
-`;
-
-const Button = styled.button`
-  border: none;
-  background-color: ${(props) => props.theme.color.white.bold};
-  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
-  padding: 0.4rem 1.4rem;
-  border-radius: 0.2rem;
-`;
-const FormContainer = styled.form``;
+import { ContentBox } from '@/components/PromotionAdmin/FAQ/ContentBox';
+import { PA_ROUTES } from '@/constants/routerConstants';
+import htmlToDraft from 'html-to-draftjs';
+import draftToHtml from 'draftjs-to-html';
 
 function FAQEditPage(props: IFAQ) {
   const navigator = useNavigate();
+
   const [editorState, setEditorState] = useState(() => {
-    const content = ContentState.createFromText(`${props.content}`);
-    return EditorState.createWithContent(content);
+    const blocksFromHtml = htmlToDraft(props.content);
+    if (blocksFromHtml) {
+      const { contentBlocks, entityMap } = blocksFromHtml;
+      const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
+      return EditorState.createWithContent(contentState);
+    } else {
+      return EditorState.createEmpty();
+    }
   });
 
   const [blocks, setBlocks] = useState<IEditorData[]>([]);
@@ -89,32 +41,29 @@ function FAQEditPage(props: IFAQ) {
   });
 
   const onValid = (data: IFAQData) => {
-    const text = blocks.map((arr) => `${arr.text}\n`).join('');
     const formData = {
       id: props.id,
       title: data.question,
-      content: text,
+      content: draftToHtml(convertToRaw(editorState.getCurrentContent())),
     };
     axios
       .put(`http://3.35.54.100:8080/api/faq`, formData)
       .then((response) => {
-        console.log('수정', response);
+        // console.log('수정', response);
       })
       .catch((error) => console.log(error));
-    navigator('/admin/faq');
+    navigator(`${PA_ROUTES.FAQ}`);
     window.location.reload();
   };
 
   const handleDelete = (id: number) => {
-    console.log('delete', id);
     axios
       .delete(`http://3.35.54.100:8080/api/faq/${id}`)
       .then((response) => {
-        console.log('삭제', response);
+        alert('FAQ가 삭제되었습니다.');
+        navigator(`${PA_ROUTES.FAQ}`);
       })
       .catch((error) => console.log(error));
-    navigator('/admin/faq');
-    window.location.reload();
   };
 
   return (
@@ -199,3 +148,61 @@ function FAQEditPage(props: IFAQ) {
 }
 
 export default FAQEditPage;
+
+const Wrapper = styled.div``;
+const Icon = styled.div`
+  padding-left: 1rem;
+  padding-right: 0.8rem;
+`;
+const TitleWrapper = styled.div`
+  display: flex;
+  border-bottom: 1px solid #f1f1f1;
+  align-items: center;
+`;
+
+const Title = styled.div`
+  display: flex;
+  align-items: center;
+  height: 4rem;
+  font-size: 1.3rem;
+`;
+
+const QAIcon = styled.div`
+  background-color: ${(props) => props.theme.color.yellow.light};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 100%;
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+`;
+
+const Content = styled.div`
+  margin-left: 2rem;
+  margin-right: 2rem;
+`;
+
+const QuestionInput = styled.input`
+  padding-left: 1.3rem;
+  border: none;
+  width: 100%;
+  height: 2rem;
+  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  padding-top: 1rem;
+  justify-content: space-between;
+`;
+
+const Button = styled.button`
+  border: none;
+  background-color: ${(props) => props.theme.color.white.bold};
+  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+  padding: 0.4rem 1.4rem;
+  border-radius: 0.2rem;
+`;
+const FormContainer = styled.form``;
