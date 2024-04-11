@@ -1,9 +1,12 @@
-import React from 'react'
+import React from 'react';
+import { Outlet } from 'react-router-dom';
 
 const index = () => {
   return (
-    <div>Faq 화면입니다.</div>
-  )
-}
+    <>
+      <Outlet />
+    </>
+  );
+};
 
-export default index
+export default index;
