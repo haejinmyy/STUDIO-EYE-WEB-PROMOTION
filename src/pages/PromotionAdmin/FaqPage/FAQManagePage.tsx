@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { ContentBox } from '@/components/PromotionAdmin/FAQ/ContentBox';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { theme } from '@/styles/theme';
+import Pagination from '@/components/PromotionAdmin/FAQ/Pagination';
 
 function FAQManagePage() {
   const navigator = useNavigate();
@@ -27,6 +28,12 @@ function FAQManagePage() {
       alert('취소합니다.');
     }
   };
+
+  // pagination 구현에 사용되는 변수
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage, setPostsPerPage] = useState(10);
+  const indexOfLast = currentPage * postsPerPage;
+  const indexOfFirst = indexOfLast - postsPerPage;
 
   return (
     <Wrapper>
@@ -104,7 +111,7 @@ function FAQManagePage() {
         ) : (
           <>
             {data &&
-              data?.data.map((faq) => (
+              data?.data.slice(indexOfFirst, indexOfLast).map((faq) => (
                 <ListWrapper
                   key={faq.id}
                   onClick={() => {
@@ -149,6 +156,11 @@ function FAQManagePage() {
               ))}
           </>
         )}
+        {data && (
+          <PaginationWrapper>
+            <Pagination postsPerPage={postsPerPage} totalPosts={data?.data.length} paginate={setCurrentPage} />
+          </PaginationWrapper>
+        )}
       </ContentBox>
       <Outlet />
     </Wrapper>
@@ -157,6 +169,11 @@ function FAQManagePage() {
 
 export default FAQManagePage;
 
+const PaginationWrapper = styled.div`
+  width: 100%;
+  position: absolute;
+  bottom: 10px;
+`;
 const Wrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 0fr);
