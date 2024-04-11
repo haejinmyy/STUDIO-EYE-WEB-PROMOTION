@@ -1,42 +1,35 @@
-import { useMatch, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useQuery } from 'react-query';
 import { IGetFAQData, getFAQData } from '../../../apis/PromotionAdmin/faq';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
-import FAQEditPage from './FAQEditPage';
+import { motion } from 'framer-motion';
 import { ContentBox } from '@/components/PromotionAdmin/FAQ/ContentBox';
 import { PA_ROUTES } from '@/constants/routerConstants';
+import { theme } from '@/styles/theme';
 
 function FAQManagePage() {
   const navigator = useNavigate();
-  const faqEditMatch = useMatch(`${PA_ROUTES.FAQ}/write/:faqId`);
-
   const { data, isLoading, refetch } = useQuery<IGetFAQData>(['faq', 'id'], getFAQData);
   const [editMode, setEditMode] = useState(false);
-  const [leaving, setLeaving] = useState(false);
-
-  const [id, setId] = useState<null | string>(null);
+  const [id, setId] = useState<null | number>(null);
 
   const handleDelete = (id: number) => {
-    // console.log('delete', id);
-    axios
-      .delete(`http://3.35.54.100:8080/api/faq/${id}`)
-      .then((response) => {
-        // console.log('삭제', response);
-      })
-      .catch((error) => console.log(error));
-    refetch();
+    if (window.confirm('삭제하시겠습니까?')) {
+      axios
+        .delete(`http://3.35.54.100:8080/api/faq/${id}`)
+        .then((response) => {})
+        .catch((error) => console.log(error));
+      alert('FAQ가 삭제되었습니다.');
+      refetch();
+    } else {
+      alert('취소합니다.');
+    }
   };
 
-  const clickedFAQ =
-    faqEditMatch?.params.faqId && data?.data.find((faq) => String(faq.id) === faqEditMatch.params.faqId);
-
-  const toggleLeaving = () => setLeaving((prev) => !prev);
-
   return (
-    <>
+    <Wrapper>
       <ContentBox>
         <TitleWrapper>
           <Title>
@@ -109,21 +102,16 @@ function FAQManagePage() {
         {isLoading ? (
           <>is Loading...</>
         ) : (
-          <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
-            <Row
-              variants={rowVariants}
-              initial='hidden'
-              animate='visible'
-              exit='exit'
-              transition={{ type: 'tween', duration: 1 }}
-            >
-              {data?.data.map((faq) => (
+          <>
+            {data &&
+              data?.data.map((faq) => (
                 <ListWrapper
                   key={faq.id}
                   onClick={() => {
-                    !editMode && navigator(`${PA_ROUTES.FAQ}/write/${faq.id}`);
-                    setId(faq.id + '');
+                    !editMode && navigator(`${PA_ROUTES.FAQ}/${faq.id}`);
+                    setId(faq.id);
                   }}
+                  selected={faq.id === id ? true : false}
                 >
                   {editMode && (
                     <DeleteButton
@@ -159,63 +147,21 @@ function FAQManagePage() {
                   </QuestionTitleWrapper>
                 </ListWrapper>
               ))}
-            </Row>
-          </AnimatePresence>
+          </>
         )}
       </ContentBox>
-
-      <AnimatePresence>
-        {faqEditMatch ? (
-          <Overlay variants={overlay} initial='hidden' animate='visible' exit='exit'>
-            <EditModal layoutId={faqEditMatch.params.faqId}>
-              {clickedFAQ && (
-                <>
-                  <FAQEditPage title={clickedFAQ.title} content={clickedFAQ.content} id={clickedFAQ.id} />
-                </>
-              )}
-            </EditModal>
-          </Overlay>
-        ) : null}
-      </AnimatePresence>
-      {/* <SearchBar /> */}
-    </>
+      <Outlet />
+    </Wrapper>
   );
 }
 
 export default FAQManagePage;
 
-const rowVariants: Variants = {
-  hidden: {
-    x: window.outerWidth + 5,
-  },
-  visible: {
-    x: 0,
-  },
-  exit: {
-    x: -window.outerWidth - 5,
-  },
-};
-
-const Row = styled(motion.div)``;
-
-const Overlay = styled(motion.div)`
-  top: 0;
-  left: 0;
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+const Wrapper = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 0fr);
+  grid-gap: 15px;
 `;
-
-const overlay: Variants = {
-  hidden: { backgroundColor: 'rgba(0, 0, 0, 0)' },
-  visible: { backgroundColor: 'rgba(0, 0, 0, 0.5)' },
-  exit: { backgroundColor: 'rgba(0, 0, 0, 0)' },
-};
-
-const Wrapper = styled.div``;
 
 const TitleWrapper = styled.div`
   display: flex;
@@ -342,22 +288,19 @@ const Button = styled.div`
   }
 `;
 
-const ListWrapper = styled.div`
+const ListWrapper = styled.div<{ selected: boolean }>`
   display: flex;
   width: 100%;
   border-bottom: 1px solid #f1f1f1;
+
   &:hover {
-    background-color: ${(props) => props.theme.color.yellow.light};
+    color: ${(props) => props.theme.color.yellow.bold};
+    font-weight: 900;
+    transition: all 0.2s ease-out;
   }
+  background-color: ${({ selected }) => (selected ? theme.color.yellow.light : 'none')};
 `;
 
-const EditModal = styled(motion.div)`
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  border-radius: 15px;
-  overflow: hidden;
-`;
 const DeleteButton = styled.button`
   border: none;
   box-shadow: 1px 2px 3px #00000020;

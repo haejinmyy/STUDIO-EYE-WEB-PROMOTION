@@ -22,11 +22,11 @@ import AdminLayout from './components/PromotionAdmin/Layout/Layout';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import FaqPage from './pages/FaqPage/FaqPAge';
 import FaqDetailPage from './pages/DetailPage/FaqDetailPage';
-import FAQMainPage from './pages/PromotionAdmin/FaqPage/FAQMainPage';
 import FAQWritePage from './pages/PromotionAdmin/FaqPage/FAQWritePage';
 import FAQManagePage from './pages/PromotionAdmin/FaqPage/FAQManagePage';
 import PARequestDetailPage from '@/pages/PromotionAdmin/RequestPage/RequestDetailPage/RequestDetailPage';
 import FAQEditPage from './pages/PromotionAdmin/FaqPage/FAQEditPage';
+import FAQCheckPage from './pages/PromotionAdmin/FaqPage/FAQCheckPage';
 
 const router = createBrowserRouter([
   {
@@ -117,10 +117,16 @@ const router = createBrowserRouter([
               {
                 path: '',
                 element: <FAQManagePage />,
-              },
-              {
-                path: `${PA_ROUTES.FAQ}/write/:faqId`,
-                element: <FAQManagePage />,
+                children: [
+                  {
+                    path: `${PA_ROUTES.FAQ}/:faqId`,
+                    element: <FAQCheckPage />,
+                  },
+                  {
+                    path: `${PA_ROUTES.FAQ}/write/:faqId`,
+                    element: <FAQEditPage />,
+                  },
+                ],
               },
               {
                 path: `${PA_ROUTES.FAQ}/write`,
