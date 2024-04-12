@@ -1,9 +1,10 @@
-const BASIC_PATH = "http://3.35.54.100:8080/";
+const BASIC_PATH = 'http://3.35.54.100:8080/';
 
 export interface IFAQ {
   id: number;
-  title: string;
-  content: string;
+  question: string;
+  answer: string;
+  visibility: boolean;
 }
 
 export interface IGetFAQData {
@@ -19,7 +20,5 @@ export function getFAQData() {
 }
 
 export function getFAQDetailData(id: number) {
-  return fetch(`${BASIC_PATH}api/faq/${id}`).then((response) =>
-    response.json()
-  );
+  return fetch(`${BASIC_PATH}api/faq/${id}`).then((response) => response.json());
 }

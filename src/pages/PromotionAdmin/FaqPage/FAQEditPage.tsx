@@ -11,7 +11,7 @@ import axios from 'axios';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import htmlToDraft from 'html-to-draftjs';
 import draftToHtml from 'draftjs-to-html';
-import { ContentBox } from '@/components/PromotionAdmin/FAQ/ContentBox';
+import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
 import TextEditor from '@/components/PromotionAdmin/FAQ/TextEditor';
 
 export default function FAQCEditPage() {
@@ -24,7 +24,7 @@ export default function FAQCEditPage() {
     faqEditMatch?.params.faqId && data?.data.find((faq) => String(faq.id) === faqEditMatch.params.faqId);
 
   const [editorState, setEditorState] = useState(() => {
-    const blocksFromHtml = clickedFAQ && htmlToDraft(clickedFAQ.content);
+    const blocksFromHtml = clickedFAQ && htmlToDraft(clickedFAQ.answer);
     if (blocksFromHtml) {
       const { contentBlocks, entityMap } = blocksFromHtml;
       const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
@@ -43,15 +43,16 @@ export default function FAQCEditPage() {
 
   const { register, handleSubmit } = useForm<IFAQData>({
     defaultValues: {
-      question: clickedFAQ && `${clickedFAQ.title}`,
+      question: clickedFAQ && `${clickedFAQ.question}`,
     },
   });
 
   const onValid = (data: IFAQData) => {
     const formData = {
       id: clickedFAQ && clickedFAQ.id,
-      title: data.question,
-      content: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+      question: data.question,
+      answer: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+      visibility: data.visibility,
     };
     if (window.confirm('수정하시겠습니까?')) {
       axios
@@ -133,6 +134,15 @@ export default function FAQCEditPage() {
 
                 <TextEditor editorState={editorState} onEditorStateChange={updateTextDescription} />
 
+                <VisibilityWrapper>
+                  공개여부
+                  <input
+                    type='checkbox'
+                    defaultChecked={clickedFAQ ? clickedFAQ.visibility : true}
+                    {...register('visibility')}
+                  />
+                </VisibilityWrapper>
+
                 <ButtonWrapper>
                   <Button
                     onClick={() => {
@@ -153,6 +163,10 @@ export default function FAQCEditPage() {
     </>
   );
 }
+
+const VisibilityWrapper = styled.div`
+  font-size: 12px;
+`;
 
 const Wrapper = styled.div`
   border-radius: 1rem;
@@ -211,6 +225,7 @@ const ButtonWrapper = styled.div`
 `;
 
 const Button = styled.div`
+  cursor: pointer;
   border: none;
   background-color: ${(props) => props.theme.color.white.bold};
   box-shadow: 1px 1px 4px 0.1px #c6c6c6;
