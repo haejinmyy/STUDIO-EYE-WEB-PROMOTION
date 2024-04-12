@@ -5,7 +5,7 @@ import { IGetFAQData, getFAQData } from '../../../apis/PromotionAdmin/faq';
 import { useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { ContentBox } from '@/components/PromotionAdmin/FAQ/ContentBox';
+import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { theme } from '@/styles/theme';
 import Pagination from '@/components/PromotionAdmin/FAQ/Pagination';
@@ -68,30 +68,61 @@ function FAQManagePage() {
                   navigator(`${PA_ROUTES.FAQ}/write`);
                 }}
               >
+                <div>
+                  <svg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                    <g clip-path='url(#clip0_2_61)'>
+                      <path
+                        d='M7.11328 4.10742V10.1074'
+                        stroke='black'
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                      />
+                      <path
+                        d='M4.11328 7.10742H10.1133'
+                        stroke='black'
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                      />
+                      <path
+                        d='M10.6133 0.607422H3.61328C1.95643 0.607422 0.613281 1.95057 0.613281 3.60742V10.6074C0.613281 12.2643 1.95643 13.6074 3.61328 13.6074H10.6133C12.2702 13.6074 13.6133 12.2643 13.6133 10.6074V3.60742C13.6133 1.95057 12.2702 0.607422 10.6133 0.607422Z'
+                        stroke='black'
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                      />
+                    </g>
+                    <defs>
+                      <clipPath id='clip0_2_61'>
+                        <rect width='14' height='14' fill='white' transform='translate(0.113281 0.107422)' />
+                      </clipPath>
+                    </defs>
+                  </svg>
+                </div>
                 FAQ 등록
               </Button>
             </ButtonWrapper>
 
             <ButtonWrapper>
-              <svg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                <path
-                  d='M1.5 2C1.23478 2 0.98043 2.10536 0.792893 2.29289C0.605357 2.48043 0.5 2.73478 0.5 3V12.5C0.5 12.7652 0.605357 13.0196 0.792893 13.2071C0.98043 13.3946 1.23478 13.5 1.5 13.5H12.5C12.7652 13.5 13.0196 13.3946 13.2071 13.2071C13.3946 13.0196 13.5 12.7652 13.5 12.5V3C13.5 2.73478 13.3946 2.48043 13.2071 2.29289C13.0196 2.10536 12.7652 2 12.5 2H10.5'
-                  stroke='black'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                />
-                <path d='M3.5 0.5V3.5' stroke='black' stroke-linecap='round' stroke-linejoin='round' />
-                <path d='M10.5 0.5V3.5' stroke='black' stroke-linecap='round' stroke-linejoin='round' />
-                <path d='M3.5 2H8.5' stroke='black' stroke-linecap='round' stroke-linejoin='round' />
-                <path
-                  d='M10 6.86404L5.86842 10.9956L4 11.25L4.26316 9.38158L8.38596 5.25L10 6.86404Z'
-                  stroke='black'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                />
-              </svg>
-              Edit
               <Button>
+                <div>
+                  <svg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                    <path
+                      d='M1.5 2C1.23478 2 0.98043 2.10536 0.792893 2.29289C0.605357 2.48043 0.5 2.73478 0.5 3V12.5C0.5 12.7652 0.605357 13.0196 0.792893 13.2071C0.98043 13.3946 1.23478 13.5 1.5 13.5H12.5C12.7652 13.5 13.0196 13.3946 13.2071 13.2071C13.3946 13.0196 13.5 12.7652 13.5 12.5V3C13.5 2.73478 13.3946 2.48043 13.2071 2.29289C13.0196 2.10536 12.7652 2 12.5 2H10.5'
+                      stroke='black'
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                    />
+                    <path d='M3.5 0.5V3.5' stroke='black' stroke-linecap='round' stroke-linejoin='round' />
+                    <path d='M10.5 0.5V3.5' stroke='black' stroke-linecap='round' stroke-linejoin='round' />
+                    <path d='M3.5 2H8.5' stroke='black' stroke-linecap='round' stroke-linejoin='round' />
+                    <path
+                      d='M10 6.86404L5.86842 10.9956L4 11.25L4.26316 9.38158L8.38596 5.25L10 6.86404Z'
+                      stroke='black'
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                    />
+                  </svg>
+                </div>
+                Edit
                 <input
                   type='checkbox'
                   id='switch'
@@ -124,7 +155,6 @@ function FAQManagePage() {
                     <DeleteButton
                       onClick={() => {
                         handleDelete(faq.id);
-                        window.location.reload();
                       }}
                     >
                       <svg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -149,8 +179,9 @@ function FAQManagePage() {
                   <QuestionTitleWrapper layoutId={faq.id + ''} key={faq.id}>
                     <QuestionTitle>
                       <QAIcon>Q</QAIcon>
-                      {faq.title}
+                      {faq.question}
                     </QuestionTitle>
+                    <VisibilityWrapper>{faq.visibility ? '공개' : '비공개'}</VisibilityWrapper>
                   </QuestionTitleWrapper>
                 </ListWrapper>
               ))}
@@ -168,6 +199,11 @@ function FAQManagePage() {
 }
 
 export default FAQManagePage;
+
+const VisibilityWrapper = styled.div`
+  font-size: 12px;
+  padding-right: 15px;
+`;
 
 const PaginationWrapper = styled.div`
   width: 100%;
@@ -225,7 +261,9 @@ const QuestionTitleWrapper = styled(motion.div)`
   margin-left: 1rem;
   height: 3rem;
   display: flex;
+  width: 100%;
   align-items: center;
+  justify-content: space-between;
 `;
 
 const QuestionTitle = styled.div`
@@ -247,14 +285,17 @@ const ButtonWrapper = styled.div`
   display: flex;
   background-color: ${(props) => props.theme.color.white.bold};
   border-radius: 5px;
-  justify-content: space-around;
   align-items: center;
   height: 30px;
-  width: 90px;
+  min-width: 90px;
   border: 0.5px solid ${(props) => props.theme.color.black.light};
   padding: 1px;
 `;
 const Button = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-around;
   #switch {
     position: absolute;
     /* hidden */
@@ -310,11 +351,11 @@ const ListWrapper = styled.div<{ selected: boolean }>`
   width: 100%;
   border-bottom: 1px solid #f1f1f1;
 
-  &:hover {
+  /* &:hover {
     color: ${(props) => props.theme.color.yellow.bold};
     font-weight: 900;
     transition: all 0.2s ease-out;
-  }
+  } */
   background-color: ${({ selected }) => (selected ? theme.color.yellow.light : 'none')};
 `;
 

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { ContentBox } from '@/components/PromotionAdmin/FAQ/ContentBox';
+import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
 import { IEditorData, IFAQData } from '../../../types/PromotionAdmin/faq';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { EditorState, convertToRaw } from 'draft-js';
@@ -15,18 +15,24 @@ function FAQWritePage() {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [blocks, setBlocks] = useState<IEditorData[]>([]);
   const navigator = useNavigate();
+  // const [visibility, setVisibility] = useState<boolean | null>(null);
 
   const updateTextDescription = async (state: any) => {
     await setEditorState(state);
     setBlocks(convertToRaw(editorState.getCurrentContent()).blocks);
   };
 
-  const { register, handleSubmit } = useForm<IFAQData>();
+  const { register, handleSubmit } = useForm<IFAQData>({
+    defaultValues: {
+      visibility: true,
+    },
+  });
 
   const onValid = (data: IFAQData) => {
     const formData = {
-      title: data.question,
-      content: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+      question: data.question,
+      answer: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+      visibility: data.visibility,
     };
     axios
       .post(`http://3.35.54.100:8080/api/faq`, formData)
@@ -73,6 +79,11 @@ function FAQWritePage() {
             Answer
           </Title>
           <TextEditor editorState={editorState} onEditorStateChange={updateTextDescription} />
+
+          <VisibilityWrapper>
+            공개여부
+            <input type='checkbox' id='switch' defaultChecked {...register('visibility')} />
+          </VisibilityWrapper>
           <ButtonWrapper>
             <Button type='submit'>등록하기</Button>
           </ButtonWrapper>
@@ -83,6 +94,10 @@ function FAQWritePage() {
 }
 
 export default FAQWritePage;
+
+const VisibilityWrapper = styled.div`
+  font-size: 12px;
+`;
 
 const Wrapper = styled.div``;
 const Icon = styled.div`

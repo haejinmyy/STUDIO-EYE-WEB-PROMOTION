@@ -1,5 +1,5 @@
 import { IGetFAQData, getFAQData } from '@/apis/PromotionAdmin/faq';
-import { ContentBox } from '@/components/PromotionAdmin/FAQ/ContentBox';
+import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { useQuery } from 'react-query';
 import { useMatch, useNavigate } from 'react-router-dom';
@@ -27,10 +27,10 @@ export default function FAQCheckPage() {
                   <Wrapper>
                     <TitleWrapper>
                       <QAIcon>Q</QAIcon>
-                      <Title>{clickedFAQ.title} </Title>
+                      <Title>{clickedFAQ.question} </Title>
                     </TitleWrapper>
                     <QAIcon>A</QAIcon>
-                    <Answer className='article' dangerouslySetInnerHTML={{ __html: clickedFAQ.content }} />
+                    <Answer className='article' dangerouslySetInnerHTML={{ __html: clickedFAQ.answer }} />
                     <ButtonWrapper>
                       <Button
                         onClick={() => {
@@ -68,6 +68,7 @@ const Title = styled.div`
 `;
 
 const QAIcon = styled.div`
+  margin: 10px 20px;
   background-color: ${(props) => props.theme.color.yellow.light};
   display: flex;
   justify-content: center;
@@ -80,6 +81,7 @@ const QAIcon = styled.div`
 `;
 
 const Answer = styled.div`
+  padding: 30px;
   img {
     max-width: 100%;
   }
@@ -94,7 +96,7 @@ const ButtonWrapper = styled.div`
 const Button = styled.button`
   border: none;
   background-color: ${(props) => props.theme.color.white.bold};
-  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+  box-shadow: 1px 1px 4px 0.1px ${(props) => props.theme.color.black.pale};
   padding: 0.4rem 1.4rem;
   border-radius: 0.2rem;
 `;
