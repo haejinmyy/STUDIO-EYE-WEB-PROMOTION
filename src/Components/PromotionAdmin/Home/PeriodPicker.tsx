@@ -42,7 +42,7 @@ const PeriodPicker = ({ startDate, endDate, startDateChange, endDateChange }: Pr
           }}
           value={endDate}
           onChange={(newValue: dayjs.Dayjs | null) => {
-            startDateChange(newValue);
+            endDateChange(newValue);
           }}
           label={'End Date'}
           views={['year', 'month']}

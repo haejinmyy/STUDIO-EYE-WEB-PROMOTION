@@ -1,5 +1,5 @@
 import { IGetFAQData, getFAQData } from '@/apis/PromotionAdmin/faq';
-import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
+import { ContentBox } from '@/Components/PromotionAdmin/FAQ/Components';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { useQuery } from 'react-query';
 import { useMatch, useNavigate } from 'react-router-dom';
