@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
-import styled from "styled-components";
-import Body from "../../Components/Common/Body";
-import BasicInfoGrid from "./BasicInfoGrid";
-import CoOpInfoGrid from "./CoOpInfoGrid";
-import MissionGrid from "./MissionGrid";
+import React, { useEffect } from 'react';
+import styled from 'styled-components';
+import Body from '../../components/Common/Body';
+import BasicInfoGrid from './BasicInfoGrid';
+import CoOpInfoGrid from './CoOpInfoGrid';
+import MissionGrid from './MissionGrid';
 
 const AboutMainpage = () => {
   useEffect(() => {

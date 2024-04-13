@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-import Body from "../../Components/Common/Body";
-import { motion } from "framer-motion";
-import axios from "axios";
-import Accordion from "react-bootstrap/Accordion";
-import MyAccordion from "./Components/MyAccordion";
+import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+import Body from '../../components/Common/Body';
+import { motion } from 'framer-motion';
+import axios from 'axios';
+import Accordion from 'react-bootstrap/Accordion';
+import MyAccordion from './Components/MyAccordion';
 
 const BoxContainer = styled(motion.div)`
   display: flex;
@@ -72,7 +72,7 @@ const NoticeMainpage = () => {
               imageUrl: data.data[i].imageUrl,
               title: data.data[i].title,
             };
-            console.log("여기");
+            console.log('여기');
             console.log(obj);
             objects.push(obj);
           }
@@ -88,11 +88,7 @@ const NoticeMainpage = () => {
         <BoxContainer>
           <Text>notice</Text>
           {data.map((item, i) => (
-            <MyAccordion
-              index={i + 1}
-              title={item.title}
-              contents={item.imageUrl}
-            />
+            <MyAccordion index={i + 1} title={item.title} contents={item.imageUrl} />
           ))}
         </BoxContainer>
       </>

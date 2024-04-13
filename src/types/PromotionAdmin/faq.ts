@@ -9,6 +9,7 @@ export interface IFAQData {
   };
   question: string;
   answer: string;
+  visibility: boolean;
 }
 
 export interface IEditorData {

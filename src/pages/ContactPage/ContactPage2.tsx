@@ -1,20 +1,20 @@
-import React, { useState } from "react";
-import Body from "../../Components/Common/Body";
-import styled from "styled-components";
-import { useForm } from "react-hook-form";
-import Select from "react-select";
-import { watch } from "fs/promises";
-import axios from "axios";
+import React, { useState } from 'react';
+import Body from '../../components/Common/Body';
+import styled from 'styled-components';
+import { useForm } from 'react-hook-form';
+import Select from 'react-select';
+import { watch } from 'fs/promises';
+import axios from 'axios';
 
 enum Category {
-  "ENTERTAINMENT" = "Entertainment",
-  "DRAMA" = "Drama",
-  "DOCUMENTARY" = "Documentary",
-  "CHANNEL_OPERATING" = "Channel Operating",
-  "BRANDED" = "Branded",
-  "MOTION_GRAPHIC" = "Motion Graphic",
-  "ANIMATION" = "Animation",
-  "LIVE_COMMERCE" = "Live Commerce",
+  'ENTERTAINMENT' = 'Entertainment',
+  'DRAMA' = 'Drama',
+  'DOCUMENTARY' = 'Documentary',
+  'CHANNEL_OPERATING' = 'Channel Operating',
+  'BRANDED' = 'Branded',
+  'MOTION_GRAPHIC' = 'Motion Graphic',
+  'ANIMATION' = 'Animation',
+  'LIVE_COMMERCE' = 'Live Commerce',
 }
 
 const categories = [
@@ -63,7 +63,7 @@ function ContactPage2() {
   });
 
   const onValid = (data: IFormData) => {
-    const fileArray = watch("photoURL");
+    const fileArray = watch('photoURL');
     const formData = {
       request: {
         category: data.category,
@@ -74,28 +74,24 @@ function ContactPage2() {
         position: data.position,
         description: data.description,
       },
-      files: [
-        fileArray && fileArray.length > 0
-          ? URL.createObjectURL(fileArray[0])
-          : "",
-      ],
+      files: [fileArray && fileArray.length > 0 ? URL.createObjectURL(fileArray[0]) : ''],
     };
 
-    console.log("formdata: ", formData);
+    console.log('formdata: ', formData);
 
     axios
       .post(`http://3.35.54.100:8080/api/requests`, formData, {})
       .then((response) => {
-        console.log("제출", response);
-        setValue("category", "Entertainment");
-        setValue("email", "");
-        setValue("clientName", "");
-        setValue("organization", "");
-        setValue("email", "");
-        setValue("contact", "");
-        setValue("description", "");
-        setValue("photoURL", []);
-        setValue("position", "");
+        console.log('제출', response);
+        setValue('category', 'Entertainment');
+        setValue('email', '');
+        setValue('clientName', '');
+        setValue('organization', '');
+        setValue('email', '');
+        setValue('contact', '');
+        setValue('description', '');
+        setValue('photoURL', []);
+        setValue('position', '');
       })
       .catch((error) => console.log(error));
   };
@@ -107,7 +103,7 @@ function ContactPage2() {
         <SubTitle>ADDRESS</SubTitle>
         <RowWrapper map>
           <SubContent>{address}</SubContent>
-          <MapLink href="https://naver.me/xJqS8qd3" target="_blank">
+          <MapLink href='https://naver.me/xJqS8qd3' target='_blank'>
             <MapButton>MAP</MapButton>
           </MapLink>
         </RowWrapper>
@@ -120,17 +116,13 @@ function ContactPage2() {
         <FormContainer onSubmit={handleSubmit(onValid)}>
           <InputWrapper>
             <Label>문의 종류</Label>
-            <StyledSelect
-              classNamePrefix="Select"
-              options={categories}
-              defaultValue={categories[0]}
-            />
+            <StyledSelect classNamePrefix='Select' options={categories} defaultValue={categories[0]} />
           </InputWrapper>
           <InputWrapper>
             <Label>직책</Label>
             <UnderlinedInput
-              {...register("position", {
-                required: "직책을 입력해주세요",
+              {...register('position', {
+                required: '직책을 입력해주세요',
               })}
             />
             <Message>{errors?.position?.message}</Message>
@@ -140,8 +132,8 @@ function ContactPage2() {
             <InputWrapper>
               <Label>이름</Label>
               <UnderlinedInput
-                {...register("clientName", {
-                  required: "이름을 입력해주세요",
+                {...register('clientName', {
+                  required: '이름을 입력해주세요',
                 })}
               />
               <Message>{errors?.clientName?.message}</Message>
@@ -149,8 +141,8 @@ function ContactPage2() {
             <InputWrapper>
               <Label>소속</Label>
               <UnderlinedInput
-                {...register("organization", {
-                  required: "소속을 입력해주세요",
+                {...register('organization', {
+                  required: '소속을 입력해주세요',
                 })}
               />
               <Message>{errors?.organization?.message}</Message>
@@ -161,12 +153,11 @@ function ContactPage2() {
             <InputWrapper>
               <Label>이메일</Label>
               <UnderlinedInput
-                {...register("email", {
-                  required: "이메일을 입력해주세요",
+                {...register('email', {
+                  required: '이메일을 입력해주세요',
                   pattern: {
-                    value:
-                      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-                    message: "이메일 양식에 맞게 입력해주세요",
+                    value: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                    message: '이메일 양식에 맞게 입력해주세요',
                   },
                 })}
               />
@@ -175,14 +166,14 @@ function ContactPage2() {
             <InputWrapper>
               <Label>연락처</Label>
               <UnderlinedInput
-                {...register("contact", {
-                  required: "연락처 입력해주세요",
+                {...register('contact', {
+                  required: '연락처 입력해주세요',
                   pattern: {
                     value: /^^[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}/,
-                    message: "연락처 양식에 맞게 입력해주세요",
+                    message: '연락처 양식에 맞게 입력해주세요',
                   },
                 })}
-                placeholder="ex) 010-1234-5678"
+                placeholder='ex) 010-1234-5678'
               />
               <Message>{errors?.contact?.message}</Message>
             </InputWrapper>
@@ -190,8 +181,8 @@ function ContactPage2() {
           <InputWrapper>
             <Label>프로젝트 내용</Label>
             <UnderlinedTextarea
-              {...register("description", {
-                required: "프로젝트 내용을 입력해주세요",
+              {...register('description', {
+                required: '프로젝트 내용을 입력해주세요',
               })}
             />
             <Message>{errors?.description?.message}</Message>
@@ -201,16 +192,16 @@ function ContactPage2() {
           <InputFileContainer>
             <FileUploadContainer>
               <FileUploadInput
-                id="uploadfile"
-                type="file"
-                accept="*/*"
+                id='uploadfile'
+                type='file'
+                accept='*/*'
                 multiple
-                {...register("photoURL")}
-                className="upload-hidden"
+                {...register('photoURL')}
+                className='upload-hidden'
               />
             </FileUploadContainer>
           </InputFileContainer>
-          <SubmitButton type="submit">문의하기</SubmitButton>
+          <SubmitButton type='submit'>문의하기</SubmitButton>
         </FormContainer>
       </Wrapper>
     </Body>
@@ -252,8 +243,7 @@ const SubContent = styled.div`
   text-align: center;
   margin-bottom: 20px;
 `;
-const address =
-  "서울시 성동구 광나루로 162 BS성수타워 5F \n 5F, 162, Gwangnaru-ro, Seondong-gu, Seoul, Korea";
+const address = '서울시 성동구 광나루로 162 BS성수타워 5F \n 5F, 162, Gwangnaru-ro, Seondong-gu, Seoul, Korea';
 const MapButton = styled.button`
   color: #ff530e;
   border: none;
@@ -313,8 +303,8 @@ const StyledSelect = styled(Select)`
   }
   .Select__option {
     height: 40px;
-    display: "flex";
-    align-items: "center";
+    display: 'flex';
+    align-items: 'center';
     padding: 9px 0px 9px 15px;
     background-color: rgb(255, 169, 0, 0.4);
     &--is-selected {
@@ -336,7 +326,7 @@ const FormContainer = styled.form`
 `;
 const RowWrapper = styled.div<{ map: boolean }>`
   display: flex;
-  ${(props) => (props.map ? "gap: 0px;" : "gap: 80px;")};
+  ${(props) => (props.map ? 'gap: 0px;' : 'gap: 80px;')};
   align-items: center;
 `;
 
@@ -435,4 +425,4 @@ const FileLabel = styled.label`
   cursor: pointer;
 `;
 
-const FileUploadInput = styled.input.attrs({ type: "file" })``;
+const FileUploadInput = styled.input.attrs({ type: 'file' })``;
