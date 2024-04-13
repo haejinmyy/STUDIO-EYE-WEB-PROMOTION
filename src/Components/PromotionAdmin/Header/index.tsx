@@ -71,7 +71,6 @@ const Index = () => {
     try {
       await updateNotification(notificationId);
       fetchData();
-      console.log('됨');
     } catch (error) {
       console.error('[❌Error updating notification]', error);
     }

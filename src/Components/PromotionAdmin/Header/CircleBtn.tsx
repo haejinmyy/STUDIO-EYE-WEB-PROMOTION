@@ -37,8 +37,8 @@ const Container = styled.div`
   justify-content: center;
 
   img {
-    width: 35.5px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     object-fit: contain;
   }
 

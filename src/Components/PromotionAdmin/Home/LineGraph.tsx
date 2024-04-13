@@ -50,6 +50,24 @@ const LineGraph = ({ data }: LineGraphProps) => {
         enableArea={true}
         enableTouchCrosshair={true}
         useMesh={true}
+        tooltip={(tooltip) => {
+          return (
+            <div
+              style={{
+                background: 'rgba(0,0,0,0.01)',
+                backdropFilter: 'blur(3px)',
+                padding: '15px',
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+              }}
+            >
+              <div style={{ fontSize: '0.9em', fontFamily: 'pretendard-medium' }}>
+                <strong>{tooltip.point.data.xFormatted}</strong>
+              </div>
+              <div style={{ marginTop: '5px', fontFamily:'pretendard-semibold' }}>조회수 {Math.round(Number(tooltip.point.data.y))}</div>
+            </div>
+          );
+        }}
         legends={[
           {
             anchor: 'bottom-right',

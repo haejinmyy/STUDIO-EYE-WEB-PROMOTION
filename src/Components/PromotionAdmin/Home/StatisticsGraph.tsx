@@ -70,7 +70,11 @@ const StatisticsGraph = () => {
         ) : viewsData && viewsData.length > 0 ? (
           <LineGraph data={processedData} />
         ) : (
-          <ErrorWrapper>⛔ 올바르지 않은 형식입니다. 데이터를 다시 선택해 주세요.</ErrorWrapper>
+          <ErrorWrapper>
+            ⛔ 날짜 형식이 올바르지 않습니다. 날짜를 다시 선택해 주세요.{' '}
+            <h1>* 올바르지 않은 경우는 다음과 같습니다. </h1>
+            <h2>1. 기간이 두 달 이하인 경우</h2> <h2> 2. 시작일이 끝일보다 뒤에 있을 경우</h2>
+          </ErrorWrapper>
         )}
       </BodyWrapper>
     </Container>
@@ -118,6 +122,18 @@ const BodyWrapper = styled.div`
 const ErrorWrapper = styled.div`
   font-family: 'pretendard-regular';
   font-size: 17px;
+  h1 {
+    font-family: 'pretendard-light';
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+
+  h2 {
+    font-family: 'pretendard-light';
+    margin-bottom: 5px;
+    font-size: 13px;
+  }
 `;
 
 const LoadingWrapper = styled.div`
