@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PeriodPicker from './PeriodPicker';
 import { fetchViewsData } from '@/apis/PromotionAdmin/view';
 import dayjs from 'dayjs';
-import { ViewData } from '@/types/view';
+import { ViewData } from '@/types/PromotionAdmin/view';
 import LineGraph from './LineGraph';
 import styled from 'styled-components';
 import { ReactComponent as Icon } from '@/assets/images/PA-Navigation/statistics.svg';
