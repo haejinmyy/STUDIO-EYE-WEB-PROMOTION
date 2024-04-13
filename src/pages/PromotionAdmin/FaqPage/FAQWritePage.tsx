@@ -3,13 +3,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
+import { ContentBox } from '@/Components/PromotionAdmin/FAQ/Components';
 import { IEditorData, IFAQData } from '../../../types/PromotionAdmin/faq';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { EditorState, convertToRaw } from 'draft-js';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import draftToHtml from 'draftjs-to-html';
-import TextEditor from '@/components/PromotionAdmin/FAQ/TextEditor';
+import TextEditor from '@/Components/PromotionAdmin/FAQ/TextEditor';
 
 function FAQWritePage() {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());

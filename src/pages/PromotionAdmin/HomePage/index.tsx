@@ -1,5 +1,5 @@
-import DateSelectBtn from '@/components/PromotionAdmin/Home/PeriodPicker';
-import StatisticsGraph from '@/components/PromotionAdmin/Home/StatisticsGraph';
+import DateSelectBtn from '@/Components/PromotionAdmin/Home/PeriodPicker';
+import StatisticsGraph from '@/Components/PromotionAdmin/Home/StatisticsGraph';
 import { Dayjs } from 'dayjs';
 import React from 'react';
 
