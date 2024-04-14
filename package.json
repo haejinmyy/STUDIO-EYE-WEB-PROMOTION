@@ -44,6 +44,8 @@
     "react-slick": "^0.29.0",
     "react-transition-group": "^4.4.5",
     "react-youtube": "^10.1.0",
+    "recoil": "^0.7.7",
+    "recoil-persist": "^5.1.0",
     "slick-carousel": "^1.8.1",
     "styled-components": "^6.1.8",
     "styled-reset": "^4.5.2",
@@ -76,13 +78,20 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@eslint/js": "^9.0.0",
     "@svgr/core": "^8.1.0",
     "@types/draftjs-to-html": "^0.8.4",
     "@types/html-to-draftjs": "^1.4.3",
     "@types/react-draft-wysiwyg": "^1.13.8",
     "@types/react-slick": "^0.23.13",
     "customize-cra": "^1.0.0",
-    "react-app-rewired": "^2.2.1"
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-react": "^7.34.1",
+    "globals": "^15.0.0",
+    "react-app-rewired": "^2.2.1",
+    "typescript-eslint": "^7.6.0"
   },
-  "proxy": "http://3.35.54.100:8080"
+  "proxy": "http://43.201.95.252:8000"
 }

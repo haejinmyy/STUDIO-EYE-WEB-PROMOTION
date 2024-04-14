@@ -27,6 +27,7 @@ import FAQManagePage from './pages/PromotionAdmin/FaqPage/FAQManagePage';
 import PARequestDetailPage from '@/pages/PromotionAdmin/RequestPage/RequestDetailPage/RequestDetailPage';
 import FAQEditPage from './pages/PromotionAdmin/FaqPage/FAQEditPage';
 import FAQCheckPage from './pages/PromotionAdmin/FaqPage/FAQCheckPage';
+import PALogin from './pages/PromotionAdmin/Login/Login';
 
 const router = createBrowserRouter([
   {
@@ -35,27 +36,31 @@ const router = createBrowserRouter([
     children: [
       {
         path: '',
-        element: <PromotionMainpage />,
+        element: <Root />,
         children: [
           {
-            path: 'about',
+            path: '',
+            element: <PromotionMainpage />,
+          },
+          {
+            path: 'ABOUT',
             element: <AboutMainpage />,
           },
           {
-            path: 'contents',
+            path: 'CONTENTS',
             element: <ArtworkMainpage />,
           },
           {
-            path: 'detail/:detailId',
+            path: 'DETAIL/:detailId',
             element: <ContentDetailPage />,
           },
           {
             path: 'login',
-            element: <LoginPage />,
+            element: <PALogin />,
           },
 
           {
-            path: 'contact',
+            path: 'CONTACT',
             element: <ContactPage />,
           },
         ],
