@@ -7,7 +7,7 @@ type LineGraphProps = {
 };
 
 const LineGraph = ({ data, division }: LineGraphProps) => {
-  const colors = division === 'request' ? ['#ff7f0e'] : ['#1f77b4'];
+  const colors = division === 'request' ? ['#0064FF'] : ['#E16262'];
   return (
     <div style={{ height: '330px', width: '550px' }}>
       <ResponsiveLine
