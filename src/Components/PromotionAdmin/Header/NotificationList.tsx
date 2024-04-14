@@ -20,7 +20,7 @@ const NotificationList = ({ requestId, onClick, onDelete, isRead, clientName, de
         <ContentWrapper>
           <TitleWrapper>
             <ClientWrapper>
-              <h1>{clientName}</h1>님께서 새로운 의뢰를 등록했어요.
+              <span>{clientName}</span>님께서 새로운 의뢰를 등록했어요.
             </ClientWrapper>
             <div>{isRead ? <IsReaded>읽음</IsReaded> : <IsNotReaded>안읽음</IsNotReaded>}</div>
           </TitleWrapper>
@@ -60,13 +60,13 @@ const Container = styled(Link)<{ isRead: boolean }>`
   }
   h3 {
     font-family: 'pretendard-semibold';
-    font-size: 18px;
+    font-size: 20px;
     color: #323232;
   }
   h4 {
     font-family: 'pretendrad-regular';
     font-size: 15px;
-    margin-top: 3px;
+    margin-top: 5px;
   }
   cursor: pointer;
   &:hover {
@@ -85,7 +85,8 @@ const TitleWrapper = styled.div`
 
 const ClientWrapper = styled.div`
   display: flex;
-  h1 {
+  margin-bottom: 15px;
+  span {
     font-size: 17px;
     font-family: 'pretendard-semibold';
     color: black;

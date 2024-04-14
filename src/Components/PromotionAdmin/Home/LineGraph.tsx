@@ -3,14 +3,17 @@ import { ResponsiveLine } from '@nivo/line';
 
 type LineGraphProps = {
   data: { x: string; y: number }[];
+  division: 'view' | 'request';
 };
 
-const LineGraph = ({ data }: LineGraphProps) => {
+const LineGraph = ({ data, division }: LineGraphProps) => {
+  const colors = division === 'request' ? ['#ff7f0e'] : ['#1f77b4'];
   return (
-    <div style={{ height: '400px', width: '700px' }}>
+    <div style={{ height: '330px', width: '550px' }}>
       <ResponsiveLine
-        data={[{ id: 'views', data }]}
-        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+        data={[{ id: 'count', data }]}
+        colors={colors}
+        margin={{ top: 10, right: 30, bottom: 50, left: 30 }}
         xScale={{ type: 'point' }}
         yScale={{
           type: 'linear',
@@ -41,7 +44,7 @@ const LineGraph = ({ data }: LineGraphProps) => {
           legendPosition: 'middle',
           truncateTickAt: 0,
         }}
-        enablePoints={false}
+        enablePoints={true}
         pointSize={10}
         pointColor={{ theme: 'background' }}
         pointBorderWidth={2}
@@ -64,36 +67,12 @@ const LineGraph = ({ data }: LineGraphProps) => {
               <div style={{ fontSize: '0.9em', fontFamily: 'pretendard-medium' }}>
                 <strong>{tooltip.point.data.xFormatted}</strong>
               </div>
-              <div style={{ marginTop: '5px', fontFamily:'pretendard-semibold' }}>조회수 {Math.round(Number(tooltip.point.data.y))}</div>
+              <div style={{ marginTop: '5px', fontFamily: 'pretendard-semibold' }}>
+                {division === 'request' ? '의뢰 수' : '조회 수'} {Math.round(Number(tooltip.point.data.y))}
+              </div>
             </div>
           );
         }}
-        legends={[
-          {
-            anchor: 'bottom-right',
-            direction: 'column',
-            justify: false,
-            translateX: 100,
-            translateY: 0,
-            itemsSpacing: 0,
-            itemDirection: 'left-to-right',
-            itemWidth: 80,
-            itemHeight: 20,
-            itemOpacity: 0.75,
-            symbolSize: 12,
-            symbolShape: 'circle',
-            symbolBorderColor: 'rgba(0, 0, 0, .5)',
-            effects: [
-              {
-                on: 'hover',
-                style: {
-                  itemBackground: 'rgba(0, 0, 0, .03)',
-                  itemOpacity: 1,
-                },
-              },
-            ],
-          },
-        ]}
       />
     </div>
   );

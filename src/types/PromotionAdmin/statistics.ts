@@ -4,3 +4,9 @@ export type ViewData = {
   month: number;
   views: number;
 };
+
+export type RequestData = {
+  year: number;
+  month: number;
+  requestCount: number;
+};

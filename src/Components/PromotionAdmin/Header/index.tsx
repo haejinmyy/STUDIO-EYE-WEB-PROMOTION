@@ -152,11 +152,13 @@ const Container = styled.div`
   top: 0;
   left: 0;
   z-index: 20;
+  backdrop-filter: blur(10px);
 `;
 
 const LeftWrapper = styled.div`
   font-family: 'pretendard-semibold';
   font-size: 16px;
+  margin-left: 30px;
   color: #000000e2;
 `;
 

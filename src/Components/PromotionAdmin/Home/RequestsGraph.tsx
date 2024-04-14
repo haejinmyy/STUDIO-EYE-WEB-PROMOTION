@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { fetchViewsData } from '@/apis/PromotionAdmin/dashboard';
+import { fetchRequestsData } from '@/apis/PromotionAdmin/dashboard';
 import dayjs from 'dayjs';
-import { ViewData } from '@/types/PromotionAdmin/statistics';
 import Graph from './Graph';
+import { RequestData } from '@/types/PromotionAdmin/statistics';
 
-const StatisticsGraph = () => {
-  const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(dayjs().subtract(5, 'month'));
+const RequestsGraph = () => {
+  const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(dayjs().subtract(2, 'month'));
   const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(dayjs().startOf('month'));
-  const [viewsData, setViewsData] = useState<ViewData[]>([]);
+  const [requestsData, setRequestsData] = useState<RequestData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [processedData, setProcessedData] = useState<{ x: string; y: number }[]>([]);
 
@@ -31,15 +31,15 @@ const StatisticsGraph = () => {
       const startMonth = startDate.month() + 1;
       const endYear = endDate.year();
       const endMonth = endDate.month() + 1;
-      const data = await fetchViewsData(startYear, startMonth, endYear, endMonth);
-      setViewsData(data);
-      const processedData = data.map((item: { year: number; month: number; views: number }) => ({
+      const data = await fetchRequestsData(startYear, startMonth, endYear, endMonth);
+      setRequestsData(data);
+      const processedData = data.map((item: { year: number; month: number; requestCount: number }) => ({
         x: `${item.year}년 ${item.month}월`,
-        y: item.views,
+        y: item.requestCount,
       }));
       setProcessedData(processedData);
     } catch (error) {
-      console.log('[❌Error fetchViewsData]', error);
+      console.log('[❌Error fetchRequestsData]', error);
     } finally {
       setLoading(false);
     }
@@ -47,17 +47,17 @@ const StatisticsGraph = () => {
 
   return (
     <Graph
-      title='기간별 조회 수'
+      title='기간별 요청 수'
       processedData={processedData}
       loading={loading}
-      data={viewsData}
+      data={requestsData}
       handleStartDateChange={handleStartDateChange}
       handleEndDateChange={handleEndDateChange}
       startDate={startDate}
       endDate={endDate}
-      division='view'
+      division='request'
     />
   );
 };
 
-export default StatisticsGraph;
+export default RequestsGraph;
