@@ -33,6 +33,7 @@ const FaqPage = (e: any) => {
           objects.push(obj);
         }
         setData(objects);
+        console.log('dataLength : ', data.data.length);
       })
       .catch((error) => {
         console.error(error);
@@ -61,7 +62,9 @@ const FaqPage = (e: any) => {
         });
       }
     }
-    setSearchData(searchResults.length > 0 ? searchResults : null);
+    console.log('searchResult : ', searchResults);
+    console.log('searchResultLength : ', searchResults.length);
+    setSearchData(searchResults.length > 0 ? searchResults : []);
     setSearchResult(searchResults.length > 0 ? 'success' : 'fail');
   };
   // const goToDetail = (id: number) => {
@@ -71,6 +74,7 @@ const FaqPage = (e: any) => {
   //   setShowAllFaq(!showAllFaq);
   // };
   const searchToggleItem = (index: number) => {
+    console.log(searchToggleStates);
     const newSearchToggleStates = [...searchToggleStates];
     newSearchToggleStates[index] = !newSearchToggleStates[index];
     setSearchToggleStates(newSearchToggleStates);
@@ -136,7 +140,7 @@ const FaqPage = (e: any) => {
                       {item.question.length >= 100 ? item.question.substring(0, 70) + '...' : item.question}
                     </FaqBriefQuestion>
                   </FaqBrief>
-                  {toggleStates[item.index] && (
+                  {searchToggleStates[item.index] && (
                     <FaqDetailBox>
                       <FaqDetailQuestion>Q. {item.question}</FaqDetailQuestion>
                       <FaqDetailAnswer>A. {item.answer.replace(/<[^>]*>/g, '')}</FaqDetailAnswer>
@@ -253,13 +257,13 @@ const SearchWrapper = styled.div`
 `;
 const SearchResultBox = styled.div`
   display: flex;
-  max-height: 300px;
-  overflow-y: auto;
+  flex-wrap: wrap;
   background-color: transparent;
   padding-top: 0px;
   padding: 30px;
   flex-direction: column;
   align-items: center;
+  border-bottom: 2px solid black;
 `;
 const SearchFailed = styled.div`
   text-align: center;
