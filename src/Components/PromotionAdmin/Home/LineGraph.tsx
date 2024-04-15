@@ -68,7 +68,7 @@ const LineGraph = ({ data, division }: LineGraphProps) => {
                 <strong>{tooltip.point.data.xFormatted}</strong>
               </div>
               <div style={{ marginTop: '5px', fontFamily: 'pretendard-semibold' }}>
-                {division === 'request' ? '의뢰 수' : '조회 수'} {Math.round(Number(tooltip.point.data.y))}
+                {division === 'request' ? '문의 수' : '조회 수'} {Math.round(Number(tooltip.point.data.y))}
               </div>
             </div>
           );

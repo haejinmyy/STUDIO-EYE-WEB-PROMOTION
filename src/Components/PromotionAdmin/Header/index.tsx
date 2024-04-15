@@ -47,6 +47,9 @@ const Index = () => {
   const fetchData = async (userId: number) => {
     try {
       const notifications: INotification[] = await fetchNotifications(userId);
+      if (!notifications) {
+        return;
+      }
       const unreadNotificationsExist: boolean = notifications.some((notification) => !notification.isRead);
       setIconStatus(unreadNotificationsExist);
       setSortedNotifications(notifications);
@@ -83,7 +86,15 @@ const Index = () => {
   const handleNotificationDelete = async (notificationId: number, userId: number) => {
     try {
       await deleteNotification(notificationId, userId);
-      fetchData(userId);
+      // 삭제 후 해당 항목을 sortedNotifications에서 제거
+      const updatedNotifications = sortedNotifications.filter(
+        (notification) => notification.notification.id !== notificationId,
+      );
+      setSortedNotifications(updatedNotifications);
+
+      // 화면에 보여지는 알림들의 인덱스 재조정
+      const updatedRequests = requests.filter((request) => request.id !== notificationId);
+      setRequests(updatedRequests);
     } catch (error) {
       console.error('[❌Error updating notification]', error);
     }
@@ -208,9 +219,10 @@ const NotiContainer = styled.div`
   margin-right: 100px;
   width: 507px;
   height: 500px;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.9);
   border-radius: 10px;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(5px);
+  z-index: 100;
   padding: 25px;
   box-sizing: border-box;
   overflow-y: scroll;
