@@ -6,11 +6,13 @@ import userIcon from '@/assets/images/PA-Header/userIcon.png';
 import openIcon from '@/assets/images/PA-Header/openIcon.png';
 import CircleBtn from './CircleBtn';
 import styled from 'styled-components';
-import { fetchNotifications, updateNotification } from '@/apis/PromotionAdmin/notification';
-import { Notification } from '@/types/notification';
+import { deleteNotification, fetchNotifications, updateNotification } from '@/apis/PromotionAdmin/notification';
+import { INotification } from '@/types/PromotionAdmin/notification';
 import { fetchRequests } from '@/apis/PromotionAdmin/request';
 import { Request } from '@/types/request';
 import NotificationList from './NotificationList';
+import { useRecoilValue } from 'recoil';
+import { authState } from '@/recoil/atoms';
 
 const CircleBtns = [
   {
@@ -27,28 +29,30 @@ const CircleBtns = [
 const Index = () => {
   const [iconStatus, setIconStatus] = useState<boolean>(false);
   const [isNotiOpened, setIsNotiOpened] = useState<boolean>(false);
-  const [sortedNotifications, setSortedNotifications] = useState<Notification[]>([]);
+  const [sortedNotifications, setSortedNotifications] = useState<INotification[]>([]);
   const [requests, setRequests] = useState<Request[]>([]);
+  const auth = useRecoilValue(authState);
 
   useEffect(() => {
-    fetchData();
+    console.log('흑', auth.userId);
+    fetchData(auth.userId);
   }, []);
 
   useEffect(() => {
     if (isNotiOpened) {
-      fetchData();
+      fetchData(auth.userId);
     }
   }, [isNotiOpened]);
 
-  const fetchData = async () => {
+  const fetchData = async (userId: number) => {
     try {
-      const notifications: Notification[] = await fetchNotifications();
+      const notifications: INotification[] = await fetchNotifications(userId);
       const unreadNotificationsExist: boolean = notifications.some((notification) => !notification.isRead);
       setIconStatus(unreadNotificationsExist);
       setSortedNotifications(notifications);
 
       const requestsPromise = notifications.map(async (notification) => {
-        const response = await fetchRequests({ requestId: notification.requestId });
+        const response = await fetchRequests({ requestId: notification.notification.requestId });
         return response;
       });
 
@@ -67,11 +71,19 @@ const Index = () => {
   //   return sortedUnreadNotifications.concat(sortedReadNotifications);
   // };
 
-  const handleNotificationClick = async (notificationId: number) => {
+  const handleNotificationClick = async (notificationId: number, userId: number) => {
     try {
-      await updateNotification(notificationId);
-      fetchData();
-      console.log('됨');
+      await updateNotification(notificationId, userId);
+      fetchData(userId);
+    } catch (error) {
+      console.error('[❌Error updating notification]', error);
+    }
+  };
+
+  const handleNotificationDelete = async (notificationId: number, userId: number) => {
+    try {
+      await deleteNotification(notificationId, userId);
+      fetchData(userId);
     } catch (error) {
       console.error('[❌Error updating notification]', error);
     }
@@ -107,15 +119,17 @@ const Index = () => {
       {isNotiOpened && (
         <NotiContainer>
           <h1>Notification</h1>
-          {requests.map((request, index) => (
+          {requests.length === 0 && <NoDataConatiner>새로운 알림이 존재하지 않습니다.</NoDataConatiner>}
+          {sortedNotifications.map((notification, index) => (
             <li key={index}>
               <NotificationList
-                requestId={request.id}
-                clientName={request.clientName}
-                description={request.description}
-                category={request.category}
-                onClick={() => handleNotificationClick(sortedNotifications[index].id)}
-                isRead={sortedNotifications[index].isRead}
+                requestId={notification.notification.requestId}
+                clientName={requests[index]?.clientName}
+                description={requests[index]?.description}
+                category={requests[index]?.category}
+                isRead={notification.isRead}
+                onClick={() => handleNotificationClick(notification.notification.id, auth.userId)}
+                onDelete={() => handleNotificationDelete(notification.notification.id, auth.userId)}
               />
             </li>
           ))}
@@ -138,11 +152,13 @@ const Container = styled.div`
   top: 0;
   left: 0;
   z-index: 20;
+  backdrop-filter: blur(10px);
 `;
 
 const LeftWrapper = styled.div`
   font-family: 'pretendard-semibold';
   font-size: 16px;
+  margin-left: 30px;
   color: #000000e2;
 `;
 
@@ -209,4 +225,8 @@ const NotiContainer = styled.div`
     font-size: 16px;
     margin-bottom: 23px;
   }
+`;
+
+const NoDataConatiner = styled.div`
+  font-family: 'pretendard-semibold';
 `;

@@ -4,6 +4,7 @@ export interface IFAQ {
   id: number;
   question: string;
   answer: string;
+  visibility: boolean;
 }
 
 export interface IGetFAQData {

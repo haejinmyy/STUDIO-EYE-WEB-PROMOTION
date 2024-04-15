@@ -1,9 +1,12 @@
-import React from 'react'
+import RequestList from '@/Components/PromotionAdmin/Request/RequestList';
+import React from 'react';
 
 const index = () => {
   return (
-    <div>request 화면입니다.</div>
-  )
-}
+    <div>
+      <RequestList />
+    </div>
+  );
+};
 
-export default index
+export default index;

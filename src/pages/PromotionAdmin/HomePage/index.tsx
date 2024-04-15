@@ -1,14 +1,21 @@
-import DateSelectBtn from '@/components/PromotionAdmin/Home/PeriodPicker';
-import StatisticsGraph from '@/components/PromotionAdmin/Home/StatisticsGraph';
+import DateSelectBtn from '@/Components/PromotionAdmin/Home/PeriodPicker';
+import RequestsGraph from '@/Components/PromotionAdmin/Home/RequestsGraph';
+import StatisticsGraph from '@/Components/PromotionAdmin/Home/StatisticsGraph';
 import { Dayjs } from 'dayjs';
 import React from 'react';
+import styled from 'styled-components';
 
 const index = () => {
   return (
-    <div>
+    <Container>
       <StatisticsGraph />
-    </div>
+      <RequestsGraph />
+    </Container>
   );
 };
 
 export default index;
+
+const Container = styled.div`
+  display: flex;
+`;

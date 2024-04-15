@@ -12,3 +12,9 @@ export const fetchRequests = async ({ requestId }: { requestId: number }): Promi
     throw error;
   }
 };
+
+export function getRequestsData() {
+  return fetch(`${BASE_URL}/api/requests`)
+    .then((response) => response.json())
+    .catch((error) => console.log('[❌Error fetching requests]', error));
+}
