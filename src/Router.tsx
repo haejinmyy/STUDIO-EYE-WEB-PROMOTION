@@ -18,16 +18,18 @@ import PAPageEditPage from './pages/PromotionAdmin/PageEditPage/index';
 import PAStatisticsPage from './pages/PromotionAdmin/StatisticsPage/index';
 import PAFaqPage from './pages/PromotionAdmin/FaqPage/index';
 import PASettingPage from './pages/PromotionAdmin/SettingPage/index';
-import AdminLayout from './Components/PromotionAdmin/Layout/Layout';
+import AdminLayout from './components/PromotionAdmin/Layout/Layout';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
-import FaqPage from './pages/FaqPage/FaqPAge';
-import FaqDetailPage from './pages/DetailPage/FaqDetailPage';
+import FaqPage from './pages/PromotionPage/FaqPage/FaqPage';
+import FaqDetailPage from './pages/PromotionPage/FaqPage/FaqDetailPage';
 import FAQWritePage from './pages/PromotionAdmin/FaqPage/FAQWritePage';
 import FAQManagePage from './pages/PromotionAdmin/FaqPage/FAQManagePage';
-import PARequestDetailPage from '@/pages/PromotionAdmin/RequestPage/RequestDetailPage/RequestDetailPage';
+import PARequestDetailPage from '@/pages/PromotionAdmin/RequestPage/RequestCheckPage';
 import FAQEditPage from './pages/PromotionAdmin/FaqPage/FAQEditPage';
 import FAQCheckPage from './pages/PromotionAdmin/FaqPage/FAQCheckPage';
 import PALogin from './pages/PromotionAdmin/Login/Login';
+import RequestManagePage from './pages/PromotionAdmin/RequestPage/RequestManagePage';
+import RequestCheckPage from './pages/PromotionAdmin/RequestPage/RequestCheckPage';
 
 const router = createBrowserRouter([
   {
@@ -98,6 +100,18 @@ const router = createBrowserRouter([
           {
             path: PA_ROUTES_CHILD.REQUEST,
             element: <PARequestPage />,
+            children: [
+              {
+                path: '',
+                element: <RequestManagePage />,
+                children: [
+                  {
+                    path: `${PA_ROUTES.REQUEST}/:requestId`,
+                    element: <RequestCheckPage />,
+                  },
+                ],
+              },
+            ],
           },
           {
             path: PA_ROUTES_CHILD.REQUEST_DETAIL,

@@ -1,10 +1,10 @@
-import RequestList from '@/Components/PromotionAdmin/Request/RequestList';
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 
 const index = () => {
   return (
     <div>
-      <RequestList />
+      <Outlet />
     </div>
   );
 };

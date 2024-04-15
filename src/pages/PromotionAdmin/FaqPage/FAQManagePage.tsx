@@ -5,10 +5,10 @@ import { IGetFAQData, getFAQData } from '../../../apis/PromotionAdmin/faq';
 import { useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { ContentBox } from '@/Components/PromotionAdmin/FAQ/Components';
+import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { theme } from '@/styles/theme';
-import Pagination from '@/Components/PromotionAdmin/FAQ/Pagination';
+import Pagination from '@/components/PromotionAdmin/FAQ/Pagination';
 
 function FAQManagePage() {
   const navigator = useNavigate();
@@ -71,18 +71,8 @@ function FAQManagePage() {
                 <div>
                   <svg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'>
                     <g clipPath='url(#clip0_2_61)'>
-                      <path
-                        d='M7.11328 4.10742V10.1074'
-                        stroke='black'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                      />
-                      <path
-                        d='M4.11328 7.10742H10.1133'
-                        stroke='black'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                      />
+                      <path d='M7.11328 4.10742V10.1074' stroke='black' strokeLinecap='round' strokeLinejoin='round' />
+                      <path d='M4.11328 7.10742H10.1133' stroke='black' strokeLinecap='round' strokeLinejoin='round' />
                       <path
                         d='M10.6133 0.607422H3.61328C1.95643 0.607422 0.613281 1.95057 0.613281 3.60742V10.6074C0.613281 12.2643 1.95643 13.6074 3.61328 13.6074H10.6133C12.2702 13.6074 13.6133 12.2643 13.6133 10.6074V3.60742C13.6133 1.95057 12.2702 0.607422 10.6133 0.607422Z'
                         stroke='black'
