@@ -94,8 +94,8 @@ function FAQWritePage() {
   const onValid = (data: IFAQData) => {
     const text = blocks.map((arr) => `${arr.text}\n`).join('');
     const formData = {
-      title: data.question,
-      content: text,
+      question: data.question,
+      answer: text,
     };
     axios
       .post(`http://3.35.54.100:8080/api/faq`, formData)

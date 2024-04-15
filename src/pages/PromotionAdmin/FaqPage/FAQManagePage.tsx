@@ -237,7 +237,7 @@ function FAQManagePage() {
               </svg>
             </Icon>
             FAQ 게시글 관리
-            <Info>등록 게시글 {data?.data.length}건</Info>
+            <Info>등록 게시글 건</Info>
           </Title>
           <EditButtonWrapper>
             <svg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -319,7 +319,7 @@ function FAQManagePage() {
                   <QuestionTitleWrapper layoutId={faq.id + ''} key={faq.id}>
                     <QuestionTitle>
                       <QAIcon>Q</QAIcon>
-                      {faq.title}
+                      {faq.question}
                     </QuestionTitle>
                   </QuestionTitleWrapper>
                 </ListWrapper>
@@ -335,7 +335,7 @@ function FAQManagePage() {
             <EditModal layoutId={faqEditMatch.params.faqId}>
               {clickedFAQ && (
                 <>
-                  <FAQEditPage title={clickedFAQ.title} content={clickedFAQ.content} id={clickedFAQ.id} />
+                  <FAQEditPage question={clickedFAQ.question} answer={clickedFAQ.answer} id={clickedFAQ.id} />
                 </>
               )}
             </EditModal>

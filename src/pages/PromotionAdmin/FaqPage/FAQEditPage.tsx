@@ -71,7 +71,7 @@ const FormContainer = styled.form``;
 function FAQEditPage(props: IFAQ) {
   const navigator = useNavigate();
   const [editorState, setEditorState] = useState(() => {
-    const content = ContentState.createFromText(`${props.content}`);
+    const content = ContentState.createFromText(`${props.answer}`);
     return EditorState.createWithContent(content);
   });
 
@@ -84,7 +84,7 @@ function FAQEditPage(props: IFAQ) {
 
   const { register, handleSubmit } = useForm<IFAQData>({
     defaultValues: {
-      question: `${props.title}`,
+      question: `${props.question}`,
     },
   });
 

@@ -6,6 +6,253 @@ import axios from 'axios';
 import Modal from './Components/Modal';
 import Select from 'react-select';
 
+const ContactPage = (e: any) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const closeModal = () => setIsModalOpen(false);
+  const [fileList, setFileList] = useState<File[]>([]);
+  const FileTextRef = useRef<HTMLInputElement>(null);
+  const [formData, setFormData] = useState<IFormData>({
+    category: 'Entertainment',
+    clientName: '',
+    organization: '',
+    email: '',
+    contact: '',
+    description: '',
+    position: 'default',
+  });
+  const emailCheck = (email: any) => {
+    const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/;
+    if (!emailRegEx.test(email)) {
+      alert('이메일 형식이 올바르지 않습니다. 다시 입력해주세요.');
+      return false;
+    }
+    return true; //형식에 맞을 경우, true 리턴
+  };
+  const telCheck = (tel: any) => {
+    const telRegEx = /^[0-9\b -]{0,13}$/;
+    if (!telRegEx.test(tel)) {
+      alert('연락처 형식이 올바르지 않습니다. 다시 입력해주세요.');
+      return false;
+    }
+    return true; //형식에 맞을 경우, true 리턴
+  };
+
+  const handleDataChange = (e: any) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleCategoryChange = (e: any) => {
+    setFormData({
+      ...formData,
+      category: e.value,
+    });
+  };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = e.target.files;
+    if (selectedFiles) {
+      setFileList([...fileList, ...Array.from(selectedFiles)]);
+      if (selectedFiles.length > 0) {
+        const fileNames = Array.from(selectedFiles)
+          .map((file) => file.name)
+          .join(', ');
+        if (FileTextRef.current) {
+          FileTextRef.current.value = fileNames;
+        }
+      } else {
+        if (FileTextRef.current) {
+          FileTextRef.current.value = '';
+        }
+      }
+    }
+  };
+  // textarea 입력값에 따른 높이 조절
+  const handleTextAreaDataChange = (e: any) => {
+    if (textareaRef && textareaRef.current) {
+      // textareaRef.current.style.height = "0px";
+      // const scrollHeight = textareaRef.current.scrollHeight;
+      // textareaRef.current.style.height = scrollHeight + "px";
+    }
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    const emptyData: any = {
+      organization: '소속',
+      email: '이메일 주소',
+      clientName: '이름',
+      contact: '연락처',
+      description: '프로젝트 내용',
+    };
+    for (const key in formData) {
+      // if (formData[key] === "") {
+      //   alert(`${emptyData[key]}을(를) 작성해주세요!`);
+      //   return;
+      // }
+    }
+    // 유효성 검사
+    const isValidEmail = emailCheck(formData.email);
+    const isValidTel = telCheck(formData.contact);
+
+    // 이메일 형식이 올바르지 않으면 더 이상 처리하지 않고 종료
+    if (!isValidEmail) {
+      return;
+    }
+    if (!isValidTel) {
+      return;
+    }
+
+    //5초 후 홈으로 이동 setTimeout할지말지
+    const requestData = new FormData();
+    requestData.append('request', new Blob([JSON.stringify(formData)], { type: 'application/json' }));
+    fileList.forEach((file) => {
+      requestData.append('files', file);
+    });
+    axios
+      .post(`http://3.35.54.100:8080/api/requests`, requestData, {})
+      .then((response) => {
+        console.log(response.data, '임다. ');
+        setIsModalOpen(true);
+        setFormData({
+          // 폼 데이터 초기화
+          category: 'Entertainment',
+          //초기화 설정..
+          clientName: '',
+          organization: '',
+          email: '',
+          contact: '',
+          description: '',
+          position: 'default',
+        });
+        setFileList([]);
+        // FileTextRef.current.value = ""; // 파일 입력
+        console.log(formData, '제출');
+      })
+
+      .catch((error) => {
+        console.error('에러 발생', error);
+      });
+  };
+  return (
+    <Body>
+      <Wrapper>
+        <Title>CONTACT</Title>
+        <SubTitle>ADDRESS</SubTitle>
+        <RowWrapper map>
+          <SubContent>{address}</SubContent>
+          <MapLink href='https://naver.me/xJqS8qd3' target='_blank'>
+            <MapButton>MAP</MapButton>
+          </MapLink>
+        </RowWrapper>
+        <SubTitle>TEL</SubTitle>
+        <SubContent>02-2038-2663</SubContent>
+        <SubTitle>FAX</SubTitle>
+        <SubContent>070-7549-2443</SubContent>
+        <Title>PROJECT REQUEST</Title>
+        <FormContainer>
+          <InputWrapper>
+            <Label>문의 종류</Label>
+            {/* <StyledSelect
+                            name="category"
+                            onChange={handleDataChange}
+                        >
+                            {categories.map((category, index) => (
+                                <option
+                                    key={index}
+                                    name="category"
+                                    id={category}
+                                    value={category}
+                                >{category}</option>
+                            ))}
+                        </StyledSelect> */}
+            <StyledSelect
+              classNamePrefix='Select'
+              options={categories}
+              defaultValue={categories[0]}
+              onChange={(e: any) => handleCategoryChange(e)}
+            />
+          </InputWrapper>
+          <RowWrapper map>
+            <InputWrapper>
+              <Label>이름</Label>
+              <UnderlinedInput type='text' value={formData.clientName} name='clientName' onChange={handleDataChange} />
+            </InputWrapper>
+            <InputWrapper>
+              <Label>소속</Label>
+              <UnderlinedInput
+                type='text'
+                value={formData.organization}
+                name='organization'
+                onChange={handleDataChange}
+              />
+            </InputWrapper>
+          </RowWrapper>
+          <RowWrapper map>
+            <InputWrapper>
+              <Label>이메일</Label>
+              <UnderlinedInput type='email' value={formData.email} name='email' onChange={handleDataChange} />
+            </InputWrapper>
+            <InputWrapper>
+              <Label>연락처</Label>
+              <UnderlinedInput
+                type='text'
+                placeholder='ex) 010-1234-5678'
+                value={formData.contact}
+                name='contact'
+                onChange={handleDataChange}
+              />
+            </InputWrapper>
+          </RowWrapper>
+
+          <InputWrapper>
+            <Label>프로젝트 내용</Label>
+
+            <UnderlinedTextarea
+              ref={textareaRef}
+              autoComplete='off'
+              value={formData.description}
+              name='description'
+              onChange={handleTextAreaDataChange}
+            />
+          </InputWrapper>
+
+          <Label>파일 첨부</Label>
+          <InputFileContainer>
+            <FileUploadContainer>
+              <FileText
+                ref={FileTextRef}
+                type='text'
+                // readOnly="readonly"
+              ></FileText>
+              <FileUploadInput id='uploadfile' type='file' accept='*/*' multiple onChange={handleFileChange} />
+              <FileLabel htmlFor='uploadfile'>upload</FileLabel>
+            </FileUploadContainer>
+          </InputFileContainer>
+
+          <SubmitButton
+            type='submit'
+            onClick={handleSubmit}
+            whileHover={{ scale: 1.04 }}
+            transition={{ ease: 'easeInOut', stiffness: 200, damping: 5 }}
+          >
+            문의하기
+          </SubmitButton>
+        </FormContainer>
+        <Modal isModalOpen={isModalOpen} closeModal={closeModal}></Modal>
+      </Wrapper>
+    </Body>
+  );
+};
+
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -266,252 +513,5 @@ interface IFormData {
   description: string;
   position: string;
 }
-
-const ContactPage = (e: any) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const closeModal = () => setIsModalOpen(false);
-  const [fileList, setFileList] = useState<File[]>([]);
-  const FileTextRef = useRef<HTMLInputElement>(null);
-  const [formData, setFormData] = useState<IFormData>({
-    category: 'Entertainment',
-    clientName: '',
-    organization: '',
-    email: '',
-    contact: '',
-    description: '',
-    position: 'default',
-  });
-  const emailCheck = (email: any) => {
-    const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/;
-    if (!emailRegEx.test(email)) {
-      alert('이메일 형식이 올바르지 않습니다. 다시 입력해주세요.');
-      return false;
-    }
-    return true; //형식에 맞을 경우, true 리턴
-  };
-  const telCheck = (tel: any) => {
-    const telRegEx = /^[0-9\b -]{0,13}$/;
-    if (!telRegEx.test(tel)) {
-      alert('연락처 형식이 올바르지 않습니다. 다시 입력해주세요.');
-      return false;
-    }
-    return true; //형식에 맞을 경우, true 리턴
-  };
-
-  const handleDataChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleCategoryChange = (e: any) => {
-    setFormData({
-      ...formData,
-      category: e.value,
-    });
-  };
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = e.target.files;
-    if (selectedFiles) {
-      setFileList([...fileList, ...Array.from(selectedFiles)]);
-      if (selectedFiles.length > 0) {
-        const fileNames = Array.from(selectedFiles)
-          .map((file) => file.name)
-          .join(', ');
-        if (FileTextRef.current) {
-          FileTextRef.current.value = fileNames;
-        }
-      } else {
-        if (FileTextRef.current) {
-          FileTextRef.current.value = '';
-        }
-      }
-    }
-  };
-  // textarea 입력값에 따른 높이 조절
-  const handleTextAreaDataChange = (e: any) => {
-    if (textareaRef && textareaRef.current) {
-      // textareaRef.current.style.height = "0px";
-      // const scrollHeight = textareaRef.current.scrollHeight;
-      // textareaRef.current.style.height = scrollHeight + "px";
-    }
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    const emptyData: any = {
-      organization: '소속',
-      email: '이메일 주소',
-      clientName: '이름',
-      contact: '연락처',
-      description: '프로젝트 내용',
-    };
-    for (const key in formData) {
-      // if (formData[key] === "") {
-      //   alert(`${emptyData[key]}을(를) 작성해주세요!`);
-      //   return;
-      // }
-    }
-    // 유효성 검사
-    const isValidEmail = emailCheck(formData.email);
-    const isValidTel = telCheck(formData.contact);
-
-    // 이메일 형식이 올바르지 않으면 더 이상 처리하지 않고 종료
-    if (!isValidEmail) {
-      return;
-    }
-    if (!isValidTel) {
-      return;
-    }
-
-    //5초 후 홈으로 이동 setTimeout할지말지
-    const requestData = new FormData();
-    requestData.append('request', new Blob([JSON.stringify(formData)], { type: 'application/json' }));
-    fileList.forEach((file) => {
-      requestData.append('files', file);
-    });
-    axios
-      .post(`http://3.35.54.100:8080/api/requests`, requestData, {})
-      .then((response) => {
-        console.log(response.data, '임다. ');
-        setIsModalOpen(true);
-        setFormData({
-          // 폼 데이터 초기화
-          category: 'Entertainment',
-          //초기화 설정..
-          clientName: '',
-          organization: '',
-          email: '',
-          contact: '',
-          description: '',
-          position: 'default',
-        });
-        setFileList([]);
-        // FileTextRef.current.value = ""; // 파일 입력
-        console.log(formData, '제출');
-      })
-
-      .catch((error) => {
-        console.error('에러 발생', error);
-      });
-  };
-  return (
-    <Body>
-      <Wrapper>
-        <Title>CONTACT</Title>
-        <SubTitle>ADDRESS</SubTitle>
-        <RowWrapper map>
-          <SubContent>{address}</SubContent>
-          <MapLink href='https://naver.me/xJqS8qd3' target='_blank'>
-            <MapButton>MAP</MapButton>
-          </MapLink>
-        </RowWrapper>
-        <SubTitle>TEL</SubTitle>
-        <SubContent>02-2038-2663</SubContent>
-        <SubTitle>FAX</SubTitle>
-        <SubContent>070-7549-2443</SubContent>
-        <Title>PROJECT REQUEST</Title>
-        <FormContainer>
-          <InputWrapper>
-            <Label>문의 종류</Label>
-            {/* <StyledSelect
-                            name="category"
-                            onChange={handleDataChange}
-                        >
-                            {categories.map((category, index) => (
-                                <option
-                                    key={index}
-                                    name="category"
-                                    id={category}
-                                    value={category}
-                                >{category}</option>
-                            ))}
-                        </StyledSelect> */}
-            <StyledSelect
-              classNamePrefix='Select'
-              options={categories}
-              defaultValue={categories[0]}
-              onChange={(e: any) => handleCategoryChange(e)}
-            />
-          </InputWrapper>
-          <RowWrapper map>
-            <InputWrapper>
-              <Label>이름</Label>
-              <UnderlinedInput type='text' value={formData.clientName} name='clientName' onChange={handleDataChange} />
-            </InputWrapper>
-            <InputWrapper>
-              <Label>소속</Label>
-              <UnderlinedInput
-                type='text'
-                value={formData.organization}
-                name='organization'
-                onChange={handleDataChange}
-              />
-            </InputWrapper>
-          </RowWrapper>
-          <RowWrapper map>
-            <InputWrapper>
-              <Label>이메일</Label>
-              <UnderlinedInput type='email' value={formData.email} name='email' onChange={handleDataChange} />
-            </InputWrapper>
-            <InputWrapper>
-              <Label>연락처</Label>
-              <UnderlinedInput
-                type='text'
-                placeholder='ex) 010-1234-5678'
-                value={formData.contact}
-                name='contact'
-                onChange={handleDataChange}
-              />
-            </InputWrapper>
-          </RowWrapper>
-
-          <InputWrapper>
-            <Label>프로젝트 내용</Label>
-
-            <UnderlinedTextarea
-              ref={textareaRef}
-              autoComplete='off'
-              value={formData.description}
-              name='description'
-              onChange={handleTextAreaDataChange}
-            />
-          </InputWrapper>
-
-          <Label>파일 첨부</Label>
-          <InputFileContainer>
-            <FileUploadContainer>
-              <FileText
-                ref={FileTextRef}
-                type='text'
-                // readOnly="readonly"
-              ></FileText>
-              <FileUploadInput id='uploadfile' type='file' accept='*/*' multiple onChange={handleFileChange} />
-              <FileLabel htmlFor='uploadfile'>upload</FileLabel>
-            </FileUploadContainer>
-          </InputFileContainer>
-
-          <SubmitButton
-            type='submit'
-            onClick={handleSubmit}
-            whileHover={{ scale: 1.04 }}
-            transition={{ ease: 'easeInOut', stiffness: 200, damping: 5 }}
-          >
-            문의하기
-          </SubmitButton>
-        </FormContainer>
-        <Modal isModalOpen={isModalOpen} closeModal={closeModal}></Modal>
-      </Wrapper>
-    </Body>
-  );
-};
 
 export default ContactPage;

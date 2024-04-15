@@ -20,8 +20,8 @@ import PAFaqPage from './pages/PromotionAdmin/FaqPage/index';
 import PASettingPage from './pages/PromotionAdmin/SettingPage/index';
 import AdminLayout from './components/PromotionAdmin/Layout/Layout';
 import { PA_ROUTES_CHILD } from '@/constants/routerConstants';
-import FaqPage from './pages/FaqPage/FaqPAge';
-import FaqDetailPage from './pages/DetailPage/FaqDetailPage';
+import FaqPage from './pages/PromotionPage/FaqPage/FaqPAge';
+import FaqDetailPage from './pages/PromotionPage/FaqPage/FaqDetailPage';
 import FAQMainPage from './pages/PromotionAdmin/FaqPage/FAQMainPage';
 import FAQWritePage from './pages/PromotionAdmin/FaqPage/FAQWritePage';
 import FAQManagePage from './pages/PromotionAdmin/FaqPage/FAQManagePage';
@@ -35,29 +35,35 @@ const router = createBrowserRouter([
       {
         path: '',
         element: <PromotionMainpage />,
-        children: [
-          {
-            path: 'about',
-            element: <AboutMainpage />,
-          },
-          {
-            path: 'contents',
-            element: <ArtworkMainpage />,
-          },
-          {
-            path: 'detail/:detailId',
-            element: <ContentDetailPage />,
-          },
-          {
-            path: 'login',
-            element: <LoginPage />,
-          },
+      },
+      {
+        path: '/about',
+        element: <AboutMainpage />,
+      },
+      {
+        path: '/contents',
+        element: <ArtworkMainpage />,
+      },
+      {
+        path: '/detail/:detailId',
+        element: <ContentDetailPage />,
+      },
+      {
+        path: '/login',
+        element: <LoginPage />,
+      },
 
-          {
-            path: 'contact',
-            element: <ContactPage />,
-          },
-        ],
+      {
+        path: '/contact',
+        element: <ContactPage />,
+      },
+      {
+        path: '/faq',
+        element: <FaqPage />,
+      },
+      {
+        path: '/faq/detail/:detailId',
+        element: <FaqDetailPage />,
       },
       // {
       //   path: '/admin',
@@ -139,14 +145,6 @@ const router = createBrowserRouter([
       //   path: "/contact",
       //   element: <ContactPage2 />,
       // },
-      {
-        path: '/faq',
-        element: <FaqPage />,
-      },
-      {
-        path: '/faq/detail/:detailId',
-        element: <FaqDetailPage />,
-      },
       {
         path: '/admin/faq',
         element: <FAQMainPage />,
