@@ -1,4 +1,4 @@
-import RequestList from '@/Components/PromotionAdmin/Request/RequestList';
+import RequestList from '@/components/PromotionAdmin/Request/RequestList';
 import React from 'react';
 
 const index = () => {
