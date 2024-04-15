@@ -14,7 +14,6 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const response: loginType = await login(email, pwd);
-      console.log('response', response);
       if (response.role === 'ADMIN') {
         setAuth({ accessToken: response.accessToken, userId: response.id });
         window.alert('로그인 성공');
