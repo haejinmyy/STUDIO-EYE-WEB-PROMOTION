@@ -3,6 +3,26 @@ import { Request } from '@/types/request';
 
 const BASE_URL = 'http://3.35.54.100:8080';
 
+export interface IRequest {
+  id: number;
+  category: string;
+  contact: string;
+  description: string;
+  email: string;
+  organization: string;
+  position: string;
+  fileUrlList: Array<string>;
+  clientName: string;
+}
+
+export interface IGetRequestData {
+  data: IRequest[];
+}
+
+export interface IGetRequestDetailData {
+  data: IRequest;
+}
+
 export const fetchRequests = async ({ requestId }: { requestId: number }): Promise<Request> => {
   try {
     const response = await axios.get(`${BASE_URL}/api/requests/${requestId}`);

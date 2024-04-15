@@ -13,3 +13,10 @@ export interface IRequest {
 export interface IRequestData {
   data: IRequest[];
 }
+
+export interface IEditorData {
+  key: string;
+  text: string;
+  type: string;
+  depth: number;
+}
