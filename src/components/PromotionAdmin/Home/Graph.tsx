@@ -9,7 +9,6 @@ import { RequestData, ViewData } from '@/types/PromotionAdmin/statistics';
 type Props = {
   title: string;
   processedData: { x: string; y: number }[];
-  loading: boolean;
   data: ViewData[] | RequestData[];
   handleStartDateChange: (newStartDate: dayjs.Dayjs | null) => void;
   handleEndDateChange: (newEndDate: dayjs.Dayjs | null) => void;
@@ -21,7 +20,6 @@ type Props = {
 const Graph = ({
   title,
   processedData,
-  loading,
   data,
   handleEndDateChange,
   handleStartDateChange,
@@ -46,15 +44,14 @@ const Graph = ({
         </DayPickerWrapper>
       </HeaderWrapper>
       <BodyWrapper>
-        {loading ? (
-          <LoadingWrapper>〰Loading〰</LoadingWrapper>
-        ) : data && data.length > 0 ? (
+        {data && data.length > 0 ? (
           <LineGraph division={division} data={processedData} />
         ) : (
           <ErrorWrapper>
             ⛔ 날짜 형식이 올바르지 않습니다. 날짜를 다시 선택해 주세요.
             <h1>* 올바르지 않은 경우는 다음과 같습니다. </h1>
-            <h2>1. 기간이 두 달 이하인 경우</h2> <h2> 2. 시작일이 끝일보다 뒤에 있을 경우</h2>
+            <h2>1. 기간이 2달 이하인 경우</h2> <h2> 2. 시작일이 끝일보다 뒤에 있을 경우</h2>
+            <h2> 3. 기간이 12달 초과인 경우</h2>
           </ErrorWrapper>
         )}
       </BodyWrapper>
@@ -67,10 +64,13 @@ export default Graph;
 const Container = styled.div`
   width: fit-content;
   height: fit-content;
+  transition: all ease-in-out 300ms;
   margin-right: 15px;
-  border: 0.2px solid #878787;
+  background-color: rgba(255, 255, 255, 0.122);
+  backdrop-filter: blur(4px);
   border-radius: 10px;
   justify-content: center;
+  box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.122);
 `;
 
 const HeaderWrapper = styled.div`
@@ -79,11 +79,12 @@ const HeaderWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 0.2px solid #878787;
 `;
 const TitleWrapper = styled.div`
   display: flex;
   align-items: center;
+  margin-right: 20px;
+  white-space: nowrap;
   svg {
     margin-left: 15px;
   }

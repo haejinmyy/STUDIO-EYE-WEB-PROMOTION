@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 type Props = {
-  // date: string;
   clientName: string;
   description: string;
   category: string;
@@ -14,6 +13,7 @@ type Props = {
 };
 
 const NotificationList = ({ requestId, onClick, onDelete, isRead, clientName, description, category }: Props) => {
+  const slicedDescription = description.length > 20 ? `${description.slice(0, 20)}...` : description;
   return (
     <>
       <Container to={`/PA-TEST/request/${requestId}`} onClick={onClick} isRead={isRead}>
@@ -26,7 +26,7 @@ const NotificationList = ({ requestId, onClick, onDelete, isRead, clientName, de
           </TitleWrapper>
           <DetailWrapper>
             <div>
-              <h3>{description}</h3>
+              <h3>{slicedDescription}</h3>
               <h4>{category}</h4>
             </div>
           </DetailWrapper>
@@ -48,7 +48,7 @@ const Container = styled(Link)<{ isRead: boolean }>`
   padding: 20px 30px;
   width: 439px;
   height: 120px;
-
+  z-index: 100;
   box-sizing: border-box;
   border-radius: 5px;
   background-color: ${(props) => (props.isRead ? '#e8e8e8' : '#fff6e3')};

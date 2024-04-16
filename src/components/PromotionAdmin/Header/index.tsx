@@ -34,20 +34,16 @@ const Index = () => {
   const auth = useRecoilValue(authState);
 
   useEffect(() => {
-    console.log('흑', auth.userId);
-    fetchData(auth.userId);
-  }, []);
-
-  useEffect(() => {
-    if (isNotiOpened) {
-      fetchData(auth.userId);
-    }
-  }, [isNotiOpened]);
+    if (auth.userId) fetchData(auth.userId);
+  }, [auth.userId]);
 
   const fetchData = async (userId: number) => {
     try {
       const notifications: INotification[] = await fetchNotifications(userId);
-      if (!notifications) {
+      if (!notifications || notifications.length === 0) {
+        setIconStatus(false);
+        setSortedNotifications([]);
+        setRequests([]);
         return;
       }
       const unreadNotificationsExist: boolean = notifications.some((notification) => !notification.isRead);
@@ -66,14 +62,6 @@ const Index = () => {
     }
   };
 
-  // const sortNotifications = (notifications: Notification[]): Notification[] => {
-  //   const unreadNotifications = notifications.filter((notification) => !notification.isRead);
-  //   const readNotifications = notifications.filter((notification) => notification.isRead);
-  //   const sortedUnreadNotifications = unreadNotifications.sort((a, b) => a.id - b.id);
-  //   const sortedReadNotifications = readNotifications.sort((a, b) => a.id - b.id);
-  //   return sortedUnreadNotifications.concat(sortedReadNotifications);
-  // };
-
   const handleNotificationClick = async (notificationId: number, userId: number) => {
     try {
       await updateNotification(notificationId, userId);
@@ -86,51 +74,45 @@ const Index = () => {
   const handleNotificationDelete = async (notificationId: number, userId: number) => {
     try {
       await deleteNotification(notificationId, userId);
-      // 삭제 후 해당 항목을 sortedNotifications에서 제거
-      const updatedNotifications = sortedNotifications.filter(
-        (notification) => notification.notification.id !== notificationId,
-      );
-      setSortedNotifications(updatedNotifications);
-
-      // 화면에 보여지는 알림들의 인덱스 재조정
-      const updatedRequests = requests.filter((request) => request.id !== notificationId);
-      setRequests(updatedRequests);
+      await fetchData(auth.userId);
     } catch (error) {
       console.error('[❌Error updating notification]', error);
     }
   };
 
   return (
-    <Container>
-      <LeftWrapper>
-        <img src={slogan} alt='pa-header-slogan' />
-        <h1>오늘도 스튜디오 아이와 함께 좋은 하루 되세요, 엉금엉금님!</h1>
-      </LeftWrapper>
-      <RightWrapper>
-        <OpenLinkWrapper href='http://ec2-3-35-22-220.ap-northeast-2.compute.amazonaws.com/' target='_blank'>
-          <img src={openIcon} alt='pa-header-open' /> <span>Open Promotion Page</span>
-        </OpenLinkWrapper>
-        <CircleBtnWrapper>
-          {CircleBtns.map((item, index) => (
-            <button key={index}>
-              <CircleBtn
-                id={item.id}
-                defaultIcon={item.defaultIcon}
-                isNewIcon={
-                  sortedNotifications.some((notification) => !notification.isRead) ? item.isNewIcon : item.defaultIcon
-                }
-                iconStatus={iconStatus}
-                isNotiOpened={isNotiOpened}
-                setIsNotiOpened={setIsNotiOpened}
-              />
-            </button>
-          ))}
-        </CircleBtnWrapper>
-      </RightWrapper>
+    <>
+      <Container>
+        <LeftWrapper>
+          <img src={slogan} alt='pa-header-slogan' />
+          <h1>오늘도 스튜디오 아이와 함께 좋은 하루 되세요, 엉금엉금님!</h1>
+        </LeftWrapper>
+        <RightWrapper>
+          <OpenLinkWrapper href='http://ec2-3-35-22-220.ap-northeast-2.compute.amazonaws.com/' target='_blank'>
+            <img src={openIcon} alt='pa-header-open' /> <span>Open Promotion Page</span>
+          </OpenLinkWrapper>
+          <CircleBtnWrapper>
+            {CircleBtns.map((item, index) => (
+              <button key={index}>
+                <CircleBtn
+                  id={item.id}
+                  defaultIcon={item.defaultIcon}
+                  isNewIcon={
+                    sortedNotifications.some((notification) => !notification.isRead) ? item.isNewIcon : item.defaultIcon
+                  }
+                  iconStatus={iconStatus}
+                  isNotiOpened={isNotiOpened}
+                  setIsNotiOpened={setIsNotiOpened}
+                />
+              </button>
+            ))}
+          </CircleBtnWrapper>
+        </RightWrapper>
+      </Container>
       {isNotiOpened && (
         <NotiContainer>
           <h1>Notification</h1>
-          {requests.length === 0 && <NoDataConatiner>새로운 알림이 존재하지 않습니다.</NoDataConatiner>}
+          {!iconStatus && <NoDataConatiner>새로운 알림이 존재하지 않습니다.</NoDataConatiner>}
           {sortedNotifications.map((notification, index) => (
             <li key={index}>
               <NotificationList
@@ -146,7 +128,7 @@ const Index = () => {
           ))}
         </NotiContainer>
       )}
-    </Container>
+    </>
   );
 };
 
@@ -213,17 +195,16 @@ const CircleBtnWrapper = styled.div`
 
 const NotiContainer = styled.div`
   // 임시로 abosolute 해둔 것
-  position: absolute;
+  position: fixed;
   top: 80px;
   right: 0px;
-  margin-right: 100px;
   width: 507px;
-  height: 500px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 10px;
+  height: 100vh;
+
+  background-color: rgba(0, 0, 0, 0.07);
   backdrop-filter: blur(5px);
-  z-index: 100;
-  padding: 25px;
+  z-index: 10;
+  padding: 25px 25px 100px 25px;
   box-sizing: border-box;
   overflow-y: scroll;
   li {
