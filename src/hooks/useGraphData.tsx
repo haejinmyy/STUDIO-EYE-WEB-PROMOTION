@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+// useGraphData 훅: 데이터를 가져오고 처리하여 그래프 컴포넌트에 전달하는 훅
+import { useState, useEffect, useCallback } from 'react';
 import dayjs from 'dayjs';
 
-// fetch component
+// 해당 기간의 데이터를 가져오는 함수
 const fetchDataByRange = async (startDate: dayjs.Dayjs, endDate: dayjs.Dayjs, fetchFunction: Function) => {
   if (!startDate || !endDate) return [];
   const startYear = startDate.year();
@@ -16,8 +17,11 @@ const fetchDataByRange = async (startDate: dayjs.Dayjs, endDate: dayjs.Dayjs, fe
   }
 };
 
-// 데이터 그래프 변환 함수
-const processChartData = (startDate: dayjs.Dayjs, endDate: dayjs.Dayjs, data: any[]) => {
+// 데이터를 그래프에 맞게 변환하는 함수
+const processChartData = (startDate: dayjs.Dayjs, endDate: dayjs.Dayjs, data: any[], division: string) => {
+  if (!data) return []; // 데이터가 null인 경우 빈 배열 반환
+  // api 조회수 없을 때 0 반환으로 변경 시 수정해야함
+
   const monthArray: { year: number; month: number }[] = [];
   let currentMonth = startDate.startOf('month');
   // 시작일부터 종료일까지의 모든 월을 배열에 추가
@@ -30,42 +34,51 @@ const processChartData = (startDate: dayjs.Dayjs, endDate: dayjs.Dayjs, data: an
     const foundData = data.find(
       (item: { year: number; month: number }) => item.year === month.year && item.month === month.month,
     );
+    const count = foundData ? (division === 'statistics' ? foundData.views : foundData.requestCount) : 0;
     return {
       x: `${month.year}년 ${month.month}월`,
-      y: foundData ? foundData.views : 0,
+      y: count,
     };
   });
 };
 
-// 그래프 데이터 처리 및 관리
-const useGraphData = (fetchFunction: Function, defaultStartDate: dayjs.Dayjs, defaultEndDate: dayjs.Dayjs) => {
+// 그래프 데이터를 처리하고 관리하는 훅
+const useGraphData = (
+  fetchFunction: Function,
+  defaultStartDate: dayjs.Dayjs,
+  defaultEndDate: dayjs.Dayjs,
+  division: 'statistics' | 'request',
+) => {
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(defaultStartDate);
   const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(defaultEndDate);
   const [data, setData] = useState<any[]>([]);
   const [processedData, setProcessedData] = useState<{ x: string; y: number }[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    fetchData();
-  }, [startDate, endDate]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     const fetchedData = await fetchDataByRange(startDate || dayjs(), endDate || dayjs(), fetchFunction);
     setData(fetchedData);
-    setProcessedData(processChartData(startDate || dayjs(), endDate || dayjs(), fetchedData));
+    setProcessedData(processChartData(startDate || dayjs(), endDate || dayjs(), fetchedData, division));
     setLoading(false);
-  };
+  }, [startDate, endDate, fetchFunction, division]);
 
+  useEffect(() => {
+    fetchData();
+  }, [startDate, endDate, division, fetchData]);
+
+  // 시작일 변경 핸들러
   const handleStartDateChange = (newStartDate: dayjs.Dayjs | null) => {
     setStartDate(newStartDate);
   };
 
+  // 종료일 변경 핸들러
   const handleEndDateChange = (newEndDate: dayjs.Dayjs | null) => {
     setEndDate(newEndDate);
   };
 
-  return { startDate, endDate, data, processedData, loading, handleStartDateChange, handleEndDateChange };
+  // 상태와 핸들러를 반환
+  return { startDate, endDate, data, processedData, loading, handleStartDateChange, handleEndDateChange, division };
 };
 
 export default useGraphData;

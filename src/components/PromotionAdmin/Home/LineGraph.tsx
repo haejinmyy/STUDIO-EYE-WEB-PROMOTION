@@ -24,7 +24,7 @@ const LineGraph = ({ data, division }: LineGraphProps) => {
           reverse: false,
         }}
         yFormat=' >-.2f'
-        curve='cardinal'
+        curve='linear'
         axisTop={null}
         axisRight={null}
         axisBottom={{
@@ -58,11 +58,12 @@ const LineGraph = ({ data, division }: LineGraphProps) => {
           return (
             <div
               style={{
-                background: 'rgba(0,0,0,0.01)',
-                backdropFilter: 'blur(3px)',
+                background: '#ffffff80',
+                backdropFilter: 'blur(20px)',
                 padding: '15px',
                 borderRadius: '5px',
                 border: '1px solid #ccc',
+                zIndex: 20,
               }}
             >
               <div style={{ fontSize: '0.9em', fontFamily: 'pretendard-medium' }}>
