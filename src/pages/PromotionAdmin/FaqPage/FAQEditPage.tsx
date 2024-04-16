@@ -11,8 +11,8 @@ import axios from 'axios';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import htmlToDraft from 'html-to-draftjs';
 import draftToHtml from 'draftjs-to-html';
-import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
-import TextEditor from '@/components/PromotionAdmin/FAQ/TextEditor';
+import { ContentBox } from '@/comp/PromotionAdmin/FAQ/Components';
+import TextEditor from '@/comp/PromotionAdmin/FAQ/TextEditor';
 
 export default function FAQCEditPage() {
   const navigator = useNavigate();

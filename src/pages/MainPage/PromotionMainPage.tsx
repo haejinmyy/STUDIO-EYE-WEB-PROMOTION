@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import Body from '../../components/Common/Body';
+import Body from '../../comp/Common/Body';
 import PortfolioGrid from './PortfolioGrid';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import MainLogoAnimation from './MainLogoAnimation';

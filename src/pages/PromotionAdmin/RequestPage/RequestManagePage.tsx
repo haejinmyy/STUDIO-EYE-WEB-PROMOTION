@@ -1,10 +1,10 @@
 import { getRequestsData } from '@/apis/PromotionAdmin/request';
 import { IRequestData } from '@/types/PromotionAdmin/request';
 import { useQuery } from 'react-query';
-import { ContentBox } from '../../../components/PromotionAdmin/Request/Components';
+import { ContentBox } from '../../../comp/PromotionAdmin/Request/Components';
 import styled from 'styled-components';
 import { useState } from 'react';
-import Pagination from '../../../components/PromotionAdmin/FAQ/Pagination';
+import Pagination from '../../../comp/PromotionAdmin/FAQ/Pagination';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { Outlet, useNavigate } from 'react-router-dom';
 
