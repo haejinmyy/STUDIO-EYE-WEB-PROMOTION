@@ -64,7 +64,7 @@ export default Graph;
 const Container = styled.div`
   width: fit-content;
   height: fit-content;
-  transition: width ease-in-out 300ms;
+  transition: all ease-in-out 300ms;
   margin-right: 15px;
   background-color: rgba(255, 255, 255, 0.122);
   backdrop-filter: blur(4px);

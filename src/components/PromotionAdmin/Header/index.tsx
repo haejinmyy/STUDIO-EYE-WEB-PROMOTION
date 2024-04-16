@@ -34,19 +34,16 @@ const Index = () => {
   const auth = useRecoilValue(authState);
 
   useEffect(() => {
-    fetchData(auth.userId);
-  }, []);
-
-  useEffect(() => {
-    if (isNotiOpened) {
-      fetchData(auth.userId);
-    }
-  }, [isNotiOpened]);
+    if (auth.userId) fetchData(auth.userId);
+  }, [auth.userId]);
 
   const fetchData = async (userId: number) => {
     try {
       const notifications: INotification[] = await fetchNotifications(userId);
-      if (!notifications) {
+      if (!notifications || notifications.length === 0) {
+        setIconStatus(false);
+        setSortedNotifications([]);
+        setRequests([]);
         return;
       }
       const unreadNotificationsExist: boolean = notifications.some((notification) => !notification.isRead);
@@ -65,14 +62,6 @@ const Index = () => {
     }
   };
 
-  // const sortNotifications = (notifications: Notification[]): Notification[] => {
-  //   const unreadNotifications = notifications.filter((notification) => !notification.isRead);
-  //   const readNotifications = notifications.filter((notification) => notification.isRead);
-  //   const sortedUnreadNotifications = unreadNotifications.sort((a, b) => a.id - b.id);
-  //   const sortedReadNotifications = readNotifications.sort((a, b) => a.id - b.id);
-  //   return sortedUnreadNotifications.concat(sortedReadNotifications);
-  // };
-
   const handleNotificationClick = async (notificationId: number, userId: number) => {
     try {
       await updateNotification(notificationId, userId);
@@ -85,15 +74,7 @@ const Index = () => {
   const handleNotificationDelete = async (notificationId: number, userId: number) => {
     try {
       await deleteNotification(notificationId, userId);
-      // 삭제 후 해당 항목을 sortedNotifications에서 제거
-      const updatedNotifications = sortedNotifications.filter(
-        (notification) => notification.notification.id !== notificationId,
-      );
-      setSortedNotifications(updatedNotifications);
-
-      // 화면에 보여지는 알림들의 인덱스 재조정
-      const updatedRequests = requests.filter((request) => request.id !== notificationId);
-      setRequests(updatedRequests);
+      await fetchData(auth.userId);
     } catch (error) {
       console.error('[❌Error updating notification]', error);
     }
@@ -131,7 +112,7 @@ const Index = () => {
       {isNotiOpened && (
         <NotiContainer>
           <h1>Notification</h1>
-          {requests.length === 0 && <NoDataConatiner>새로운 알림이 존재하지 않습니다.</NoDataConatiner>}
+          {!iconStatus && <NoDataConatiner>새로운 알림이 존재하지 않습니다.</NoDataConatiner>}
           {sortedNotifications.map((notification, index) => (
             <li key={index}>
               <NotificationList
