@@ -200,9 +200,8 @@ const NotiContainer = styled.div`
   right: 0px;
   width: 507px;
   height: 100vh;
-
-  background-color: rgba(0, 0, 0, 0.07);
-  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.055);
+  backdrop-filter: blur(8px);
   z-index: 10;
   padding: 25px 25px 100px 25px;
   box-sizing: border-box;
@@ -213,13 +212,15 @@ const NotiContainer = styled.div`
   }
 
   h1 {
-    color: #969696;
+    color: #595959;
     font-family: 'pretendard-semibold';
-    font-size: 16px;
-    margin-bottom: 23px;
+    font-size: 25px;
+    margin-bottom: 15px;
   }
 `;
 
 const NoDataConatiner = styled.div`
   font-family: 'pretendard-semibold';
+  margin-bottom: 15px;
+  color: #595959;
 `;
