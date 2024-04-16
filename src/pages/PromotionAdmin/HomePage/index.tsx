@@ -1,6 +1,6 @@
-import DateSelectBtn from '@/comp/PromotionAdmin/Home/PeriodPicker';
-import RequestsGraph from '@/comp/PromotionAdmin/Home/RequestsGraph';
-import StatisticsGraph from '@/comp/PromotionAdmin/Home/StatisticsGraph';
+import DateSelectBtn from '@/components/PromotionAdmin/Home/PeriodPicker';
+import RequestsGraph from '@/components/PromotionAdmin/Home/RequestsGraph';
+import StatisticsGraph from '@/components/PromotionAdmin/Home/StatisticsGraph';
 import { Dayjs } from 'dayjs';
 import React from 'react';
 import styled from 'styled-components';

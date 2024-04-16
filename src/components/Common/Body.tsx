@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import Footer from '@/comp/Common/Footer';
+import Footer from '@/components/Common/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
-import Header from '@/comp/Common/TempHeader';
+import Header from '@/components/Common/TempHeader';
 
 // const Spacer = styled.div`
 //   height: 4rem;

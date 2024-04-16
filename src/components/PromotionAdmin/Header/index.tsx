@@ -4,13 +4,13 @@ import isNewIcon from '@/assets/images/PA-Header/isNewIcon.png';
 import defaultIcon from '@/assets/images/PA-Header/defaultIcon.png';
 import userIcon from '@/assets/images/PA-Header/userIcon.png';
 import openIcon from '@/assets/images/PA-Header/openIcon.png';
-import CircleBtn from '@/comp/PromotionAdmin/Header/CircleBtn';
+import CircleBtn from '@/components/PromotionAdmin/Header/CircleBtn';
 import styled from 'styled-components';
 import { deleteNotification, fetchNotifications, updateNotification } from '@/apis/PromotionAdmin/notification';
 import { INotification } from '@/types/PromotionAdmin/notification';
 import { fetchRequests } from '@/apis/PromotionAdmin/request';
 import { Request } from '@/types/request';
-import NotificationList from '@/comp/PromotionAdmin/Header/NotificationList';
+import NotificationList from '@/components/PromotionAdmin/Header/NotificationList';
 import { useRecoilValue } from 'recoil';
 import { authState } from '@/recoil/atoms';
 

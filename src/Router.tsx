@@ -18,7 +18,7 @@ import PAPageEditPage from './pages/PromotionAdmin/PageEditPage/index';
 import PAStatisticsPage from './pages/PromotionAdmin/StatisticsPage/index';
 import PAFaqPage from './pages/PromotionAdmin/FaqPage/index';
 import PASettingPage from './pages/PromotionAdmin/SettingPage/index';
-import AdminLayout from './comp/PromotionAdmin/Layout/Layout';
+import AdminLayout from './components/PromotionAdmin/Layout/Layout';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import FaqPage from './pages/PromotionPage/FaqPage/FaqPage';
 import FaqDetailPage from './pages/PromotionPage/FaqPage/FaqDetailPage';

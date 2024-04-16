@@ -5,10 +5,10 @@ import { IGetFAQData, getFAQData } from '../../../apis/PromotionAdmin/faq';
 import { useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { ContentBox } from '@/comp/PromotionAdmin/FAQ/Components';
+import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { theme } from '@/styles/theme';
-import Pagination from '@/comp/PromotionAdmin/FAQ/Pagination';
+import Pagination from '@/components/PromotionAdmin/FAQ/Pagination';
 
 function FAQManagePage() {
   const navigator = useNavigate();

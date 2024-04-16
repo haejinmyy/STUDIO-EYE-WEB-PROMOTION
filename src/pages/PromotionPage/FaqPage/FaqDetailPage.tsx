@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Body from '../../../comp/Common/Body';
+import Body from '../../../components/Common/Body';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
