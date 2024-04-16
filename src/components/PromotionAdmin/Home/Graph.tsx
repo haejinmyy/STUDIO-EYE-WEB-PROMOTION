@@ -68,9 +68,10 @@ const Container = styled.div`
   width: fit-content;
   height: fit-content;
   margin-right: 15px;
-  border: 0.2px solid #878787;
+
   border-radius: 10px;
   justify-content: center;
+  box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.122);
 `;
 
 const HeaderWrapper = styled.div`
@@ -79,11 +80,11 @@ const HeaderWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 0.2px solid #878787;
 `;
 const TitleWrapper = styled.div`
   display: flex;
   align-items: center;
+  margin-right: 20px;
   svg {
     margin-left: 15px;
   }

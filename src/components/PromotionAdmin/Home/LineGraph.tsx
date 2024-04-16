@@ -8,8 +8,9 @@ type LineGraphProps = {
 
 const LineGraph = ({ data, division }: LineGraphProps) => {
   const colors = division === 'request' ? ['#0064FF'] : ['#E16262'];
+
   return (
-    <div style={{ height: '330px', width: '550px' }}>
+    <div style={{ height: '300px', width: '530px' }}>
       <ResponsiveLine
         data={[{ id: 'count', data }]}
         colors={colors}

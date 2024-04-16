@@ -34,7 +34,6 @@ const Index = () => {
   const auth = useRecoilValue(authState);
 
   useEffect(() => {
-    console.log('흑', auth.userId);
     fetchData(auth.userId);
   }, []);
 
@@ -101,32 +100,34 @@ const Index = () => {
   };
 
   return (
-    <Container>
-      <LeftWrapper>
-        <img src={slogan} alt='pa-header-slogan' />
-        <h1>오늘도 스튜디오 아이와 함께 좋은 하루 되세요, 엉금엉금님!</h1>
-      </LeftWrapper>
-      <RightWrapper>
-        <OpenLinkWrapper href='http://ec2-3-35-22-220.ap-northeast-2.compute.amazonaws.com/' target='_blank'>
-          <img src={openIcon} alt='pa-header-open' /> <span>Open Promotion Page</span>
-        </OpenLinkWrapper>
-        <CircleBtnWrapper>
-          {CircleBtns.map((item, index) => (
-            <button key={index}>
-              <CircleBtn
-                id={item.id}
-                defaultIcon={item.defaultIcon}
-                isNewIcon={
-                  sortedNotifications.some((notification) => !notification.isRead) ? item.isNewIcon : item.defaultIcon
-                }
-                iconStatus={iconStatus}
-                isNotiOpened={isNotiOpened}
-                setIsNotiOpened={setIsNotiOpened}
-              />
-            </button>
-          ))}
-        </CircleBtnWrapper>
-      </RightWrapper>
+    <>
+      <Container>
+        <LeftWrapper>
+          <img src={slogan} alt='pa-header-slogan' />
+          <h1>오늘도 스튜디오 아이와 함께 좋은 하루 되세요, 엉금엉금님!</h1>
+        </LeftWrapper>
+        <RightWrapper>
+          <OpenLinkWrapper href='http://ec2-3-35-22-220.ap-northeast-2.compute.amazonaws.com/' target='_blank'>
+            <img src={openIcon} alt='pa-header-open' /> <span>Open Promotion Page</span>
+          </OpenLinkWrapper>
+          <CircleBtnWrapper>
+            {CircleBtns.map((item, index) => (
+              <button key={index}>
+                <CircleBtn
+                  id={item.id}
+                  defaultIcon={item.defaultIcon}
+                  isNewIcon={
+                    sortedNotifications.some((notification) => !notification.isRead) ? item.isNewIcon : item.defaultIcon
+                  }
+                  iconStatus={iconStatus}
+                  isNotiOpened={isNotiOpened}
+                  setIsNotiOpened={setIsNotiOpened}
+                />
+              </button>
+            ))}
+          </CircleBtnWrapper>
+        </RightWrapper>
+      </Container>
       {isNotiOpened && (
         <NotiContainer>
           <h1>Notification</h1>
@@ -146,7 +147,7 @@ const Index = () => {
           ))}
         </NotiContainer>
       )}
-    </Container>
+    </>
   );
 };
 
@@ -213,17 +214,16 @@ const CircleBtnWrapper = styled.div`
 
 const NotiContainer = styled.div`
   // 임시로 abosolute 해둔 것
-  position: absolute;
+  position: fixed;
   top: 80px;
   right: 0px;
-  margin-right: 100px;
   width: 507px;
-  height: 500px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 10px;
+  height: 100vh;
+
+  background-color: rgba(0, 0, 0, 0.07);
   backdrop-filter: blur(5px);
-  z-index: 100;
-  padding: 25px;
+  z-index: 10;
+  padding: 25px 25px 100px 25px;
   box-sizing: border-box;
   overflow-y: scroll;
   li {
