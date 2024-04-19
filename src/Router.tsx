@@ -19,7 +19,7 @@ import PAStatisticsPage from './pages/PromotionAdmin/StatisticsPage/index';
 import PAFaqPage from './pages/PromotionAdmin/FaqPage/index';
 import PASettingPage from './pages/PromotionAdmin/SettingPage/index';
 import AdminLayout from './components/PromotionAdmin/Layout/Layout';
-import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
+import { PA_ROUTES, PA_ROUTES_CHILD, PP_ROUTES_CHILD } from '@/constants/routerConstants';
 import FaqPage from './pages/PromotionPage/FaqPage/FaqPage';
 import FaqDetailPage from './pages/PromotionPage/FaqPage/FaqDetailPage';
 import FAQWritePage from './pages/PromotionAdmin/FaqPage/FAQWritePage';
@@ -30,6 +30,8 @@ import FAQCheckPage from './pages/PromotionAdmin/FaqPage/FAQCheckPage';
 import PALogin from './pages/PromotionAdmin/Login/Login';
 import RequestManagePage from './pages/PromotionAdmin/RequestPage/RequestManagePage';
 import RequestCheckPage from './pages/PromotionAdmin/RequestPage/RequestCheckPage';
+import ArtworkDetailPage from './pages/PromotionPage/ArtworkPage/ArtworkDetailPage';
+import ArtworkPage from './pages/PromotionPage/ArtworkPage/ArtworkPage';
 
 const router = createBrowserRouter([
   {
@@ -158,6 +160,16 @@ const router = createBrowserRouter([
             element: <PASettingPage />,
           },
         ],
+      },
+
+      {
+        path: PP_ROUTES_CHILD.ARTWORK,
+        element: <ArtworkPage />,
+      },
+
+      {
+        path: PP_ROUTES_CHILD.ARTWORK_DETAIL,
+        element: <ArtworkDetailPage />,
       },
       {
         path: '/admin/artwork',
