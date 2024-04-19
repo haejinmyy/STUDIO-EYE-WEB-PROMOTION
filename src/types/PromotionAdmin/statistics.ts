@@ -12,6 +12,7 @@ export type RequestData = {
 };
 
 export type WaitingRequestData = {
+  date: string | number | Date;
   id: number;
   category: string;
   clientName: string;
