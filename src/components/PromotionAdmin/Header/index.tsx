@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import slogan from '@/assets/images/PA-Header/slogan.png';
 import isNewIcon from '@/assets/images/PA-Header/isNewIcon.png';
 import defaultIcon from '@/assets/images/PA-Header/defaultIcon.png';
@@ -11,8 +11,8 @@ import { INotification } from '@/types/PromotionAdmin/notification';
 import { fetchRequests } from '@/apis/PromotionAdmin/request';
 import { Request } from '@/types/request';
 import NotificationList from '@/components/PromotionAdmin/Header/NotificationList';
-import { useRecoilValue } from 'recoil';
-import { authState } from '@/recoil/atoms';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { authState, notiState } from '@/recoil/atoms';
 
 const CircleBtns = [
   {
@@ -28,14 +28,29 @@ const CircleBtns = [
 
 const Index = () => {
   const [iconStatus, setIconStatus] = useState<boolean>(false);
-  const [isNotiOpened, setIsNotiOpened] = useState<boolean>(false);
+  const [isNotiOpened, setIsNotiOpened] = useRecoilState(notiState);
   const [sortedNotifications, setSortedNotifications] = useState<INotification[]>([]);
   const [requests, setRequests] = useState<Request[]>([]);
   const auth = useRecoilValue(authState);
+  const notiContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (auth.userId) fetchData(auth.userId);
   }, [auth.userId]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isNotiOpened && notiContainerRef.current && !notiContainerRef.current.contains(event.target as Node)) {
+        setIsNotiOpened(false);
+      }
+    };
+    // 'mousedown' 대신 'click' 이벤트를 사용
+    // click 마우스를 눌렀다 땔 떄 발생, mousedown 마우스를 누를 때 발생, 이벤트 순서 알아두기
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isNotiOpened]);
 
   const fetchData = async (userId: number) => {
     try {
@@ -101,8 +116,6 @@ const Index = () => {
                     sortedNotifications.some((notification) => !notification.isRead) ? item.isNewIcon : item.defaultIcon
                   }
                   iconStatus={iconStatus}
-                  isNotiOpened={isNotiOpened}
-                  setIsNotiOpened={setIsNotiOpened}
                 />
               </button>
             ))}
@@ -110,7 +123,7 @@ const Index = () => {
         </RightWrapper>
       </Container>
       {isNotiOpened && (
-        <NotiContainer>
+        <NotiContainer ref={notiContainerRef}>
           <h1>Notification</h1>
           {!iconStatus && <NoDataConatiner>새로운 알림이 존재하지 않습니다.</NoDataConatiner>}
           {sortedNotifications.map((notification, index) => (
@@ -201,7 +214,7 @@ const NotiContainer = styled.div`
   width: 507px;
   height: 100vh;
 
-  background-color: rgba(0, 0, 0, 0.07);
+  background-color: rgba(190, 190, 190, 0.07);
   backdrop-filter: blur(5px);
   z-index: 10;
   padding: 25px 25px 100px 25px;
@@ -222,4 +235,5 @@ const NotiContainer = styled.div`
 
 const NoDataConatiner = styled.div`
   font-family: 'pretendard-semibold';
+  margin-bottom: 10px;
 `;

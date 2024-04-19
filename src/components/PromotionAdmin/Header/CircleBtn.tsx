@@ -1,4 +1,6 @@
+import { notiState } from '@/recoil/atoms';
 import React from 'react';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 type Props = {
@@ -6,15 +8,20 @@ type Props = {
   defaultIcon: string;
   isNewIcon?: string; // noti only
   iconStatus?: boolean; // noti only, true-새로운 알림이 있는 상태, false-새로운 알림이 없는 상태
-  isNotiOpened: boolean;
-  setIsNotiOpened: (isNotiOpened: boolean) => void;
 };
 
-const CircleBtn = ({ id, defaultIcon, isNewIcon, iconStatus, isNotiOpened, setIsNotiOpened }: Props) => {
+const CircleBtn = ({ id, defaultIcon, isNewIcon, iconStatus }: Props) => {
+  const [isNotiOpened, setIsNotiOpened] = useRecoilState(notiState);
+
+  const handleNotiButtonClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.stopPropagation();
+    setIsNotiOpened(!isNotiOpened);
+  };
+
   return (
     <Container>
       {id === 'notification' ? (
-        <NotiButton onClick={() => setIsNotiOpened(!isNotiOpened)}>
+        <NotiButton onClick={handleNotiButtonClick}>
           <img src={iconStatus ? isNewIcon : defaultIcon} alt='noti icon' />
         </NotiButton>
       ) : (

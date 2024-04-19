@@ -15,3 +15,8 @@ export const authState = atom<IAuth>({
   },
   effects_UNSTABLE: [persistAtom],
 });
+
+export const notiState = atom<boolean>({
+  key: 'notiState',
+  default: false,
+});
