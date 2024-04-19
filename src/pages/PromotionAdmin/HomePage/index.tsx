@@ -1,6 +1,7 @@
-import DateSelectBtn from '@/components/PromotionAdmin/Home/PeriodPicker';
-import RequestsGraph from '@/components/PromotionAdmin/Home/RequestsGraph';
-import StatisticsGraph from '@/components/PromotionAdmin/Home/StatisticsGraph';
+import DateSelectBtn from '@/components/PromotionAdmin/Home/Graph/PeriodPicker';
+import RequestsGraph from '@/components/PromotionAdmin/Home/Graph/RequestsGraph';
+import StatisticsGraph from '@/components/PromotionAdmin/Home/Graph/StatisticsGraph';
+import RequestSummary from '@/components/PromotionAdmin/Home/RequestSummary/RequestSummary';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -8,6 +9,7 @@ const index = () => {
   return (
     <Container>
       <HeaderWrapper>Overview</HeaderWrapper>
+      <RequestSummary />
       <StatisticsWrapper>
         <StatisticsGraph />
         <RequestsGraph />
@@ -32,4 +34,5 @@ const HeaderWrapper = styled.div`
 
 const StatisticsWrapper = styled.div`
   display: flex;
+  margin-top: 15px;
 `;

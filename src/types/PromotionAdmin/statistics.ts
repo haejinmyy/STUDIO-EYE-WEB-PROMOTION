@@ -10,3 +10,19 @@ export type RequestData = {
   month: number;
   requestCount: number;
 };
+
+export type WaitingRequestData = {
+  id: number;
+  category: string;
+  clientName: string;
+  organization: string;
+  contact: string;
+  email: string;
+  position: string;
+  description: string;
+  answer: string;
+  year: number;
+  month: number;
+  state: number;
+  fileUrlList: string[];
+};
