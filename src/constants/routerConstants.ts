@@ -20,3 +20,8 @@ export const PA_ROUTES_CHILD = {
   FAQ: 'faq',
   SETTING: 'setting',
 };
+
+export const PP_ROUTES_CHILD = {
+  ARTWORK: 'artwork',
+  ARTWORK_DETAIL: 'artwork/:id',
+};
