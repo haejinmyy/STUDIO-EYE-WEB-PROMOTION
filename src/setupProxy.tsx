@@ -13,4 +13,10 @@ module.exports = function (app: any) {
       changeOrigin: true,
     }),
   );
+  app.use(
+    createProxyMiddleware('/s3-bucket', {
+      target: 'https://studio-eye-gold-bucket.s3.ap-northeast-2.amazonaws.com/',
+      changeOrigin: true,
+    }),
+  );
 };

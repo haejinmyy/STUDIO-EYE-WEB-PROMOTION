@@ -35,4 +35,7 @@ const BodyWrapper = styled.div`
   margin-left: 157px;
   margin-right: 157px;
   padding-top: 129px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 `;

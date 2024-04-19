@@ -13,7 +13,7 @@ import ContactPage from './pages/ContactPage/ContactPage';
 import LoginPage from './pages/LoginPage/LoginMainPage';
 import PAHomePage from './pages/PromotionAdmin/HomePage/index';
 import PARequestPage from './pages/PromotionAdmin/RequestPage/index';
-import PAArtworkPage from './pages/PromotionAdmin/ArtworkPage/index';
+import PAArtworkPage from './pages/PromotionAdmin/ArtworkPage/Artwork';
 import PAPageEditPage from './pages/PromotionAdmin/PageEditPage/index';
 import PAStatisticsPage from './pages/PromotionAdmin/StatisticsPage/index';
 import PAFaqPage from './pages/PromotionAdmin/FaqPage/index';
@@ -30,6 +30,7 @@ import FAQCheckPage from './pages/PromotionAdmin/FaqPage/FAQCheckPage';
 import PALogin from './pages/PromotionAdmin/Login/Login';
 import RequestManagePage from './pages/PromotionAdmin/RequestPage/RequestManagePage';
 import RequestCheckPage from './pages/PromotionAdmin/RequestPage/RequestCheckPage';
+import PAArtworkDetail from '@/pages/PromotionAdmin/ArtworkPage/ArtworkDetail';
 
 const router = createBrowserRouter([
   {
@@ -120,7 +121,14 @@ const router = createBrowserRouter([
           {
             path: PA_ROUTES_CHILD.ARTWORK,
             element: <PAArtworkPage />,
+            children: [
+              {
+                path: `${PA_ROUTES.ARTWORK}/:artworkId`,
+                element: <PAArtworkDetail />,
+              },
+            ],
           },
+
           {
             path: PA_ROUTES_CHILD.PAGE_EDIT,
             element: <PAPageEditPage />,

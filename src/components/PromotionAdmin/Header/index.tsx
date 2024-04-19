@@ -91,7 +91,7 @@ const Index = () => {
       await deleteNotification(notificationId, userId);
       await fetchData(auth.userId);
     } catch (error) {
-      console.error('[❌Error updating notification]', error);
+      console.error('[❌Error deleting notification]', error);
     }
   };
 
