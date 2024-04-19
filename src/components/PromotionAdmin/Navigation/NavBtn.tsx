@@ -27,6 +27,7 @@ const LinkStyle = styled(NavLink)`
   align-items: center;
   justify-content: center;
   color: #595959;
+  text-decoration: none;
   &:hover,
   &.active {
     color: #ffa900;

@@ -1,10 +1,10 @@
 import React from 'react';
-import PeriodPicker from './PeriodPicker';
 import dayjs from 'dayjs';
 import LineGraph from './LineGraph';
 import styled from 'styled-components';
 import { ReactComponent as Icon } from '@/assets/images/PA-Navigation/statistics.svg';
 import { RequestData, ViewData } from '@/types/PromotionAdmin/statistics';
+import PeriodPicker from '@/components/PromotionAdmin/Home/Graph/PeriodPicker';
 
 type Props = {
   title: string;
@@ -62,7 +62,7 @@ const Graph = ({
 export default Graph;
 
 const Container = styled.div`
-  width: fit-content;
+  min-width: fit-content;
   height: fit-content;
   transition: all ease-in-out 300ms;
   margin-right: 15px;

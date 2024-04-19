@@ -21,12 +21,13 @@ export default Layout;
 
 const Container = styled.div`
   width: 100%;
-  height: 100vh;
+  padding-bottom: 200px;
+  min-height: 100vh;
   background-image: url(${backgroundImg});
   background-repeat: no-repeat;
   background-size: cover;
-  background-size: 440px 500px;
-  background-position: calc(100% - 150px) calc(100% - 50px);
+  background-size: 340px 400px;
+  background-position: calc(100% - 150px) calc(100vh - 450px);
   background-color: #f9fafc;
 `;
 
