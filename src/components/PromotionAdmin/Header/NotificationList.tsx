@@ -13,7 +13,8 @@ type Props = {
 };
 
 const NotificationList = ({ requestId, onClick, onDelete, isRead, clientName, description, category }: Props) => {
-  const slicedDescription = description.length > 20 ? `${description.slice(0, 20)}...` : description;
+  const slicedDescription = description && description.length > 20 ? `${description.slice(0, 20)}...` : description;
+
   return (
     <>
       <Container to={`/PA-TEST/request/${requestId}`} onClick={onClick} isRead={isRead}>
