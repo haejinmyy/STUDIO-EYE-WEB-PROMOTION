@@ -408,7 +408,7 @@ const UnderlinedInput = styled.input`
   padding-bottom: 5px;
   padding-left: 10px;
   margin-bottom: 10px;
-  width: 250px;
+  width: 350px;
   font-size: 18px;
   font-weight: 500;
   background-color: #f3f4f8;
@@ -434,7 +434,7 @@ const UnderlinedTextarea = styled.textarea`
   outline: none;
   margin-bottom: 16px;
   width: 100%;
-  height: 30px;
+  height: 300px;
   font-size: 18px;
   overflow: hidden;
   line-height: 30px;
