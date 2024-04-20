@@ -13,7 +13,8 @@ type Props = {
 };
 
 const NotificationList = ({ requestId, onClick, onDelete, isRead, clientName, description, category }: Props) => {
-  const slicedDescription = description.length > 20 ? `${description.slice(0, 20)}...` : description;
+  const slicedDescription = description && description.length > 20 ? `${description.slice(0, 20)}...` : description;
+
   return (
     <>
       <Container to={`/PA-TEST/request/${requestId}`} onClick={onClick} isRead={isRead}>
@@ -51,7 +52,7 @@ const Container = styled(Link)<{ isRead: boolean }>`
   z-index: 100;
   box-sizing: border-box;
   border-radius: 5px;
-  background-color: ${(props) => (props.isRead ? '#e8e8e8' : '#fff6e3')};
+  background-color: ${(props) => (props.isRead ? '#f3f3f388' : '#fff2d682')};
   h2 {
     font-family: 'pretendard-semibold';
     font-size: 18px;

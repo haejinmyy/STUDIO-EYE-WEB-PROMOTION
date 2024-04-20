@@ -226,14 +226,15 @@ const NotiContainer = styled.div`
   }
 
   h1 {
-    color: #969696;
+    color: #595959;
     font-family: 'pretendard-semibold';
-    font-size: 16px;
-    margin-bottom: 23px;
+    font-size: 25px;
+    margin-bottom: 15px;
   }
 `;
 
 const NoDataConatiner = styled.div`
   font-family: 'pretendard-semibold';
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  color: #595959;
 `;
