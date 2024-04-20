@@ -54,7 +54,7 @@ function RequestList() {
               <th>소속</th>
               <th>연락처</th>
               <th>이메일</th>
-              <th>지위</th>
+              <th>승인상태</th>
             </tr>
           </thead>
           <tbody>
@@ -66,7 +66,15 @@ function RequestList() {
                   <td>{request.organization}</td>
                   <td>{request.contact}</td>
                   <td>{request.email}</td>
-                  <td>{request.position}</td>
+                  <td>
+                    {request.state === 0
+                      ? '대기'
+                      : request.state === 1
+                        ? '승인'
+                        : request.state === 2
+                          ? '거절'
+                          : '답변완료'}
+                  </td>
                 </tr>
               ))}
           </tbody>

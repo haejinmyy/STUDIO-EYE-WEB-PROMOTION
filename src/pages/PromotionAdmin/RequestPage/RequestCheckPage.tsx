@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useMatch, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 // import { Request } from '@/types/request';
@@ -33,12 +33,25 @@ const RequestDetailPage = () => {
     setBlocks(convertToRaw(editorState.getCurrentContent()).blocks);
   };
 
-  const replyRequest = () => {
+  const replyRequest = (state: number) => {
     if (!clickedRequest) {
       return;
     }
+    let answerText = '';
+    if (state === 1 && !editorState.getCurrentContent().hasText()) {
+      answerText = clickedRequest.clientName + '님의 의뢰가 승인되었습니다.';
+    } else if (state === 2 && !editorState.getCurrentContent().hasText()) {
+      answerText =
+        clickedRequest.clientName +
+        '님의 의뢰를 거절하게 되어 죄송합니다. 더 발전된 Studio-EYE가 되어 더욱 많은 의뢰를 진행할 수 있도록 노력하겠습니다.';
+    } else if (state === 3 && !editorState.getCurrentContent().hasText()) {
+      answerText = clickedRequest.clientName + '님의 의뢰가 완료되었습니다.';
+    } else {
+      answerText = draftToHtml(convertToRaw(editorState.getCurrentContent())).replace(/<[^>]*>/g, '');
+    }
     const formData = {
-      answer: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+      answer: answerText,
+      state: state,
     };
     if (window.confirm('답변 메일을 보내시겠습니까?')) {
       axios
@@ -92,7 +105,17 @@ const RequestDetailPage = () => {
                     <UserInfo>소속 : {clickedRequest.organization}</UserInfo>
                     <UserInfo>연락처 : {clickedRequest.contact}</UserInfo>
                     <UserInfo>지위 : {clickedRequest.position}</UserInfo>
-                    <UserInfo>첨부파일 : {clickedRequest.fileUrlList}</UserInfo>
+                    <UserInfo>
+                      첨부파일 :&nbsp;
+                      {clickedRequest.fileUrlList.map((url, index) => (
+                        <React.Fragment key={index}>
+                          <a href={url} target='_blank' rel='noopener noreferrer'>
+                            {url}
+                          </a>
+                          {index !== clickedRequest.fileUrlList.length - 1 && ', '}
+                        </React.Fragment>
+                      ))}
+                    </UserInfo>
                     <Answer className='article' dangerouslySetInnerHTML={{ __html: clickedRequest.description }} />
                   </Wrapper>
                   <Wrapper>
@@ -105,7 +128,21 @@ const RequestDetailPage = () => {
                   <ButtonWrapper>
                     <Button
                       onClick={() => {
-                        clickedRequest && replyRequest();
+                        clickedRequest && replyRequest(1);
+                      }}
+                    >
+                      승인하기
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        clickedRequest && replyRequest(2);
+                      }}
+                    >
+                      거절하기
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        clickedRequest && replyRequest(3);
                       }}
                     >
                       답변하기
@@ -171,7 +208,7 @@ const Answer = styled.div`
 const ButtonWrapper = styled.div`
   display: flex;
   padding: 1rem;
-  justify-content: flex-end;
+  justify-content: space-between;
 `;
 
 const Button = styled.div`

@@ -4,7 +4,7 @@ import Body from '../../../components/Common/Body';
 // import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { FaSearch } from 'react-icons/fa';
+// import { FaSearch } from 'react-icons/fa';
 
 const FaqPage = (e: any) => {
   const [data, setData] = useState([]);
@@ -13,43 +13,58 @@ const FaqPage = (e: any) => {
   const [searchData, setSearchData] = useState([]);
   const [searchToggleStates, setSearchToggleStates] = useState(Array(searchData.length).fill(false));
   // const [showAllFaq, setShowAllFaq] = useState(false);
-  const [toggleStates, setToggleStates] = useState(Array(data.length).fill(false));
+  // const [toggleStates, setToggleStates] = useState(Array(data.length).fill(false));
   // const navigate = useNavigate();
 
   useEffect(() => {
     axios
       .get(`http://3.35.54.100:8080/api/faq`)
       .then((response) => {
-        const data = response.data;
-        console.log('faq Data : ', data);
-        const objects: any = [];
-
-        for (let i = data.data.length - 1; i >= 0; i--) {
-          const obj = {
-            id: data.data[i].id,
-            question: data.data[i].question,
-            answer: data.data[i].answer,
-          };
-          objects.push(obj);
-        }
+        const filteredData = response.data.data.filter((item: any) => item.visibility === true);
+        const objects = filteredData.map((item: any) => ({
+          id: item.id,
+          question: item.question,
+          answer: item.answer,
+          visibility: item.visibility,
+        }));
         setData(objects);
-        console.log('dataLength : ', data.data.length);
+        initiate(objects);
       })
       .catch((error) => {
         console.error(error);
       });
   }, []);
 
+  const initiate = (data: any) => {
+    const initData: any = [];
+    if (data.length === 0) {
+      setSearchData([]);
+      setSearchResult('none');
+      return;
+    }
+    for (let i = 0; i < data.length; i++) {
+      initData.push({
+        index: i,
+        question: data[i].question,
+        answer: data[i].answer,
+        visibility: data[i].visibility,
+      });
+    }
+    setSearchData(initData);
+    setSearchResult('success');
+  };
+
   const handleTextAreaDataChange = (e: any) => {
+    refreshToggleItem();
     setFaqQuestion(e.target.value);
+    searchQuestion(e.target.value, data);
   };
   const searchQuestion = (searchTerm: string, data: any) => {
     const searchTermLower = searchTerm.toLowerCase();
     const searchResults: any = [];
     if (data.length === 0) {
       setSearchData([]);
-      setSearchResult('fail');
-      console.log('searchData : ', searchData);
+      setSearchResult('none');
       return;
     }
     for (let i = 0; i < data.length; i++) {
@@ -59,11 +74,10 @@ const FaqPage = (e: any) => {
           index: i,
           question: data[i].question,
           answer: data[i].answer,
+          visibility: data[i].visibility,
         });
       }
     }
-    console.log('searchResult : ', searchResults);
-    console.log('searchResultLength : ', searchResults.length);
     setSearchData(searchResults.length > 0 ? searchResults : []);
     setSearchResult(searchResults.length > 0 ? 'success' : 'fail');
   };
@@ -80,10 +94,9 @@ const FaqPage = (e: any) => {
     setSearchToggleStates(newSearchToggleStates);
   };
 
-  const toggleItem = (index: number) => {
-    const newToggleStates = [...toggleStates]; // 상태 배열 복사
-    newToggleStates[index] = !newToggleStates[index];
-    setToggleStates(newToggleStates);
+  const refreshToggleItem = () => {
+    const newSearchToggleStates = searchToggleStates.map(() => false);
+    setSearchToggleStates(newSearchToggleStates);
   };
 
   return (
@@ -108,25 +121,25 @@ const FaqPage = (e: any) => {
                   autoComplete='off'
                   name='searchingfaqquestion'
                   onChange={handleTextAreaDataChange}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      searchQuestion(faqQuestion, data);
-                    }
-                  }}
+                  // onKeyPress={(e) => {
+                  //   if (e.key === 'Enter') {
+                  //     e.preventDefault();
+                  //     searchQuestion(faqQuestion, data);
+                  //   }
+                  // }}
                 />
-                <SearchButton
+                {/* <SearchButton
                   whileHover={{ scale: 1.04 }}
                   transition={{ ease: 'easeInOut', stiffness: 200, damping: 5 }}
                   onClick={() => searchQuestion(faqQuestion, data)}
                 >
                   <FaSearch size={24} />
-                </SearchButton>
+                </SearchButton> */}
               </>
             )}
           </SearchWrapper>
           {searchResult === 'success' ? (
-            <SearchResultBox>
+            <FaqList>
               {searchData.map((item: any) => (
                 <FaqDetailButton
                   key={item.index}
@@ -143,19 +156,19 @@ const FaqPage = (e: any) => {
                   {searchToggleStates[item.index] && (
                     <FaqDetailBox>
                       <FaqDetailQuestion>Q. {item.question}</FaqDetailQuestion>
-                      <FaqDetailAnswer>A. {item.answer.replace(/<[^>]*>/g, '')}</FaqDetailAnswer>
+                      <FaqDetailAnswer dangerouslySetInnerHTML={{ __html: item.answer }} />
                     </FaqDetailBox>
                   )}
                 </FaqDetailButton>
               ))}
-            </SearchResultBox>
+            </FaqList>
           ) : searchResult === 'fail' ? (
             <SearchFailed>검색 조건에 맞는 결과를 찾지 못했습니다.</SearchFailed>
           ) : (
-            <></>
+            <SearchFailed>자주 묻는 질문이 없습니다.</SearchFailed>
           )}
         </InputWrapper>
-        <InputWrapper>
+        {/* <InputWrapper>
           <FaqList>
             {data.map((item: any, index: number) => (
               <FaqDetailButton
@@ -178,7 +191,7 @@ const FaqPage = (e: any) => {
                 )}
               </FaqDetailButton>
             ))}
-            {/* {data.slice(0, showAllFaq === false ? 4 : undefined).map((item: any) => (
+            {data.slice(0, showAllFaq === false ? 4 : undefined).map((item: any) => (
               <FaqDetailButton
                 key={item.id}
                 whileHover={{ scale: 1.04 }}
@@ -192,10 +205,10 @@ const FaqPage = (e: any) => {
                     : item.answer.replace(/<[^>]*>/g, '')}
                 </FaqDetailAnswer>
               </FaqDetailButton>
-            ))} */}
+            ))}
           </FaqList>
         </InputWrapper>
-        {/* <ShowAllFaqButton
+        <ShowAllFaqButton
           whileHover={{ scale: 1.04 }}
           transition={{ ease: 'easeInOut', stiffness: 200, damping: 5 }}
           onClick={handleShowAllFaq}
@@ -255,21 +268,22 @@ const SearchWrapper = styled.div`
   padding-right: 15px;
   margin-bottom: 30px;
 `;
-const SearchResultBox = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  background-color: transparent;
-  padding-top: 0px;
-  padding: 30px;
-  flex-direction: column;
-  align-items: center;
-  border-bottom: 2px solid black;
-`;
+// const SearchResultBox = styled.div`
+//   display: flex;
+//   flex-wrap: wrap;
+//   background-color: transparent;
+//   padding-top: 0px;
+//   padding: 30px;
+//   flex-direction: column;
+//   align-items: center;
+//   border-bottom: 2px solid black;
+// `;
 const SearchFailed = styled.div`
   text-align: center;
   font-size: 20px;
   font-weight: 500;
   color: #ff0000;
+  margin-bottom: 100px;
 `;
 const FaqList = styled.div`
   display: flex;
@@ -355,15 +369,15 @@ const SearchFaqQuestion = styled.input`
   font-weight: bold;
   overflow-wrap: break-word;
 `;
-const SearchButton = styled(motion.button)`
-  background-color: transparent;
-  border: none;
-  color: #ffa900;
-  cursor: pointer;
-  &:hover {
-    color: #ffffff;
-  }
-`;
+// const SearchButton = styled(motion.button)`
+//   background-color: transparent;
+//   border: none;
+//   color: #ffa900;
+//   cursor: pointer;
+//   &:hover {
+//     color: #ffffff;
+//   }
+// `;
 // const FaqDetailButton = styled(motion.button)`
 //   width: 270px;
 //   height: 270px;
