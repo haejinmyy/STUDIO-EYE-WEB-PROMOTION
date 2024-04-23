@@ -304,6 +304,7 @@ const Nav = styled.div`
 `;
 
 const List = styled.div`
+  cursor: pointer;
   padding: 0 30px;
   display: flex;
   justify-content: center;
