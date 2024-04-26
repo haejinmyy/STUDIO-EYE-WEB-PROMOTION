@@ -1,9 +1,9 @@
-const BASIC_PATH = 'http://3.35.54.100:8080/';
+import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 
 export function getArtworkData() {
-  return fetch(`${BASIC_PATH}api/projects`).then((response) => response.json());
+  return fetch(`${PROMOTION_BASIC_PATH}/api/projects`).then((response) => response.json());
 }
 
 export function getArtworkDetailData(id: number) {
-  return fetch(`${BASIC_PATH}api/projects/${id}`).then((response) => response.json());
+  return fetch(`${PROMOTION_BASIC_PATH}/api/projects/${id}`).then((response) => response.json());
 }
