@@ -33,6 +33,7 @@ import RequestCheckPage from './pages/PromotionAdmin/RequestPage/RequestCheckPag
 import PAArtworkDetail from '@/pages/PromotionAdmin/ArtworkPage/ArtworkDetail';
 import ArtworkDetailPage from './pages/PromotionPage/ArtworkPage/ArtworkDetailPage';
 import ArtworkPage from './pages/PromotionPage/ArtworkPage/ArtworkPage';
+import ArtworkLayout from './components/PromotionPage/Artwork/Layout';
 
 const router = createBrowserRouter([
   {
@@ -172,7 +173,13 @@ const router = createBrowserRouter([
 
       {
         path: PP_ROUTES_CHILD.ARTWORK,
-        element: <ArtworkPage />,
+        element: <ArtworkLayout />,
+        children: [
+          {
+            path: '',
+            element: <ArtworkPage />,
+          },
+        ],
       },
 
       {
