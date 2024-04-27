@@ -5,10 +5,10 @@ import { IArtworksData } from '@/types/PromotionPage/artwork';
 import { useQuery } from 'react-query';
 import { getArtworkData } from '@/apis/PromotionPage/artwork';
 import { motion, useTransform, useScroll } from 'framer-motion';
-import ScrollAnimatedComponent from '@/components/PromotionPage/Artwork/ScrollAnimatedComponent';
-import RotatedCircle from '@/components/PromotionPage/Artwork/RotatedCircle';
-import ImageSlider from '@/components/PromotionPage/Artwork/ImageSlider';
-import { NavWrapper } from '@/components/PromotionPage/Artwork/Components';
+import ScrollAnimatedComponent from '@/components/PromotionPage/ArtworkDetail/ScrollAnimatedComponent';
+import RotatedCircle from '@/components/PromotionPage/ArtworkDetail/RotatedCircle';
+import ImageSlider from '@/components/PromotionPage/ArtworkDetail/ImageSlider';
+import { NavWrapper } from '@/components/PromotionPage/ArtworkDetail/Components';
 
 function ArtworkDetailPage() {
   const navigator = useNavigate();
@@ -304,6 +304,7 @@ const Nav = styled.div`
 `;
 
 const List = styled.div`
+  cursor: pointer;
   padding: 0 30px;
   display: flex;
   justify-content: center;

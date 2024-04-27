@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Request } from '@/types/request';
+import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 
 const BASE_URL = 'http://3.35.54.100:8080';
 
@@ -25,7 +26,7 @@ export interface IGetRequestDetailData {
 
 export const fetchRequests = async ({ requestId }: { requestId: number }): Promise<Request> => {
   try {
-    const response = await axios.get(`${BASE_URL}/api/requests/${requestId}`);
+    const response = await axios.get(`${PROMOTION_BASIC_PATH}/api/requests/${requestId}`);
     return response.data.data;
   } catch (error) {
     console.log('[❌Error fetching requests]', error);
@@ -34,7 +35,7 @@ export const fetchRequests = async ({ requestId }: { requestId: number }): Promi
 };
 
 export function getRequestsData() {
-  return fetch(`${BASE_URL}/api/requests`)
+  return fetch(`${PROMOTION_BASIC_PATH}/api/requests`)
     .then((response) => response.json())
     .catch((error) => console.log('[❌Error fetching requests]', error));
 }
