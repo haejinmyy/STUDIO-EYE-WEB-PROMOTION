@@ -14,13 +14,9 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const response: loginType = await login(email, pwd);
-      if (response.role === 'ADMIN') {
-        setAuth({ accessToken: response.accessToken, userId: response.id });
-        window.alert('로그인 성공');
-        navigate('/pa-test/home');
-      } else {
-        window.alert('관리자만 로그인 할 수 있음');
-      }
+      setAuth({ accessToken: response.accessToken, userId: response.id });
+      window.alert('로그인 성공');
+      navigate('/pa-test/home');
     } catch (error) {
       window.alert('이것은 에러');
       console.log('Login 실패', error);

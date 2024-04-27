@@ -32,7 +32,7 @@ const WatingRequests = () => {
             <Icon width={20} height={20} stroke='#595959' />
             <h1>의뢰 통계 요약</h1>
           </div>
-          <span>승인 대기 의뢰 총 {waitingRequests.length}건</span>
+          <span>승인 대기 의뢰 총 {waitingRequests ? waitingRequests.length : 0}건</span>
         </TitleWrapper>
         <BtnWrapper>
           <SortWrapper>
@@ -52,9 +52,7 @@ const WatingRequests = () => {
       <BodyWrapper>
         {loading ? (
           <LoadingWrapper>Loading...</LoadingWrapper>
-        ) : waitingRequests.length === 0 ? (
-          <NoDataWrapper>😊 대기 중인 의뢰가 없습니다.</NoDataWrapper>
-        ) : (
+        ) : waitingRequests && waitingRequests.length > 0 ? (
           waitingRequests.map((request) => (
             <WaitingRequestsList
               key={request.id}
@@ -67,6 +65,8 @@ const WatingRequests = () => {
               requestId={request.id.toString()}
             />
           ))
+        ) : (
+          <NoDataWrapper>😊 대기 중인 의뢰가 없습니다.</NoDataWrapper>
         )}
       </BodyWrapper>
     </Container>
