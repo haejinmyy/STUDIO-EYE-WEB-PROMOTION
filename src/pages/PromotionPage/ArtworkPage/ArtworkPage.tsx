@@ -15,12 +15,14 @@ function ArtworkPage() {
   const { data, isLoading } = useQuery<IArtworksData>(['artwork', 'id'], getArtworkData);
   const category = artwork_categories.find((category) => category.key + '' === categoryId);
 
-  const filteredData =
-    data && data?.data.filter((artworks) => artworks.category.toLowerCase() === category?.label.toLocaleLowerCase());
+  const postedData = data && data?.data.filter((artwork) => artwork.isPosted === true);
+  const filteredData = postedData?.filter(
+    (artworks) => artworks.category.toLowerCase() === category?.label.toLocaleLowerCase(),
+  );
 
-  useEffect(() => {
-    console.log(`Selected category ID: ${categoryId}`);
-  }, [filteredData]);
+  // useEffect(() => {
+  //   console.log(`Selected category ID: ${categoryId}`);
+  // }, [categoryId]);
 
   return (
     <>
@@ -31,9 +33,20 @@ function ArtworkPage() {
           <Wrapper>
             {data && categoryId === null ? (
               <ArtworkWrapper>
-                {data.data.map((artwork) => (
-                  <ArtworkCard id={artwork.id} name={artwork.name} client={artwork.client} mainImg={artwork.mainImg} />
-                ))}
+                {postedData?.length === 0 ? (
+                  <NullException />
+                ) : (
+                  <>
+                    {postedData?.map((artwork) => (
+                      <ArtworkCard
+                        id={artwork.id}
+                        name={artwork.name}
+                        client={artwork.client}
+                        mainImg={artwork.mainImg}
+                      />
+                    ))}
+                  </>
+                )}
               </ArtworkWrapper>
             ) : (
               <ArtworkWrapper>

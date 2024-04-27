@@ -1,9 +1,8 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { PP_ROUTES_CHILD } from '@/constants/routerConstants';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { theme } from '@/styles/theme';
-import { useEffect } from 'react';
 
 interface IArtworkCardProps {
   id: number;
@@ -14,12 +13,6 @@ interface IArtworkCardProps {
 
 function ArtworkCard({ id, name, client, mainImg }: IArtworkCardProps) {
   const navigator = useNavigate();
-  const location = useLocation();
-  const categoryId = new URLSearchParams(location.search).get('category');
-
-  useEffect(() => {
-    console.log(`Selected category ID: ${categoryId}`);
-  }, [categoryId]);
 
   return (
     <ArtworkItem
