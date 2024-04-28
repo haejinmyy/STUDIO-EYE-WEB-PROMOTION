@@ -1,9 +1,10 @@
+import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import axios from 'axios';
 
 export const fetchViewsData = async (startYear: number, startMonth: number, endYear: number, endMonth: number) => {
   try {
     const response = await axios.get(
-      `http://3.36.95.109:8080/api/views/${startYear}/${startMonth}/${endYear}/${endMonth}`,
+      `${PROMOTION_BASIC_PATH}/api/views/${startYear}/${startMonth}/${endYear}/${endMonth}`,
     );
     return response.data.data;
   } catch (error) {
@@ -15,7 +16,7 @@ export const fetchViewsData = async (startYear: number, startMonth: number, endY
 export const fetchRequestsData = async (startYear: number, startMonth: number, endYear: number, endMonth: number) => {
   try {
     const response = await axios.get(
-      `http://3.36.95.109:8080/api/requests/${startYear}/${startMonth}/${endYear}/${endMonth}`,
+      `${PROMOTION_BASIC_PATH}/api/requests/${startYear}/${startMonth}/${endYear}/${endMonth}`,
     );
     return response.data.data;
   } catch (error) {
@@ -26,7 +27,7 @@ export const fetchRequestsData = async (startYear: number, startMonth: number, e
 
 export const fetchWaitingRequests = async () => {
   try {
-    const response = await axios.get(`http://3.36.95.109:8080/api/requests/waiting`);
+    const response = await axios.get(`${PROMOTION_BASIC_PATH}/api/requests/waiting`);
     return response.data.data;
   } catch (error) {
     console.log('[❌Error fetchWaitingRequests]', error);
