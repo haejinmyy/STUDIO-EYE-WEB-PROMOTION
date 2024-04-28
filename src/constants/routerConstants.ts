@@ -22,7 +22,18 @@ export const PA_ROUTES_CHILD = {
 };
 
 export const PP_ROUTES_CHILD = {
+  MAIN: '',
+  ABOUT: 'about',
   REQUEST: 'request',
   ARTWORK: 'artwork',
   ARTWORK_DETAIL: 'artwork/:id',
+};
+
+export const PP_ROUTES = {
+  MAIN: '',
+  ABOUT: '/about',
+  REQUEST: '/request',
+  ARTWORK: '/artwork',
+  ARTWORK_DETAIL: 'artwork/:id',
+  CONTACT: '/contact',
 };
