@@ -34,6 +34,7 @@ import PAArtworkDetail from '@/pages/PromotionAdmin/ArtworkPage/ArtworkDetail';
 import ArtworkDetailPage from './pages/PromotionPage/ArtworkPage/ArtworkDetailPage';
 import ArtworkPage from './pages/PromotionPage/ArtworkPage/ArtworkPage';
 import ArtworkLayout from './components/PromotionPage/Artwork/Layout';
+import ContactUsPage from './pages/PromotionPage/ContactPage/ContactUsPage';
 
 const router = createBrowserRouter([
   {
@@ -108,12 +109,10 @@ const router = createBrowserRouter([
               {
                 path: '',
                 element: <RequestManagePage />,
-                children: [
-                  {
-                    path: `${PA_ROUTES.REQUEST}/:requestId`,
-                    element: <RequestCheckPage />,
-                  },
-                ],
+              },
+              {
+                path: `${PA_ROUTES.REQUEST}/:requestId`,
+                element: <RequestCheckPage />,
               },
             ],
           },
@@ -213,6 +212,10 @@ const router = createBrowserRouter([
       {
         path: '/faq/detail/:detailId',
         element: <FaqDetailPage />,
+      },
+      {
+        path: '/contactUs',
+        element: <ContactUsPage />,
       },
     ],
   },

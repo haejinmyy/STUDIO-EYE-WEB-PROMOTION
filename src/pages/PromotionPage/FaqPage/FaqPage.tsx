@@ -18,7 +18,7 @@ const FaqPage = (e: any) => {
 
   useEffect(() => {
     axios
-      .get(`http://3.35.54.100:8080/api/faq`)
+      .get(`http://3.36.95.109:8080/api/faq`)
       .then((response) => {
         const filteredData = response.data.data.filter((item: any) => item.visibility === true);
         const objects = filteredData.map((item: any) => ({
