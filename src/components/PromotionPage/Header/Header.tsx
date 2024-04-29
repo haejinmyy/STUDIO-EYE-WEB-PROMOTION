@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import defaultLogo from '@/assets/images/PP-Header/defaultLogo.png';
 import styled from 'styled-components';
 import { useRecoilState } from 'recoil';
@@ -7,9 +7,12 @@ import { NavLink } from 'react-router-dom';
 import HeaderDetail from './HeaderDetail';
 import Menubar from './Menubar';
 import { motion, AnimatePresence } from 'framer-motion';
-
+interface ContainerProps {
+  isScrolled: boolean;
+}
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useRecoilState(ppHeaderState);
+  const [isScrolled, setIsScrolled] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -26,6 +29,19 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      setIsScrolled(scrollTop > 50);
+    };
+    console.log(isScrolled);
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
     const disableScroll = () => {
       if (isMenuOpen) {
         document.body.style.overflow = 'hidden';
@@ -38,7 +54,7 @@ const Header = () => {
 
   return (
     <>
-      <Container ref={headerRef}>
+      <Container ref={headerRef} isScrolled={isScrolled}>
         <HeaderContainer>
           <HomeLinkWrapper to={'/'}>
             <LogoImg src={defaultLogo} alt='logo' />
@@ -66,16 +82,18 @@ const Header = () => {
 
 export default Header;
 
-const Container = styled.div`
+const Container = styled.div<ContainerProps>`
   width: 100vw;
   height: 80px;
   padding: 15px 40px;
-
   box-sizing: border-box;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(15px);
+  background-color: ${({ isScrolled }) => (isScrolled ? 'rgba(0,0,0,0.7)' : 'transparent')};
+  backdrop-filter: ${({ isScrolled }) => (isScrolled ? 'blur(15px)' : 'none')};
   position: fixed;
   z-index: 100;
+  transition:
+    background-color 0.3s,
+    backdrop-filter 0.3s;
 `;
 const HeaderContainer = styled.div`
   display: flex;
