@@ -35,7 +35,7 @@ function FAQWritePage() {
       visibility: data.visibility,
     };
     axios
-      .post(`http://3.35.54.100:8080/api/faq`, formData)
+      .post(`http://3.36.95.109:8080/api/faq`, formData)
       .then((response) => {
         alert('FAQ가 등록되었습니다.');
         navigator(`${PA_ROUTES.FAQ}`);

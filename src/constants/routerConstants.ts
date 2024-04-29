@@ -27,6 +27,7 @@ export const PP_ROUTES_CHILD = {
   REQUEST: 'request',
   ARTWORK: 'artwork',
   ARTWORK_DETAIL: 'artwork/:id',
+  CONTACT: 'contact',
 };
 
 export const PP_ROUTES = {

@@ -22,6 +22,7 @@ import ArtworkPage from './pages/PromotionPage/ArtworkPage/ArtworkPage';
 import ArtworkLayout from './components/PromotionPage/Artwork/Layout';
 import Mainpage from '@/pages/PromotionPage/Main/MainPage';
 import PPLayout from '@/components/PromotionPage/Layout/Layout';
+import ContactUsPage from './pages/PromotionPage/ContactPage/ContactUsPage';
 
 const router = createBrowserRouter([
   {
@@ -50,6 +51,21 @@ const router = createBrowserRouter([
             path: PP_ROUTES_CHILD.ARTWORK_DETAIL,
             element: <ArtworkDetailPage />,
           },
+          {
+            path: PP_ROUTES_CHILD.ARTWORK,
+            element: <ArtworkLayout />,
+            children: [
+              {
+                path: '',
+                element: <ArtworkPage />,
+              },
+            ],
+          },
+
+          {
+            path: PP_ROUTES_CHILD.ARTWORK_DETAIL,
+            element: <ArtworkDetailPage />,
+          },
         ],
       },
 
@@ -68,12 +84,10 @@ const router = createBrowserRouter([
               {
                 path: '',
                 element: <RequestManagePage />,
-                children: [
-                  {
-                    path: `${PA_ROUTES.REQUEST}/:requestId`,
-                    element: <RequestCheckPage />,
-                  },
-                ],
+              },
+              {
+                path: `${PA_ROUTES.REQUEST}/:requestId`,
+                element: <RequestCheckPage />,
               },
             ],
           },
