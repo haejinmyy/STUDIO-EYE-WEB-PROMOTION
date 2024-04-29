@@ -3,7 +3,7 @@ import defaultLogo from '@/assets/images/PP-Header/defaultLogo.png';
 import styled from 'styled-components';
 import { useRecoilState } from 'recoil';
 import { ppHeaderState } from '@/recoil/atoms';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import HeaderDetail from './HeaderDetail';
 import Menubar from './Menubar';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,6 +14,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useRecoilState(ppHeaderState);
   const [isScrolled, setIsScrolled] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
 
   const handleClickOutside = (event: MouseEvent) => {
     if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
@@ -51,7 +52,9 @@ const Header = () => {
     };
     disableScroll();
   }, [isMenuOpen]);
-
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
   return (
     <>
       <Container ref={headerRef} isScrolled={isScrolled}>
