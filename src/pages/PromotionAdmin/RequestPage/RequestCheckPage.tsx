@@ -38,13 +38,15 @@ const RequestDetailPage = () => {
       return;
     }
     let answerText = '';
-    if (state === 1 && !editorState.getCurrentContent().hasText()) {
-      answerText = clickedRequest.clientName + '님의 의뢰가 승인되었습니다.';
-    } else if (state === 2 && !editorState.getCurrentContent().hasText()) {
-      answerText =
-        clickedRequest.clientName +
-        '님의 의뢰를 거절하게 되어 죄송합니다. 더 발전된 Studio-EYE가 되어 더욱 많은 의뢰를 진행할 수 있도록 노력하겠습니다.';
-    } else if (state === 3 && !editorState.getCurrentContent().hasText()) {
+    // if (state === 1 && !editorState.getCurrentContent().hasText()) {
+    //   answerText = clickedRequest.clientName + '님의 의뢰가 승인되었습니다.';
+    // }
+    // else if (state === 2 && !editorState.getCurrentContent().hasText()) {
+    //   answerText =
+    //     clickedRequest.clientName +
+    //     '님의 의뢰를 거절하게 되어 죄송합니다. 더 발전된 Studio-EYE가 되어 더욱 많은 의뢰를 진행할 수 있도록 노력하겠습니다.';
+    // }
+    if (state === 3 && !editorState.getCurrentContent().hasText()) {
       answerText = clickedRequest.clientName + '님의 의뢰가 완료되었습니다.';
     } else {
       answerText = draftToHtml(convertToRaw(editorState.getCurrentContent())).replace(/<[^>]*>/g, '');
@@ -55,7 +57,7 @@ const RequestDetailPage = () => {
     };
     if (window.confirm('답변 메일을 보내시겠습니까?')) {
       axios
-        .put(`http://3.35.54.100:8080/api/requests/${clickedRequest.id}/comment`, formData)
+        .put(`http://3.36.95.109:8080/api/requests/${clickedRequest.id}/comment`, formData)
         .then((response) => {
           alert('메일 발송이 완료되었습니다.');
           navigator(`${PA_ROUTES.REQUEST}`);
@@ -86,77 +88,78 @@ const RequestDetailPage = () => {
   // }, [id]);
 
   return (
+    // <>
+    //   {isLoading ? (
+    //     <div> is Loading... </div>
+    //   ) : (
     <>
-      {isLoading ? (
-        <div> is Loading... </div>
-      ) : (
+      {requestDetailMatch ? (
         <>
-          {requestDetailMatch ? (
-            <>
-              {clickedRequest && (
-                <ContentBox>
-                  <Wrapper>
-                    <TitleWrapper>
-                      <FromToIcon>From</FromToIcon>
-                      <Title>{clickedRequest.clientName} </Title>
-                    </TitleWrapper>
-                    <UserInfo>이메일 : {clickedRequest.email}</UserInfo>
-                    <UserInfo>카테고리 : {clickedRequest.category}</UserInfo>
-                    <UserInfo>소속 : {clickedRequest.organization}</UserInfo>
-                    <UserInfo>연락처 : {clickedRequest.contact}</UserInfo>
-                    <UserInfo>지위 : {clickedRequest.position}</UserInfo>
-                    <UserInfo>
-                      첨부파일 :&nbsp;
-                      {clickedRequest.fileUrlList.map((url, index) => (
-                        <React.Fragment key={index}>
-                          <a href={url} target='_blank' rel='noopener noreferrer'>
-                            {url}
-                          </a>
-                          {index !== clickedRequest.fileUrlList.length - 1 && ', '}
-                        </React.Fragment>
-                      ))}
-                    </UserInfo>
-                    <Answer className='article' dangerouslySetInnerHTML={{ __html: clickedRequest.description }} />
-                  </Wrapper>
-                  <Wrapper>
-                    <TitleWrapper>
-                      <FromToIcon>To</FromToIcon>
-                      <Title>{clickedRequest.clientName} </Title>
-                    </TitleWrapper>
-                    <TextEditor editorState={editorState} onEditorStateChange={updateTextDescription} />
-                  </Wrapper>
-                  <ButtonWrapper>
-                    <Button
-                      onClick={() => {
-                        clickedRequest && replyRequest(1);
-                      }}
-                    >
-                      승인하기
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        clickedRequest && replyRequest(2);
-                      }}
-                    >
-                      거절하기
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        clickedRequest && replyRequest(3);
-                      }}
-                    >
-                      답변하기
-                    </Button>
-                  </ButtonWrapper>
-                </ContentBox>
-              )}
-            </>
-          ) : null}
+          {clickedRequest && (
+            <ContentBox>
+              <Wrapper>
+                <TitleWrapper>
+                  <FromToIcon>From</FromToIcon>
+                  <Title>{clickedRequest.clientName} </Title>
+                </TitleWrapper>
+                <UserInfo>이메일 : {clickedRequest.email}</UserInfo>
+                <UserInfo>카테고리 : {clickedRequest.category}</UserInfo>
+                <UserInfo>소속 : {clickedRequest.organization}</UserInfo>
+                <UserInfo>연락처 : {clickedRequest.contact}</UserInfo>
+                <UserInfo>지위 : {clickedRequest.position}</UserInfo>
+                <UserInfo>
+                  첨부파일 :&nbsp;
+                  {clickedRequest.fileUrlList.map((url, index) => (
+                    <React.Fragment key={index}>
+                      <a href={url} target='_blank' rel='noopener noreferrer'>
+                        {url}
+                      </a>
+                      {index !== clickedRequest.fileUrlList.length - 1 && ', '}
+                    </React.Fragment>
+                  ))}
+                </UserInfo>
+                <Answer className='article' dangerouslySetInnerHTML={{ __html: clickedRequest.description }} />
+              </Wrapper>
+              <Wrapper>
+                <TitleWrapper>
+                  <FromToIcon>To</FromToIcon>
+                  <Title>{clickedRequest.clientName} </Title>
+                </TitleWrapper>
+                <TextEditor editorState={editorState} onEditorStateChange={updateTextDescription} />
+              </Wrapper>
+              <ButtonWrapper>
+                <Button
+                  onClick={() => {
+                    clickedRequest && replyRequest(1);
+                  }}
+                >
+                  답변 보내기
+                </Button>
+                {/* <Button
+                  onClick={() => {
+                    clickedRequest && replyRequest(2);
+                  }}
+                >
+                  거절하기
+                </Button> */}
+                <Button
+                  onClick={() => {
+                    clickedRequest && replyRequest(3);
+                  }}
+                >
+                  의뢰 완료하기
+                </Button>
+              </ButtonWrapper>
+            </ContentBox>
+          )}
         </>
-      )}
+      ) : null}
     </>
   );
 };
+//   </>
+// );
+// };
 
 const Wrapper = styled.div`
   position: relative;

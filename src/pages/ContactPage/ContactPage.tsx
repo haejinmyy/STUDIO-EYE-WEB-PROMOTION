@@ -118,7 +118,7 @@ const ContactPage = (e: any) => {
       requestData.append('files', file);
     });
     axios
-      .post(`http://3.35.54.100:8080/api/requests`, requestData, {})
+      .post(`http://3.36.95.109:8080/api/requests`, requestData, {})
       .then((response) => {
         console.log(response.data, '임다. ');
         setIsModalOpen(true);
@@ -436,7 +436,7 @@ const UnderlinedTextarea = styled.textarea`
   width: 100%;
   height: 300px;
   font-size: 18px;
-  overflow: hidden;
+  overflow-y: auto;
   line-height: 30px;
   font-weight: 500;
   display: block;

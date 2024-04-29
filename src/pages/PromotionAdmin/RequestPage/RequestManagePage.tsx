@@ -7,6 +7,7 @@ import { useState } from 'react';
 import Pagination from '../../../components/PromotionAdmin/FAQ/Pagination';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { Outlet, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function RequestList() {
   const { data, isLoading } = useQuery<IRequestData>(['request', 'id'], getRequestsData);
@@ -18,6 +19,56 @@ function RequestList() {
   const [postsPerPage, setPostsPerPage] = useState(10);
   const indexOfLast = currentPage * postsPerPage;
   const indexOfFirst = indexOfLast - postsPerPage;
+  const [modalVisible, setModalVisible] = useState(false);
+  const [showWaitingApproval, setShowWaitingApproval] = useState(false);
+  const [showCompletedRequest, setShowCompletedRequest] = useState(false);
+
+  const handleWaitingToggle = () => {
+    setShowWaitingApproval(!showWaitingApproval);
+    if (!showWaitingApproval) {
+      setShowCompletedRequest(false);
+    }
+  };
+
+  const handleCompletedToggle = () => {
+    setShowCompletedRequest(!showCompletedRequest);
+    if (!showCompletedRequest) {
+      setShowWaitingApproval(false);
+    }
+  };
+
+  const openModal = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setModalVisible(!modalVisible);
+  };
+
+  const closeModal = (e: React.MouseEvent, clientName: string, state: number, requestId: number) => {
+    e.stopPropagation();
+    let answerText = '';
+    if (state === 1) {
+      answerText = clientName + '님의 의뢰가 승인되었습니다.';
+    } else if (state === 2) {
+      answerText =
+        clientName +
+        '님의 의뢰를 거절하게 되어 죄송합니다. 더 발전된 Studio-EYE가 되어 더욱 많은 의뢰를 진행할 수 있도록 노력하겠습니다.';
+    }
+    const formData = {
+      answer: answerText,
+      state: state,
+    };
+    if (window.confirm('답변 메일을 보내시겠습니까?')) {
+      axios
+        .put(`http://3.36.95.109:8080/api/requests/${requestId}/comment`, formData)
+        .then((response) => {
+          alert('메일 발송이 완료되었습니다.');
+          navigator(`${PA_ROUTES.REQUEST}`);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+    setModalVisible(!modalVisible);
+  };
 
   return (
     <Wrapper>
@@ -45,6 +96,36 @@ function RequestList() {
             Request 관리
             <Info>의뢰 총 {data?.data.length}건</Info>
           </Title>
+          <ButtonsWrapper>
+            <ButtonWrapper>
+              <Button>
+                승인 대기 의뢰
+                <input
+                  type='checkbox'
+                  id='waitingApprovalSwitch'
+                  checked={showWaitingApproval}
+                  onChange={handleWaitingToggle}
+                />
+                <label htmlFor='waitingApprovalSwitch' className='switch_label'>
+                  <span className='onf_btn'></span>
+                </label>
+              </Button>
+            </ButtonWrapper>
+            <ButtonWrapper>
+              <Button>
+                완료된 의뢰
+                <input
+                  type='checkbox'
+                  id='completedRequestSwitch'
+                  checked={showCompletedRequest}
+                  onChange={handleCompletedToggle}
+                />
+                <label htmlFor='completedRequestSwitch' className='switch_label'>
+                  <span className='onf_btn'></span>
+                </label>
+              </Button>
+            </ButtonWrapper>
+          </ButtonsWrapper>
         </TitleWrapper>
         <StyledTable>
           <thead>
@@ -54,29 +135,139 @@ function RequestList() {
               <th>소속</th>
               <th>연락처</th>
               <th>이메일</th>
+              <th>지위</th>
+              <th>날짜</th>
               <th>승인상태</th>
+              <th>의뢰상태</th>
             </tr>
           </thead>
           <tbody>
-            {data &&
-              data.data.slice(indexOfFirst, indexOfLast).map((request) => (
-                <tr key={request.id} onClick={() => navigator(`${PA_ROUTES.REQUEST}/${request.id}`)}>
-                  <td>{request.category}</td>
-                  <td>{request.clientName}</td>
-                  <td>{request.organization}</td>
-                  <td>{request.contact}</td>
-                  <td>{request.email}</td>
-                  <td>
-                    {request.state === 0
-                      ? '대기'
-                      : request.state === 1
-                        ? '승인'
-                        : request.state === 2
-                          ? '거절'
-                          : '답변완료'}
-                  </td>
-                </tr>
-              ))}
+            {data && showWaitingApproval === true
+              ? data.data
+                  .filter((request) => request.state === 0)
+                  .slice(indexOfFirst, indexOfLast)
+                  .map((request) => (
+                    <tr key={request.id} onClick={() => navigator(`${PA_ROUTES.REQUEST}/${request.id}`)}>
+                      <td>{request.category}</td>
+                      <td>{request.clientName}</td>
+                      <td>{request.organization}</td>
+                      <td>{request.contact}</td>
+                      <td>{request.email}</td>
+                      <td>{request.position}</td>
+                      <td>
+                        {request.year}-{request.month}
+                      </td>
+                      <td>
+                        {modalVisible === false ? (
+                          <StateButton requestState={request.state} onClick={openModal}>
+                            {request.state === 0 ? '대기' : request.state === 2 ? '거부' : '승인'}
+                          </StateButton>
+                        ) : (
+                          <>
+                            <SelectButton
+                              onClick={(e) => {
+                                closeModal(e, request.clientName, 1, request.id);
+                              }}
+                            >
+                              승인
+                            </SelectButton>
+                            <SelectButton
+                              onClick={(e) => {
+                                closeModal(e, request.clientName, 2, request.id);
+                              }}
+                            >
+                              거부
+                            </SelectButton>
+                          </>
+                        )}
+                      </td>
+                      <td>{request.state === 3 || request.state === 2 ? '답변완료' : '대기'}</td>
+                    </tr>
+                  ))
+              : data && showCompletedRequest === true
+                ? data.data
+                    .filter((request) => request.state === 3 || request.state === 2)
+                    .slice(indexOfFirst, indexOfLast)
+                    .map((request) => (
+                      <tr key={request.id} onClick={() => navigator(`${PA_ROUTES.REQUEST}/${request.id}`)}>
+                        <td>{request.category}</td>
+                        <td>{request.clientName}</td>
+                        <td>{request.organization}</td>
+                        <td>{request.contact}</td>
+                        <td>{request.email}</td>
+                        <td>{request.position}</td>
+                        <td>
+                          {request.year}-{request.month}
+                        </td>
+                        <td>
+                          {modalVisible === false ? (
+                            <StateButton requestState={request.state} onClick={openModal}>
+                              {request.state === 0 ? '대기' : request.state === 2 ? '거부' : '승인'}
+                            </StateButton>
+                          ) : (
+                            <>
+                              <SelectButton
+                                onClick={(e) => {
+                                  closeModal(e, request.clientName, 1, request.id);
+                                }}
+                              >
+                                승인
+                              </SelectButton>
+                              <SelectButton
+                                onClick={(e) => {
+                                  closeModal(e, request.clientName, 2, request.id);
+                                }}
+                              >
+                                거부
+                              </SelectButton>
+                            </>
+                          )}
+                        </td>
+                        <td>{request.state === 3 || request.state === 2 ? '답변완료' : '대기'}</td>
+                      </tr>
+                    ))
+                : data &&
+                  data.data
+                    .filter((request) => request.state === 0 || request.state === 1)
+                    .slice(indexOfFirst, indexOfLast)
+                    .map((request) => (
+                      <tr key={request.id} onClick={() => navigator(`${PA_ROUTES.REQUEST}/${request.id}`)}>
+                        <td>{request.category}</td>
+                        <td>{request.clientName}</td>
+                        <td>{request.organization}</td>
+                        <td>{request.contact}</td>
+                        <td>{request.email}</td>
+                        <td>{request.position}</td>
+                        <td>
+                          {request.year}-{request.month}
+                        </td>
+                        <td>
+                          {modalVisible === false ? (
+                            <StateButton requestState={request.state} onClick={openModal}>
+                              {request.state === 0 ? '대기' : request.state === 2 ? '거부' : '승인'}
+                            </StateButton>
+                          ) : (
+                            <>
+                              <SelectButton
+                                onClick={(e) => {
+                                  closeModal(e, request.clientName, 1, request.id);
+                                }}
+                              >
+                                승인
+                              </SelectButton>
+                              <SelectButton
+                                onClick={(e) => {
+                                  closeModal(e, request.clientName, 2, request.id);
+                                }}
+                              >
+                                거부
+                              </SelectButton>
+                            </>
+                          )}
+                        </td>
+                        <td>{request.state === 3 || request.state === 2 ? '답변완료' : '대기'}</td>
+                      </tr>
+                    ))}
           </tbody>
         </StyledTable>
         {data && (
@@ -112,10 +303,7 @@ const StyledTable = styled.table`
   td {
     padding: 15px;
     text-align: center;
-  }
-
-  th:last-child {
-    display: flex;
+    width: 200px;
   }
 
   tbody tr {
@@ -157,8 +345,144 @@ const Info = styled.div`
   color: gray;
 `;
 
+const ButtonsWrapper = styled.div`
+  display: flex;
+  width: 310px;
+  justify-content: space-between;
+`;
+
+const ButtonWrapper = styled.div`
+  font-size: 15px;
+  color: ${(props) => props.theme.color.black.bold};
+  cursor: pointer;
+  display: flex;
+  background-color: ${(props) => props.theme.color.white.bold};
+  border-radius: 5px;
+  align-items: center;
+  height: 30px;
+  min-width: 90px;
+  border: 0.5px solid ${(props) => props.theme.color.black.light};
+  padding: 5px;
+`;
+
+const Button = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-around;
+  #waitingApprovalSwitch {
+    position: absolute;
+    /* hidden */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+  #completedRequestSwitch {
+    position: absolute;
+    /* hidden */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+
+  .switch_label {
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    width: 35px;
+    height: 14px;
+    background: #fff;
+    border: 1px solid ${(props) => props.theme.color.yellow.bold};
+    border-radius: 20px;
+    transition: 0.2s;
+    margin-left: 5px;
+  }
+
+  .onf_btn {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    background: ${(props) => props.theme.color.yellow.bold};
+    transition: 0.2s;
+  }
+
+  /* checking style */
+  #waitingApprovalSwitch:checked + .switch_label {
+    background: ${(props) => props.theme.color.yellow.bold};
+    border: 1px solid ${(props) => props.theme.color.yellow.bold};
+  }
+
+  #waitingApprovalSwitch:checked + .switch_label:hover {
+    background: ${(props) => props.theme.color.yellow.bold};
+  }
+  #completedRequestSwitch:checked + .switch_label {
+    background: ${(props) => props.theme.color.yellow.bold};
+    border: 1px solid ${(props) => props.theme.color.yellow.bold};
+  }
+
+  #completedRequestSwitch:checked + .switch_label:hover {
+    background: ${(props) => props.theme.color.yellow.bold};
+  }
+
+  /* move */
+  #waitingApprovalSwitch:checked + .switch_label .onf_btn {
+    left: 21px;
+    background: #fff;
+    box-shadow: 1px 2px 3px #00000020;
+  }
+  #completedRequestSwitch:checked + .switch_label .onf_btn {
+    left: 21px;
+    background: #fff;
+    box-shadow: 1px 2px 3px #00000020;
+  }
+`;
+
 const PaginationWrapper = styled.div`
   width: 100%;
   position: absolute;
   bottom: 10px;
+`;
+
+const StateButton = styled.button<{ requestState: number }>`
+  padding: 5px 10px;
+  border: 1px solid #c8c9cc;
+  border-radius: 20px;
+  cursor: pointer;
+  background: ${({ requestState }) => {
+    if (requestState === 0) {
+      return 'transparent';
+    } else if (requestState === 2) {
+      return 'red';
+    } else {
+      return 'green';
+    }
+  }};
+  color: ${({ requestState }) => {
+    if (requestState === 0) {
+      return 'black';
+    } else {
+      return 'white';
+    }
+  }};
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #ddd;
+  }
+`;
+
+const SelectButton = styled.button`
+  padding: 5px 10px;
+  border: 1px solid #c8c9cc;
+  border-radius: 20px;
+  cursor: pointer;
+  background: transparent;
+  color: black;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #ddd;
+  }
 `;
