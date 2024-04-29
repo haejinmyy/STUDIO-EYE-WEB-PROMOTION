@@ -51,20 +51,10 @@ const router = createBrowserRouter([
             path: PP_ROUTES_CHILD.ARTWORK_DETAIL,
             element: <ArtworkDetailPage />,
           },
-          {
-            path: PP_ROUTES_CHILD.ARTWORK,
-            element: <ArtworkLayout />,
-            children: [
-              {
-                path: '',
-                element: <ArtworkPage />,
-              },
-            ],
-          },
 
           {
-            path: PP_ROUTES_CHILD.ARTWORK_DETAIL,
-            element: <ArtworkDetailPage />,
+            path: PP_ROUTES_CHILD.CONTACT,
+            element: <ContactUsPage />,
           },
         ],
       },
