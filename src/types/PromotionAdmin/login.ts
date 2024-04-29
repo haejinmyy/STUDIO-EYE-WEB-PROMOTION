@@ -2,7 +2,6 @@ export type loginType = {
   tokenType: string;
   accessToken: string;
   refreshToken: string;
-  accessTokenExpireDate: string;
-  role: string;
+  accessTokenExpireDate: number;
   id: number;
 };

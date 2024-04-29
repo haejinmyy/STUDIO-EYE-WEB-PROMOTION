@@ -2,8 +2,6 @@ import axios from 'axios';
 import { Request } from '@/types/request';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 
-const BASE_URL = 'http://3.35.54.100:8080';
-
 export interface IRequest {
   id: number;
   category: string;

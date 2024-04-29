@@ -20,3 +20,8 @@ export const notiState = atom<boolean>({
   key: 'notiState',
   default: false,
 });
+
+export const ppHeaderState = atom<boolean>({
+  key: 'ppHeader',
+  default: false,
+});
