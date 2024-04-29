@@ -22,6 +22,27 @@ const Mainpage = () => {
 
       <Slide3 />
     </>
+    // <ChakraProvider>
+    //   <MotionBox
+    //     scrollSnapType='y mandatory'
+    //     overflowY='scroll'
+    //     overflowX='hidden'
+    //     h='100vh'
+    //     style={{ scrollBehavior: 'smooth' }}
+    //     ref={wrapperRef}
+    //   >
+    //     {slides.map((Slide, index) => (
+    //       <Box
+    //         key={index}
+    //         h='100vh'
+    //         scrollSnapAlign='start'
+    //         ref={(el) => (sectionsRef.current[index] = el as HTMLElement)}
+    //       >
+    //         {Slide}
+    //       </Box>
+    //     ))}
+    //   </MotionBox>
+    // </ChakraProvider>
   );
 };
 
