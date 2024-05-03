@@ -23,6 +23,7 @@ import ArtworkLayout from './components/PromotionPage/Artwork/Layout';
 import Mainpage from '@/pages/PromotionPage/Main/MainPage';
 import PPLayout from '@/components/PromotionPage/Layout/Layout';
 import ContactUsPage from './pages/PromotionPage/ContactPage/ContactUsPage';
+import FaqPage from './pages/PromotionPage/FaqPage/FaqPage';
 
 const router = createBrowserRouter([
   {
@@ -55,6 +56,10 @@ const router = createBrowserRouter([
           {
             path: PP_ROUTES_CHILD.CONTACT,
             element: <ContactUsPage />,
+          },
+          {
+            path: PP_ROUTES_CHILD.FAQ,
+            element: <FaqPage />,
           },
         ],
       },
