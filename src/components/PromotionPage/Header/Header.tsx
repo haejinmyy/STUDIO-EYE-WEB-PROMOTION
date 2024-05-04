@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import defaultLogo from '@/assets/images/PP-Header/defaultLogo.png';
 import styled from 'styled-components';
 import { useRecoilState } from 'recoil';
-import { ppHeaderState } from '@/recoil/atoms';
+import { ppHeaderScrolledState, ppHeaderState } from '@/recoil/atoms';
 import { NavLink, useLocation } from 'react-router-dom';
 import HeaderDetail from './HeaderDetail';
 import Menubar from './Menubar';
@@ -12,7 +12,7 @@ interface ContainerProps {
 }
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useRecoilState(ppHeaderState);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useRecoilState(ppHeaderScrolledState);
   const headerRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
@@ -34,7 +34,6 @@ const Header = () => {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       setIsScrolled(scrollTop > 50);
     };
-    console.log(isScrolled);
     window.addEventListener('scroll', handleScroll);
 
     return () => {
@@ -90,7 +89,7 @@ const Container = styled.div<ContainerProps>`
   height: 80px;
   padding: 15px 40px;
   box-sizing: border-box;
-  background-color: ${({ isScrolled }) => (isScrolled ? 'rgba(0,0,0,0.7)' : 'transparent')};
+  background-color: ${({ isScrolled }) => (isScrolled ? 'rgba(0,0,0,0.1)' : 'transparent')};
   backdrop-filter: ${({ isScrolled }) => (isScrolled ? 'blur(15px)' : 'none')};
   position: fixed;
   z-index: 100;
