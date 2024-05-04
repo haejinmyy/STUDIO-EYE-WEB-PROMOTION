@@ -21,7 +21,7 @@ function ArtworkCard({ id, name, client, mainImg }: IArtworkCardProps) {
       initial='initial'
       whileHover='hover'
     >
-      <ArtworkImg variants={imgVariants(mainImg)} ArtworkPhoto={mainImg} />
+      <ArtworkImg key={mainImg} variants={imgVariants(mainImg)} ArtworkPhoto={mainImg} />
       <Info>
         <motion.span variants={spanVariants} className='info_client'>
           {client}
@@ -57,12 +57,6 @@ const imgVariants = (ArtworkPhoto: string) => ({
     backgroundSize: 'cover', // 이미지 크기 조정
     backgroundPosition: 'center', // 이미지 위치 조정
     borderRadius: '0 150px 0 0', // 오른쪽 상단 모서리를 둥글게 설정
-
-    // transition: {
-    //   duration: 0.3,
-    //   ease: 'easeInOut',
-    //   backgroundSize: { duration: 0.3, ease: 'easeInOut' },
-    // },
   },
 });
 

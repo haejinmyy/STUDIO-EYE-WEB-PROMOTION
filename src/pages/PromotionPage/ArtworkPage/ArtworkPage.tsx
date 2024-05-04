@@ -15,14 +15,18 @@ function ArtworkPage() {
   const { data, isLoading } = useQuery<IArtworksData>(['artwork', 'id'], getArtworkData);
   const category = artwork_categories.find((category) => category.key + '' === categoryId);
 
-  const postedData = data && data?.data.filter((artwork) => artwork.isPosted === true);
+  const postedData = data && data?.data.filter((artwork) => artwork.isPosted === false);
   const filteredData = postedData?.filter(
     (artworks) => artworks.category.toLowerCase() === category?.label.toLocaleLowerCase(),
   );
 
-  // useEffect(() => {
-  //   console.log(`Selected category ID: ${categoryId}`);
-  // }, [categoryId]);
+  function ScrollToTop() {
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, [location]); // pathname이 변경될 때마다 실행
+
+    return null;
+  }
 
   return (
     <>
@@ -30,10 +34,11 @@ function ArtworkPage() {
         <div>is Loading...</div>
       ) : (
         <>
+          <ScrollToTop />
           <Wrapper>
             {data && categoryId === null ? (
               <ArtworkWrapper>
-                {postedData?.length === 0 ? (
+                {postedData?.length === 0 || data === null ? (
                   <NullException />
                 ) : (
                   <>
@@ -50,10 +55,11 @@ function ArtworkPage() {
               </ArtworkWrapper>
             ) : (
               <ArtworkWrapper>
-                {filteredData?.length === 0 ? (
+                {filteredData?.length === 0 || data === null ? (
                   <NullException />
                 ) : (
                   <>
+                    <ScrollToTop />
                     {filteredData?.map((artwork) => (
                       <ArtworkCard
                         id={artwork.id}
