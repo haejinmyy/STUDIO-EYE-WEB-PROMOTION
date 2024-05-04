@@ -29,8 +29,8 @@ const linksData = [
     svgComponent: <Artwork width={20} height={20} />,
   },
   {
-    path: PA_ROUTES.PAGE_EDIT,
-    pathName: 'Page Edit',
+    path: PA_ROUTES.DATA_EDIT,
+    pathName: 'Data Edit',
     svgComponent: <PageEdit width={20} height={20} />,
   },
   {
