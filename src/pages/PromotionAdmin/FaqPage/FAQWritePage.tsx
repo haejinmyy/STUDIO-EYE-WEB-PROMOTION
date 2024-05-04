@@ -10,6 +10,7 @@ import { EditorState, convertToRaw } from 'draft-js';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import draftToHtml from 'draftjs-to-html';
 import TextEditor from '@/components/PromotionAdmin/FAQ/TextEditor';
+import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 
 function FAQWritePage() {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -35,7 +36,7 @@ function FAQWritePage() {
       visibility: data.visibility,
     };
     axios
-      .post(`http://3.36.95.109:8080/api/faq`, formData)
+      .post(`${PROMOTION_BASIC_PATH}/api/faq`, formData)
       .then((response) => {
         alert('FAQ가 등록되었습니다.');
         navigator(`${PA_ROUTES.FAQ}`);

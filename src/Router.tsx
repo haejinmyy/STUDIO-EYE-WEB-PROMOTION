@@ -3,7 +3,7 @@ import Root from './Root';
 import PAHomePage from './pages/PromotionAdmin/HomePage/index';
 import PARequestPage from './pages/PromotionAdmin/RequestPage/index';
 import PAArtworkPage from './pages/PromotionAdmin/ArtworkPage/Artwork';
-import PAPageEditPage from './pages/PromotionAdmin/PageEditPage/index';
+import PAPageEditPage from './pages/PromotionAdmin/DataEditPage/index';
 import PAStatisticsPage from './pages/PromotionAdmin/StatisticsPage/index';
 import PAFaqPage from './pages/PromotionAdmin/FaqPage/index';
 import PASettingPage from './pages/PromotionAdmin/SettingPage/index';
@@ -25,6 +25,13 @@ import PPLayout from '@/components/PromotionPage/Layout/Layout';
 import ContactUsPage from './pages/PromotionPage/ContactPage/ContactUsPage';
 import Test from '@/components/PromotionPage/Main/Slide3';
 
+import CEOPage from './pages/PromotionAdmin/DataEditPage/CEOPage/CEOPage';
+import CompanyPage from './pages/PromotionAdmin/DataEditPage/CompanyPage/CompanyPage';
+import PartnerPage from './pages/PromotionAdmin/DataEditPage/PartnerPage/PartnerPage';
+import ClientPage from './pages/PromotionAdmin/DataEditPage/ClientPage/ClientPage';
+import PartnerEditPage from './pages/PromotionAdmin/DataEditPage/PartnerPage/PartnerEditPage';
+import ClientEditPage from './pages/PromotionAdmin/DataEditPage/ClientPage/ClientEditPage';
+import PartnerWritePage from './pages/PromotionAdmin/DataEditPage/PartnerPage/PartnerWritePage';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -97,8 +104,42 @@ const router = createBrowserRouter([
             ],
           },
           {
-            path: PA_ROUTES_CHILD.PAGE_EDIT,
+            path: PA_ROUTES_CHILD.DATA_EDIT,
             element: <PAPageEditPage />,
+            children: [
+              {
+                path: `${PA_ROUTES.DATA_EDIT}/ceo`,
+                element: <CEOPage />,
+              },
+              {
+                path: `${PA_ROUTES.DATA_EDIT}/company`,
+                element: <CompanyPage />,
+              },
+              {
+                path: `${PA_ROUTES.DATA_EDIT}/partner`,
+                element: <PartnerPage />,
+                children: [
+                  {
+                    path: `${PA_ROUTES.DATA_EDIT}/partner/:partnerId`,
+                    element: <PartnerEditPage />,
+                  },
+                ],
+              },
+              {
+                path: `${PA_ROUTES.DATA_EDIT}/partner/write`,
+                element: <PartnerWritePage />,
+              },
+              {
+                path: `${PA_ROUTES.DATA_EDIT}/client`,
+                element: <ClientPage />,
+                children: [
+                  {
+                    path: `${PA_ROUTES.DATA_EDIT}/client/:clientrId`,
+                    element: <ClientEditPage />,
+                  },
+                ],
+              },
+            ],
           },
           {
             path: PA_ROUTES_CHILD.STATISTICS,

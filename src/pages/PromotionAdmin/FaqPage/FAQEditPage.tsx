@@ -13,6 +13,7 @@ import htmlToDraft from 'html-to-draftjs';
 import draftToHtml from 'draftjs-to-html';
 import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
 import TextEditor from '@/components/PromotionAdmin/FAQ/TextEditor';
+import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 
 export default function FAQCEditPage() {
   const navigator = useNavigate();
@@ -56,7 +57,7 @@ export default function FAQCEditPage() {
     };
     if (window.confirm('수정하시겠습니까?')) {
       axios
-        .put(`http://3.35.54.100:8080/api/faq`, formData)
+        .put(`${PROMOTION_BASIC_PATH}/api/faq`, formData)
         .then((response) => {
           alert('FAQ가 수정되었습니다.');
         })
@@ -69,7 +70,7 @@ export default function FAQCEditPage() {
   const handleDelete = (id: number) => {
     if (window.confirm('삭제하시겠습니까?')) {
       axios
-        .delete(`http://3.35.54.100:8080/api/faq/${id}`)
+        .delete(`${PROMOTION_BASIC_PATH}/api/faq/${id}`)
         .then((response) => {})
         .catch((error) => console.log(error));
 

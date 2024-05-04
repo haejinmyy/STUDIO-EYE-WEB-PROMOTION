@@ -34,12 +34,17 @@ function Navigation() {
   const categoryId = new URLSearchParams(location.search).get('category');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
+  const [refresh, setRefresh] = useState(1);
+  const handleRefresh = () => {
+    setRefresh(refresh * -1);
+  };
+
   useEffect(() => {
     // console.log(`Selected category ID: ${categoryId}`);
     if (categoryId === null) {
       setSelectedCategory(ARTWORK_CATECORY.ALL);
     }
-  }, [categoryId]);
+  }, [categoryId, refresh]);
 
   return (
     <CategoryBar>
@@ -47,6 +52,8 @@ function Navigation() {
         onClick={() => {
           navigator(`/${PP_ROUTES_CHILD.ARTWORK}`);
           setSelectedCategory(artwork_categories[0].label);
+          handleRefresh();
+          // window.location.replace(`/${PP_ROUTES_CHILD.ARTWORK}`);
         }}
         selected={selectedCategory === artwork_categories[0].label && categoryId !== null + '' ? true : false}
       >
@@ -59,6 +66,8 @@ function Navigation() {
           onClick={() => {
             navigator(`?category=${category.key}`);
             setSelectedCategory(category.label);
+            handleRefresh();
+            // window.location.reload();
           }}
           selected={categoryId === category.key + '' ? true : false}
         >

@@ -1,9 +1,22 @@
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
+import axios from 'axios';
 
-export function getArtworkData() {
-  return fetch(`${PROMOTION_BASIC_PATH}/api/projects`).then((response) => response.json());
-}
+export const getArtworkData = async () => {
+  try {
+    const response = await axios.get(`${PROMOTION_BASIC_PATH}/api/projects`);
+    return response.data;
+  } catch (error) {
+    console.log('[❌ Error fetching all artworks]', error);
+    throw error;
+  }
+};
 
-export function getArtworkDetailData(id: number) {
-  return fetch(`${PROMOTION_BASIC_PATH}/api/projects/${id}`).then((response) => response.json());
-}
+export const getArtworkDetailData = async (id: number) => {
+  try {
+    const response = await axios.get(`${PROMOTION_BASIC_PATH}/api/projects/${id}`);
+    return response.data.data;
+  } catch (error) {
+    console.log('[❌ Error fetching artwork detail]', error);
+    throw error;
+  }
+};
