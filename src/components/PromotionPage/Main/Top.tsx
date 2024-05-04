@@ -1,31 +1,37 @@
 import { motion, useInView } from 'framer-motion';
 import React, { useRef } from 'react';
 import styled from 'styled-components';
-import mainBackgroundImgPath from '@/assets/images/mockup/test2.png';
+
 import Circle from '../Circle/Circle';
 
-const Top = () => {
+type Props = {
+  backgroundImg: string;
+};
+
+const Top = ({ backgroundImg }: Props) => {
   const ref = useRef(null);
   const isInView = useInView(ref);
   return (
     <Background
-      style={{ backgroundImage: `url(${mainBackgroundImgPath})` }}
+      style={{ backgroundImage: `url(${backgroundImg})`, backgroundPosition: 'center', backgroundSize: 'cover' }}
       initial={{ opacity: 0, scale: 0.7 }}
       animate={{ opacity: isInView ? 1 : 0.9, scale: 1 }}
       transition={{ duration: 1.5 }}
     >
       <SloganWrapper
         ref={ref}
-        initial={{ opacity: 0, y: '-50%', x: '-50%', scale: 0.5 }}
-        animate={{ opacity: isInView ? 1 : 0, y: isInView ? '130%' : '50%', x: '-40%', scale: isInView ? 1 : 0.5 }} // 애니메이션 적용 후 상태 (화면 정중앙에서 보임)
+        initial={{ opacity: 0, y: '100%', x: '20%', scale: 0.5 }}
+        animate={{
+          opacity: isInView ? 1 : 0,
+          y: isInView ? '140%' : '100%',
+          x: isInView ? '-60%' : '20%',
+          scale: isInView ? 1 : 0.5,
+        }}
         transition={{ duration: 1 }}
       >
         <BackWrapper>New Media Contents Group</BackWrapper>
         <NameWrapper>STUDIO EYE</NameWrapper>
       </SloganWrapper>
-      <CircleWrapper>
-        <Circle label='ABOUT STUDIO EYE' />
-      </CircleWrapper>
     </Background>
   );
 };
@@ -44,12 +50,6 @@ const Background = styled(motion.div)`
 
 const SloganWrapper = styled(motion.div)`
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  bottom: -20%;
-  left: -10%;
 `;
 
 const BackWrapper = styled.div`

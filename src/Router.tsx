@@ -23,7 +23,6 @@ import ArtworkLayout from './components/PromotionPage/Artwork/Layout';
 import Mainpage from '@/pages/PromotionPage/Main/MainPage';
 import PPLayout from '@/components/PromotionPage/Layout/Layout';
 import ContactUsPage from './pages/PromotionPage/ContactPage/ContactUsPage';
-import Test from '@/components/PromotionPage/Main/Slide3';
 
 import CEOPage from './pages/PromotionAdmin/DataEditPage/CEOPage/CEOPage';
 import CompanyPage from './pages/PromotionAdmin/DataEditPage/CompanyPage/CompanyPage';
