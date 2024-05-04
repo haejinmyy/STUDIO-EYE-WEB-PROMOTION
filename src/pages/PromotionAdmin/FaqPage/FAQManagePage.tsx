@@ -9,6 +9,7 @@ import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { theme } from '@/styles/theme';
 import Pagination from '@/components/PromotionAdmin/FAQ/Pagination';
+import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 
 function FAQManagePage() {
   const navigator = useNavigate();
@@ -19,7 +20,7 @@ function FAQManagePage() {
   const handleDelete = (id: number) => {
     if (window.confirm('삭제하시겠습니까?')) {
       axios
-        .delete(`http://3.36.95.109:8080/api/faq/${id}`)
+        .delete(`${PROMOTION_BASIC_PATH}/api/faq/${id}`)
         .then((response) => {})
         .catch((error) => console.log(error));
       alert('FAQ가 삭제되었습니다.');

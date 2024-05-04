@@ -1,4 +1,4 @@
-import { useMatch, useNavigate } from 'react-router-dom';
+import { useLocation, useMatch, useNavigate } from 'react-router-dom';
 import { PP_ROUTES_CHILD } from '@/constants/routerConstants';
 import styled from 'styled-components';
 import { IArtworksData } from '@/types/PromotionPage/artwork';
@@ -9,6 +9,7 @@ import ScrollAnimatedComponent from '@/components/PromotionPage/ArtworkDetail/Sc
 import RotatedCircle from '@/components/PromotionPage/ArtworkDetail/RotatedCircle';
 import ImageSlider from '@/components/PromotionPage/ArtworkDetail/ImageSlider';
 import { NavWrapper } from '@/components/PromotionPage/ArtworkDetail/Components';
+import { useEffect } from 'react';
 
 function ArtworkDetailPage() {
   const navigator = useNavigate();
@@ -30,6 +31,16 @@ function ArtworkDetailPage() {
   const prevIndex = data && currentIndex === 0 ? null : data?.data[currentIndex - 1].id;
   const nextIndex = data && currentIndex === dataLength - 1 ? null : data?.data[currentIndex + 1].id;
 
+  function ScrollToTop() {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, [pathname]); // pathname이 변경될 때마다 실행
+
+    return null;
+  }
+
   return (
     <>
       {isLoading ? (
@@ -38,6 +49,7 @@ function ArtworkDetailPage() {
         <>
           {clickedArtwork && (
             <>
+              <ScrollToTop />
               <Wrapper>
                 <Thumbnail bgPhoto={clickedArtwork.mainImg}>
                   <Title>{clickedArtwork.name}</Title>
@@ -94,9 +106,9 @@ function ArtworkDetailPage() {
                     <p>
                       Do you want to see the <span>&nbsp;project</span>?
                     </p>
-                    <Circle>
-                      <RotatedCircle url={clickedArtwork.link} />
-                    </Circle>
+                    <CircleWrapper>
+                      <RotatedCircle label='WATCH' link={clickedArtwork.link} />
+                    </CircleWrapper>
                   </Content>
                 </ContentWrapper>
 
@@ -177,7 +189,13 @@ function ArtworkDetailPage() {
                       </NavWrapper>
                     )}
 
-                    <List onClick={() => navigator(`/${PP_ROUTES_CHILD.ARTWORK}`)}>LIST</List>
+                    <List
+                      onClick={() => {
+                        navigator(`/${PP_ROUTES_CHILD.ARTWORK}`);
+                      }}
+                    >
+                      LIST
+                    </List>
                   </>
                 )}
               </Wrapper>
@@ -287,7 +305,7 @@ const Content = styled.div`
   }
 `;
 
-const Circle = styled.div`
+const CircleWrapper = styled.div`
   display: flex;
   justify-content: center;
 `;
@@ -312,6 +330,7 @@ const List = styled.div`
   font-size: 40px;
   font-weight: 500;
   height: 100px;
+  color: ${(props) => props.theme.color.black.bold};
   border-bottom: 1px solid ${(props) => props.theme.color.black.bold};
   background-color: ${(props) => props.theme.color.white.bold};
 `;

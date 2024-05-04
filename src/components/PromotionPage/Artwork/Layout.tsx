@@ -17,7 +17,7 @@ const Layout = () => {
 export default Layout;
 
 const Wrapper = styled.div`
-  padding-top: 100px;
+  padding-top: 200px;
   width: 100%;
   min-height: 100vh;
   background-color: ${(props) => props.theme.color.background};
