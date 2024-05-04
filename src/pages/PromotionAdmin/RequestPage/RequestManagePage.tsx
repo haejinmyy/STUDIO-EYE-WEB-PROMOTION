@@ -46,11 +46,11 @@ function RequestList() {
     e.stopPropagation();
     let answerText = '';
     if (state === 1) {
-      answerText = clientName + '님의 의뢰가 승인되었습니다.';
+      answerText = clientName + '님의 문의가 승인되었습니다.';
     } else if (state === 2) {
       answerText =
         clientName +
-        '님의 의뢰를 거절하게 되어 죄송합니다. 더 발전된 Studio-EYE가 되어 더욱 많은 의뢰를 진행할 수 있도록 노력하겠습니다.';
+        '님의 문의를 거절하게 되어 죄송합니다. 더 발전된 Studio-EYE가 되어 더욱 많은 문의를 진행할 수 있도록 노력하겠습니다.';
     }
     const formData = {
       answer: answerText,
@@ -94,12 +94,12 @@ function RequestList() {
               </svg>
             </Icon>
             Request 관리
-            <Info>의뢰 총 {data?.data.length}건</Info>
+            <Info>문의 총 {data?.data.length}건</Info>
           </Title>
           <ButtonsWrapper>
             <ButtonWrapper>
               <Button>
-                승인 대기 의뢰
+                승인 대기 문의
                 <input
                   type='checkbox'
                   id='waitingApprovalSwitch'
@@ -113,7 +113,7 @@ function RequestList() {
             </ButtonWrapper>
             <ButtonWrapper>
               <Button>
-                완료된 의뢰
+                완료된 문의
                 <input
                   type='checkbox'
                   id='completedRequestSwitch'
@@ -135,10 +135,10 @@ function RequestList() {
               <th>소속</th>
               <th>연락처</th>
               <th>이메일</th>
-              <th>지위</th>
+              <th>직책</th>
               <th>날짜</th>
               <th>승인상태</th>
-              <th>의뢰상태</th>
+              <th>문의상태</th>
             </tr>
           </thead>
           <tbody>
