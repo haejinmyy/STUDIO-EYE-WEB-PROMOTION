@@ -2,13 +2,17 @@ import React from 'react';
 import Header from '@/components/PromotionPage/Header/Header';
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
+import CustomCursor from '../CustomCursor/CustomCursor';
+import ScrollToTop from '@/hooks/useScrollToTop';
 
 const Layout = () => {
   return (
-    <Container>
+    <Container className='promotion-cursor'>
+      <ScrollToTop />
       <Header />
       <BodyWrapper>
         <Outlet />
+        <CustomCursor />
       </BodyWrapper>
     </Container>
   );
@@ -21,4 +25,5 @@ const Container = styled.div`
   width: 100%;
   color: white;
 `;
+
 const BodyWrapper = styled.div``;

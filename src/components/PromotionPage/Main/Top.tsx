@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import mainBackgroundImgPath from '@/assets/images/mockup/test2.png';
 import Circle from '../Circle/Circle';
 
-const Slide1 = () => {
+const Top = () => {
   const ref = useRef(null);
   const isInView = useInView(ref);
   return (
@@ -30,7 +30,7 @@ const Slide1 = () => {
   );
 };
 
-export default Slide1;
+export default Top;
 
 const Background = styled(motion.div)`
   width: 100%;
