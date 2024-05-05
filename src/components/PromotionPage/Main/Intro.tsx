@@ -49,6 +49,7 @@ export default Intro;
 const Container = styled.div`
   width: 100%;
   height: 100vh;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -73,4 +74,3 @@ const DesWrapper = styled.div`
 const CircleWrapper = styled(motion.div)`
   margin-top: 102px;
 `;
-const Cidd = styled.div``;

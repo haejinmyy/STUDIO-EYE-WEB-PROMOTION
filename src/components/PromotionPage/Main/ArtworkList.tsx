@@ -2,6 +2,10 @@ import React, { useEffect } from 'react';
 import { Box, BoxProps, Flex, FlexProps } from '@chakra-ui/react';
 import { motion, Variants, useTransform, MotionValue, useSpring } from 'framer-motion';
 import styled from 'styled-components';
+import index from '@/pages/PromotionAdmin/HomePage';
+import { MotionBox } from '@/pages/PromotionPage/Main/MainPage';
+import { ppHeaderScrolledState } from '@/recoil/atoms';
+import { useSetRecoilState } from 'recoil';
 
 interface SectionProps {
   elementHeight: number;
@@ -32,10 +36,11 @@ const ArtworkList = React.forwardRef<HTMLElement, SectionProps>(({ elementHeight
     ['0vh', '100vh'],
   );
 
+  // TODO 마지막 요소에서 스크롤 자연스럽게 넘어가게 하기
   return (
     <MotionBox
       w='100%'
-      h='100vh'
+      h='90%'
       scrollSnapAlign='center'
       initial='offscreen'
       whileInView='onscreen'
@@ -46,10 +51,11 @@ const ArtworkList = React.forwardRef<HTMLElement, SectionProps>(({ elementHeight
       backgroundImage={`url(${data.backgroundImg})`}
       backgroundSize='cover'
       backgroundPosition='center'
+      opacity={0.8}
     >
       <MotionFlex
         w='100%'
-        h='100%'
+        h='90%'
         paddingLeft={100}
         paddingTop={150}
         color='white'
@@ -70,13 +76,17 @@ const ArtworkList = React.forwardRef<HTMLElement, SectionProps>(({ elementHeight
 export default ArtworkList;
 const TitleWrapper = styled.div`
   font-family: 'pretendard-bold';
-  font-size: 6rem;
+  font-size: 50px;
   color: white;
   white-space: nowrap;
 `;
 const ClientWrapper = styled(motion.h2)`
   font-family: 'pretendard-bold';
-  font-size: 2.6rem;
+  font-size: 25px;
   color: #cccccc;
 `;
-const OverviewWrapper = styled.div``;
+const OverviewWrapper = styled.div`
+  font-family: 'pretendard-medium';
+  font-size: 20px;
+  color: white;
+`;
