@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
 import CustomCursor from '../CustomCursor/CustomCursor';
 import ScrollToTop from '@/hooks/useScrollToTop';
+import Footer from '../Footer/Footer';
 
 const Layout = () => {
   return (
@@ -14,6 +15,7 @@ const Layout = () => {
         <Outlet />
         <CustomCursor />
       </BodyWrapper>
+      <Footer />
     </Container>
   );
 };
