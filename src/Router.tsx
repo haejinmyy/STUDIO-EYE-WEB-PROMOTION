@@ -23,6 +23,7 @@ import ArtworkLayout from './components/PromotionPage/Artwork/Layout';
 import Mainpage from '@/pages/PromotionPage/Main/MainPage';
 import PPLayout from '@/components/PromotionPage/Layout/Layout';
 import ContactUsPage from './pages/PromotionPage/ContactPage/ContactUsPage';
+import FaqPage from './pages/PromotionPage/FaqPage/FaqPage';
 
 import CEOPage from './pages/PromotionAdmin/DataEditPage/CEOPage/CEOPage';
 import CompanyPage from './pages/PromotionAdmin/DataEditPage/CompanyPage/CompanyPage';
@@ -66,6 +67,10 @@ const router = createBrowserRouter([
           {
             path: PP_ROUTES_CHILD.CONTACT,
             element: <ContactUsPage />,
+          },
+          {
+            path: PP_ROUTES_CHILD.FAQ,
+            element: <FaqPage />,
           },
         ],
       },

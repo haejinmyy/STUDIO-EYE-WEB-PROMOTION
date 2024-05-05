@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import Body from '../../../components/Common/Body';
-// import { useNavigate } from 'react-router-dom';
+import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-// import { FaSearch } from 'react-icons/fa';
+import { FaSearch } from 'react-icons/fa';
 
-const FaqPage = (e: any) => {
+interface FaqData {
+  id: number;
+  question: string;
+  answer: string;
+  visibility: boolean;
+}
+
+const FaqPage = () => {
   const [data, setData] = useState([]);
   const [faqQuestion, setFaqQuestion] = useState('');
   const [searchResult, setSearchResult] = useState('');
-  const [searchData, setSearchData] = useState([]);
+  const [searchData, setSearchData] = useState<FaqData[]>([]);
+  const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
   const [searchToggleStates, setSearchToggleStates] = useState(Array(searchData.length).fill(false));
-  // const [showAllFaq, setShowAllFaq] = useState(false);
-  // const [toggleStates, setToggleStates] = useState(Array(data.length).fill(false));
-  // const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -59,6 +62,7 @@ const FaqPage = (e: any) => {
     setFaqQuestion(e.target.value);
     searchQuestion(e.target.value, data);
   };
+
   const searchQuestion = (searchTerm: string, data: any) => {
     const searchTermLower = searchTerm.toLowerCase();
     const searchResults: any = [];
@@ -81,17 +85,17 @@ const FaqPage = (e: any) => {
     setSearchData(searchResults.length > 0 ? searchResults : []);
     setSearchResult(searchResults.length > 0 ? 'success' : 'fail');
   };
-  // const goToDetail = (id: number) => {
-  //   navigate(`/faq/detail/${id}`);
-  // };
-  // const handleShowAllFaq = () => {
-  //   setShowAllFaq(!showAllFaq);
-  // };
+
   const searchToggleItem = (index: number) => {
-    console.log(searchToggleStates);
-    const newSearchToggleStates = [...searchToggleStates];
-    newSearchToggleStates[index] = !newSearchToggleStates[index];
-    setSearchToggleStates(newSearchToggleStates);
+    setExpandedItems((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(index)) {
+        newSet.delete(index);
+      } else {
+        newSet.add(index);
+      }
+      return newSet;
+    });
   };
 
   const refreshToggleItem = () => {
@@ -100,328 +104,207 @@ const FaqPage = (e: any) => {
   };
 
   return (
-    <Body>
-      <Wrapper>
-        <Title>FAQ</Title>
-        <SubContent>이곳에 자주 묻는 질문들에 대한 답변을 모아 놓았어요.</SubContent>
+    <Container>
+      <GradientOverlayTopLeft />
+      <GradientOverlayBottomRight />
+      <Header>
+        <Title>
+          <AnimatedSpan delay={0.1}>F</AnimatedSpan>requently
+          <AnimatedSpan delay={0.3}> A</AnimatedSpan>sked
+          <AnimatedSpan delay={0.5}> Q</AnimatedSpan>uestions
+        </Title>
+        <SubContent>이곳에 자주 묻는 질문들에 대한 답변을 모아 놓았습니다.</SubContent>
+      </Header>
+      <Content>
         <InputWrapper>
-          <Label>자주 묻는 질문 검색</Label>
-          <SearchWrapper>
-            {faqQuestion === '' ? (
+          {faqQuestion === '' ? (
+            <SearchFaqQuestion
+              placeholder="컨텐츠 문의, 회사 위치 등의 검색어를 입력해 주세요."
+              autoComplete='off'
+              name='searchingfaqquestion'
+              value={faqQuestion}
+              onChange={handleTextAreaDataChange}
+            />
+          ) : (
+            <>
               <SearchFaqQuestion
-                placeholder='검색 예시: 컨텐츠 문의, 회사 위치 등'
                 autoComplete='off'
                 name='searchingfaqquestion'
-                value={faqQuestion}
                 onChange={handleTextAreaDataChange}
               />
-            ) : (
-              <>
-                <SearchFaqQuestion
-                  autoComplete='off'
-                  name='searchingfaqquestion'
-                  onChange={handleTextAreaDataChange}
-                  // onKeyPress={(e) => {
-                  //   if (e.key === 'Enter') {
-                  //     e.preventDefault();
-                  //     searchQuestion(faqQuestion, data);
-                  //   }
-                  // }}
-                />
-                {/* <SearchButton
-                  whileHover={{ scale: 1.04 }}
-                  transition={{ ease: 'easeInOut', stiffness: 200, damping: 5 }}
-                  onClick={() => searchQuestion(faqQuestion, data)}
-                >
-                  <FaSearch size={24} />
-                </SearchButton> */}
-              </>
-            )}
-          </SearchWrapper>
-          {searchResult === 'success' ? (
-            <FaqList>
-              {searchData.map((item: any) => (
-                <FaqDetailButton
-                  key={item.index}
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ ease: 'easeInOut', stiffness: 200, damping: 5 }}
-                  onClick={() => searchToggleItem(item.index)}
-                >
-                  <FaqBrief>
-                    <FaqBriefIndex>Q{item.index + 1}</FaqBriefIndex>
-                    <FaqBriefQuestion>
-                      {item.question.length >= 100 ? item.question.substring(0, 70) + '...' : item.question}
-                    </FaqBriefQuestion>
-                  </FaqBrief>
-                  {searchToggleStates[item.index] && (
-                    <FaqDetailBox>
-                      <FaqDetailQuestion>Q. {item.question}</FaqDetailQuestion>
-                      <FaqDetailAnswer dangerouslySetInnerHTML={{ __html: item.answer }} />
-                    </FaqDetailBox>
-                  )}
-                </FaqDetailButton>
-              ))}
-            </FaqList>
-          ) : searchResult === 'fail' ? (
-            <SearchFailed>검색 조건에 맞는 결과를 찾지 못했습니다.</SearchFailed>
-          ) : (
-            <SearchFailed>자주 묻는 질문이 없습니다.</SearchFailed>
+            </>
           )}
         </InputWrapper>
-        {/* <InputWrapper>
-          <FaqList>
-            {data.map((item: any, index: number) => (
-              <FaqDetailButton
-                key={item.id}
-                whileHover={{ scale: 1.02 }}
-                transition={{ ease: 'easeInOut', stiffness: 200, damping: 5 }}
-                onClick={() => toggleItem(index)}
-              >
-                <FaqBrief>
-                  <FaqBriefIndex>Q{index + 1}</FaqBriefIndex>
-                  <FaqBriefQuestion>
-                    {item.question.length >= 100 ? item.question.substring(0, 70) + '...' : item.question}
-                  </FaqBriefQuestion>
-                </FaqBrief>
-                {toggleStates[index] && (
-                  <FaqDetailBox>
-                    <FaqDetailQuestion>Q. {item.question}</FaqDetailQuestion>
-                    <FaqDetailAnswer>A. {item.answer.replace(/<[^>]*>/g, '')}</FaqDetailAnswer>
-                  </FaqDetailBox>
-                )}
-              </FaqDetailButton>
-            ))}
-            {data.slice(0, showAllFaq === false ? 4 : undefined).map((item: any) => (
-              <FaqDetailButton
-                key={item.id}
-                whileHover={{ scale: 1.04 }}
-                transition={{ ease: 'easeInOut', stiffness: 200, damping: 5 }}
-                onClick={() => goToDetail(item.id)}
-              >
-                <FaqDetailQuestion>{item.question}</FaqDetailQuestion>
-                <FaqDetailAnswer>
-                  {item.answer.length >= 100
-                    ? item.answer.replace(/<[^>]*>/g, '').substring(0, 70) + '...'
-                    : item.answer.replace(/<[^>]*>/g, '')}
-                </FaqDetailAnswer>
-              </FaqDetailButton>
-            ))}
-          </FaqList>
-        </InputWrapper>
-        <ShowAllFaqButton
-          whileHover={{ scale: 1.04 }}
-          transition={{ ease: 'easeInOut', stiffness: 200, damping: 5 }}
-          onClick={handleShowAllFaq}
-        >
-          <SubTitle>모두 보기</SubTitle>
-        </ShowAllFaqButton> */}
-      </Wrapper>
-    </Body>
+        {searchResult === 'fail' ? (
+          <NoResults>검색 결과가 없습니다.</NoResults>
+        ) : (
+          searchData.map((item: any, i: number) => (
+            <FaqDetailButton
+              key={i}
+              initial={{ height: 30, opacity: 0.5, scale: 0.9 }}
+              animate={expandedItems.has(i) ? { height: 'auto', opacity: 1, scale: 1 } : { height: 30, opacity: 0.5, scale: 0.9 }}
+              transition={{ duration: 0.4, ease: 'easeInOut' }}
+              onClick={() => searchToggleItem(i)}
+            >
+              <FaqBrief>
+                <FaqBriefQuestion>{item.question.length >= 100 ? item.question.substring(0, 70) + '...' : item.question}</FaqBriefQuestion>
+              </FaqBrief>
+              {expandedItems.has(i) && (
+                <FaqDetailBox>
+                  <FaqDetailAnswer dangerouslySetInnerHTML={{ __html: item.answer }} />
+                </FaqDetailBox>
+              )}
+            </FaqDetailButton>
+          ))
+        )}
+
+      </Content>
+    </Container >
   );
 };
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+const Container = styled.div`
+  font-family: 'Pretendard';
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  background-color: black;
+  color: white;
 `;
-const Title = styled.div`
-  font-size: 54px;
-  font-weight: 750;
-  color: #ff530e;
-  letter-spacing: 2px;
-  margin-top: 100px;
-  margin-bottom: 50px;
-  text-align: center;
+
+const GradientOverlayTopLeft = styled.div`
+  position: absolute;
+  top: 0%;
+  left: 00%;
+  width: 50%;
+  height: 50%;
+  background-image: radial-gradient(circle at top left, rgba(255, 169, 0, 0.3), transparent);
+  filter: blur(50px);
+  z-index: 0;
 `;
-// const SubTitle = styled.div`
-//   font-size: 25px;
-//   font-weight: bold;
-//   color: #ffa900;
-//   margin-bottom: 7px;
-// `;
-const SubContent = styled.div`
-  font-size: 23px;
-  font-weight: bold;
-  color: black;
-  white-space: pre-line;
-  text-align: center;
-  margin-bottom: 20px;
-`;
-const InputWrapper = styled.div`
-  margin-top: 100px;
-  display: flex;
+
+const GradientOverlayBottomRight = styled.div`
+  position: absolute;
+  bottom: 0%;
+  right: 0%;
   width: 80%;
-  flex-direction: column;
+  height: 80%;
+  background-image: radial-gradient(circle at bottom right, rgba(255, 169, 0, 0.3), transparent);
+  filter: blur(50px);
+  z-index: 0;
 `;
-const SearchWrapper = styled.div`
+
+const Header = styled.div`
+  position: relative;
+  text-align: center;
+  margin-top: 8rem;
+`;
+
+const slideIn = keyframes`
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+`;
+
+const Title = styled.h1`
+  font-size: 4rem;
+  font-weight: 600;
+  color: white;
+`;
+
+interface AnimatedSpanProps {
+  delay?: number;
+}
+
+const AnimatedSpan = styled.span<AnimatedSpanProps>`
+  color: #ffa900;
+  animation: ${slideIn} 1.2s ease-out;
+  animation-delay: ${(props) => props.delay || 0}s;
+`;
+
+const SubContent = styled.p`
+  font-size: 1.2rem;
+
+  margin-top: 2rem;
+  color: white;
+`;
+
+const Content = styled.div`
+  padding-top: 5rem;
+  padding-bottom: 20px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  flex-direction: row;
-  height: 50px;
-  border: 1px solid black;
-  border-radius: 30px;
-  background-color: #eaeaea;
-  padding-left: 15px;
-  padding-right: 15px;
-  margin-bottom: 30px;
+  position: relative;
+  z-index: 1;
 `;
-// const SearchResultBox = styled.div`
-//   display: flex;
-//   flex-wrap: wrap;
-//   background-color: transparent;
-//   padding-top: 0px;
-//   padding: 30px;
-//   flex-direction: column;
-//   align-items: center;
-//   border-bottom: 2px solid black;
-// `;
-const SearchFailed = styled.div`
-  text-align: center;
-  font-size: 20px;
-  font-weight: 500;
-  color: #ff0000;
-  margin-bottom: 100px;
-`;
-const FaqList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 100px;
-`;
-// const FaqDetailQuestion = styled.div`
-//   font-size: 20px;
-//   font-weight: 700;
-//   color: #000000;
-//   margin-bottom: 10px;
-// `;
-// const FaqDetailAnswer = styled.div`
-//   font-size: 16px;
-//   font-weight: 500;
-//   color: #000000;
-// `;
-const FaqBrief = styled.div`
-  display: flex;
-  flex-direction: row;
-`;
-const FaqBriefIndex = styled.div`
-  width: 10%;
-  height: 50px;
-  align-content: center;
-  text-align: center;
-  font-size: 20px;
-  font-weight: 700;
-  color: #000000;
-  background-color: #d5d5d5;
-  border-radius: 10px 0 0 10px;
-`;
-const FaqBriefQuestion = styled.div`
-  width: 90%;
-  height: 50px;
-  align-content: center;
-  text-align: center;
-  font-size: 20px;
-  font-weight: 700;
-  color: #000000;
-  background-color: #eaeaea;
-  border-radius: 0 10px 10px 0;
-`;
-const FaqDetailBox = styled.div`
-  display: flex;
-  width: 100%;
-  max-height: 300px;
-  overflow-y: auto;
+
+const InputWrapper = styled.div`
+  padding: 10px 30px;
+  border: 2px solid gray;
   background-color: transparent;
-  padding: 30px;
-  flex-direction: column;
-  align-items: flex-start;
+  width: 80%;
+  text-align: center;
+  margin-bottom: 2rem;
 `;
-const FaqDetailQuestion = styled.div`
-  font-size: 45px;
-  font-weight: 700;
-  color: #000000;
-  letter-spacing: 2px;
-  margin-bottom: 60px;
-`;
-const FaqDetailAnswer = styled.div`
-  font-size: 20px;
-  font-weight: 500;
-  color: #303030;
-  white-space: pre-line;
-  text-align: justify;
-`;
-const Label = styled.label`
-  margin-bottom: 20px;
-  padding-left: 15px;
-  font-weight: bold;
-  font-size: 18px;
-  color: black;
-`;
+
 const SearchFaqQuestion = styled.input`
   all: unset;
-  outline: none;
-  align-content: center;
-  height: 50px;
+  height: 30px;
   width: 100%;
-  font-size: 20px;
-  line-height: 30px;
-  font-weight: bold;
-  overflow-wrap: break-word;
+  font-size: 18px;
+  color: white;
+  text-align: center;
 `;
-// const SearchButton = styled(motion.button)`
-//   background-color: transparent;
-//   border: none;
-//   color: #ffa900;
-//   cursor: pointer;
-//   &:hover {
-//     color: #ffffff;
-//   }
-// `;
-// const FaqDetailButton = styled(motion.button)`
-//   width: 270px;
-//   height: 270px;
-//   margin: 10px;
-//   margin-bottom: 0px;
-//   margin-top: 5px;
-//   background-color: #d5d5d5;
-//   border: none;
-//   cursor: pointer;
-//   &:hover {
-//     background-color: #eaeaea;
-//   }
-//   padding: 10px;
-//   text-align: justify;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-// `;
-const FaqDetailButton = styled(motion.button)`
-  width: 100%;
-  margin-bottom: 10px;
-  background-color: rgba(0, 0, 0, 0);
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  &:hover
-  text-align: justify;
+
+const FaqDetailButton = styled(motion.div)`
+  border-top: 2px solid gray;
+  border-bottom: 2px solid gray;
+
+  margin-bottom: 1rem;
+  padding: 30px;
+  width: 80%;
   overflow: hidden;
-  text-overflow: ellipsis;
-  align-items: center;
+  cursor: pointer;
 `;
-// const ShowAllFaqButton = styled(motion.button)`
-//   width: 400px;
-//   height: 40px;
-//   margin: 5px;
-//   background-color: #eaeaea;
-//   border: none;
-//   border-radius: 20px;
-//   cursor: pointer;
-//   &:hover {
-//     background-color: #f6f6f6;
-//   }
-//   margin-bottom: 50px;
-//   margin-top: 30px;
-//   font-size: 20px;
-// `;
+
+const FaqBrief = styled.div`
+  display: flex;
+  justify-content: left;
+`;
+
+const FaqBriefQuestion = styled.h2`
+  font-weight: 800;
+  font-size: 2rem;
+  color: #ffa900;
+  
+  transition: all 0.3s ease;
+  &:hover {
+    color: white;
+  }
+`;
+
+const FaqDetailBox = styled.div`
+  padding: 40px 40px 0 40px;
+`;
+
+const FaqDetailAnswer = styled.p`
+  font-size: 1rem;
+  font-weight: 400;
+  text-align: justify;
+  color: white;
+`;
+
+const NoResults = styled.div`
+  font-size: 1rem;
+  color: gray;
+  text-align: center;
+  margin-top: 2rem;
+`;
 
 export default FaqPage;
