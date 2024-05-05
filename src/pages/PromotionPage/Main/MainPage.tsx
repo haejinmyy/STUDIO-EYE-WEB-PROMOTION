@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { ChakraProvider, Box, BoxProps } from '@chakra-ui/react';
-import { motion, useElementScroll, useScroll } from 'framer-motion';
+import { motion, useScroll } from 'framer-motion';
 import Top from '@/components/PromotionPage/Main/Top';
 import Intro from '@/components/PromotionPage/Main/Intro';
 import useWindowSize from '@/hooks/useWindowSize';
@@ -9,6 +9,7 @@ import { getArtworkData } from '@/apis/PromotionPage/artwork';
 import { MIArtworksData } from '@/types/PromotionPage/artwork';
 import { useQuery } from 'react-query';
 import defaultTopImg from '@/assets/images/PP/defaultTopImg.jpg';
+import Outro from '@/components/PromotionPage/Main/Outro';
 
 export const MotionBox = motion<BoxProps>(Box);
 
@@ -77,6 +78,7 @@ const Mainpage = () => {
             ))
           )}
         </Box>
+        <Outro />
       </ChakraProvider>
     </>
   );
