@@ -36,10 +36,11 @@ const ArtworkList = React.forwardRef<HTMLElement, SectionProps>(({ elementHeight
     ['0vh', '100vh'],
   );
 
+  // TODO 마지막 요소에서 스크롤 자연스럽게 넘어가게 하기
   return (
     <MotionBox
       w='100%'
-      h='100vh'
+      h='90%'
       scrollSnapAlign='center'
       initial='offscreen'
       whileInView='onscreen'
@@ -54,7 +55,7 @@ const ArtworkList = React.forwardRef<HTMLElement, SectionProps>(({ elementHeight
     >
       <MotionFlex
         w='100%'
-        h='100%'
+        h='90%'
         paddingLeft={100}
         paddingTop={150}
         color='white'
