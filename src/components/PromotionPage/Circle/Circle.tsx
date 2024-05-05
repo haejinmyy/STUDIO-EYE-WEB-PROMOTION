@@ -1,28 +1,33 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import circle from '@/assets/images/PP/circle.png';
 import styled from 'styled-components';
-import { motion, TargetAndTransition } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { rotateAnimation } from '@/styles/motionAnimation';
+import useFollowPointer from '@/hooks/useFollowPointer';
 
 type Props = {
   label: string;
 };
 
 const Circle = ({ label }: Props) => {
-  const rotateAnimation: TargetAndTransition = {
-    rotate: [0, 360],
-    transition: {
-      ease: 'linear',
-      duration: 3,
-      repeat: Infinity,
-      repeatType: 'loop',
-    },
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const { x, y } = useFollowPointer(containerRef);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
   };
 
   return (
-    <Container>
+    <Container ref={containerRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <RotatingWrapper animate={rotateAnimation}>
         <RotatingImage src={circle} alt='circle' />
       </RotatingWrapper>
+
       <LabelWrapper>{label}</LabelWrapper>
     </Container>
   );
@@ -35,7 +40,7 @@ const Container = styled.div`
   display: inline-block;
 `;
 
-const LabelWrapper = styled.div`
+const LabelWrapper = styled(motion.div)`
   position: absolute;
   top: 50%;
   left: 50%;
@@ -45,6 +50,7 @@ const LabelWrapper = styled.div`
   font-size: 18px;
 `;
 
+const HoveredLabelWrapper = styled(motion.div)``;
 const RotatingWrapper = styled(motion.div)`
   display: inline-block;
 `;

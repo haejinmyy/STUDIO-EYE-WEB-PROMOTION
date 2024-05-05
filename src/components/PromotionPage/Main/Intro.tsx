@@ -2,7 +2,7 @@ import { motion, useInView } from 'framer-motion';
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Circle from '../Circle/Circle';
-const Slide2 = () => {
+const Intro = () => {
   const introRef = useRef(null);
   const desRef = useRef(null);
   const circleRef = useRef(null);
@@ -44,11 +44,12 @@ const Slide2 = () => {
     </Container>
   );
 };
-export default Slide2;
+export default Intro;
 
 const Container = styled.div`
   width: 100%;
   height: 100vh;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -73,4 +74,3 @@ const DesWrapper = styled.div`
 const CircleWrapper = styled(motion.div)`
   margin-top: 102px;
 `;
-const Cidd = styled.div``;

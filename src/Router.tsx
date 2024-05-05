@@ -24,6 +24,8 @@ import Mainpage from '@/pages/PromotionPage/Main/MainPage';
 import PPLayout from '@/components/PromotionPage/Layout/Layout';
 import AboutPage from '@/pages/PromotionPage/AboutPage/AboutPage';
 import ContactUsPage from './pages/PromotionPage/ContactPage/ContactUsPage';
+import FaqPage from './pages/PromotionPage/FaqPage/FaqPage';
+
 import CEOPage from './pages/PromotionAdmin/DataEditPage/CEOPage/CEOPage';
 import CompanyPage from './pages/PromotionAdmin/DataEditPage/CompanyPage/CompanyPage';
 import PartnerPage from './pages/PromotionAdmin/DataEditPage/PartnerPage/PartnerPage';
@@ -31,6 +33,7 @@ import ClientPage from './pages/PromotionAdmin/DataEditPage/ClientPage/ClientPag
 import PartnerEditPage from './pages/PromotionAdmin/DataEditPage/PartnerPage/PartnerEditPage';
 import ClientEditPage from './pages/PromotionAdmin/DataEditPage/ClientPage/ClientEditPage';
 import PartnerWritePage from './pages/PromotionAdmin/DataEditPage/PartnerPage/PartnerWritePage';
+import FaqPage from './pages/PromotionPage/FaqPage/FaqPage';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -62,10 +65,17 @@ const router = createBrowserRouter([
             path: PP_ROUTES_CHILD.ARTWORK_DETAIL,
             element: <ArtworkDetailPage />,
           },
-
+          {
+            path: PP_ROUTES_CHILD.FAQ,
+            element: <FaqPage />,
+          },
           {
             path: PP_ROUTES_CHILD.CONTACT,
             element: <ContactUsPage />,
+          },
+          {
+            path: PP_ROUTES_CHILD.FAQ,
+            element: <FaqPage />,
           },
         ],
       },

@@ -12,6 +12,7 @@ const linksData = [
   },
   { path: PP_ROUTES.ARTWORK, pathName: 'ARTWORK' },
   { path: PP_ROUTES.CONTACT, pathName: 'CONTACT' },
+  { path: PP_ROUTES.FAQ, pathName: 'FAQ' },
 ];
 
 const HeaderDetail = () => {
