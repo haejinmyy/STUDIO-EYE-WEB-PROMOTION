@@ -638,6 +638,9 @@ const RequestCategoryButton = styled.button<IButtonProps>`
   font-size: 30px;
   color: white;
   margin-bottom: 30px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 const RequestInfoInput = styled.input`
   margin-bottom: 15px;
