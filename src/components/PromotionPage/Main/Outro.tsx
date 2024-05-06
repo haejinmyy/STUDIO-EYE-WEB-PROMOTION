@@ -28,4 +28,8 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 20px 0;
+  box-sizing: border-box;
+  margin-top: 40px;
+  margin-bottom: 40px;
 `;

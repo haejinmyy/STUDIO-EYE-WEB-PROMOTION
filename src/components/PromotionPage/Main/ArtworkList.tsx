@@ -1,11 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Box, BoxProps, Flex, FlexProps } from '@chakra-ui/react';
-import { motion, Variants, useTransform, MotionValue, useSpring } from 'framer-motion';
+import { motion, Variants, useTransform, MotionValue } from 'framer-motion';
 import styled from 'styled-components';
-import index from '@/pages/PromotionAdmin/HomePage';
-import { MotionBox } from '@/pages/PromotionPage/Main/MainPage';
-import { ppHeaderScrolledState } from '@/recoil/atoms';
-import { useSetRecoilState } from 'recoil';
+import Circle from '../Circle/Circle';
 
 interface SectionProps {
   elementHeight: number;
@@ -38,38 +35,41 @@ const ArtworkList = React.forwardRef<HTMLElement, SectionProps>(({ elementHeight
 
   // TODO 마지막 요소에서 스크롤 자연스럽게 넘어가게 하기
   return (
-    <MotionBox
-      w='100%'
-      h='90%'
-      scrollSnapAlign='center'
-      initial='offscreen'
-      whileInView='onscreen'
-      position='relative'
-      viewport={{ once: false, amount: 0.7 }}
-      ref={ref}
-      zIndex={index + 1}
-      backgroundImage={`url(${data.backgroundImg})`}
-      backgroundSize='cover'
-      backgroundPosition='center'
-      opacity={0.8}
-    >
-      <MotionFlex
+    <>
+      <MotionBox
         w='100%'
         h='90%'
-        paddingLeft={100}
-        paddingTop={150}
-        color='white'
-        style={{ y: transformY }}
-        alignItems='start'
-        justifyContent='start'
+        scrollSnapAlign='center'
+        initial='offscreen'
+        whileInView='onscreen'
+        position='relative'
+        viewport={{ once: false, amount: 0.7 }}
+        ref={ref}
+        zIndex={index + 1}
+        backgroundImage={`url(${data.backgroundImg})`}
+        backgroundSize='cover'
+        backgroundPosition='center'
+        opacity={0.8}
       >
-        <motion.div variants={cardInView}>
-          <ClientWrapper>{data.client}</ClientWrapper>
-          <TitleWrapper>{data.title}</TitleWrapper>
-          <OverviewWrapper>{data.overview}</OverviewWrapper>
-        </motion.div>
-      </MotionFlex>
-    </MotionBox>
+        <MotionFlex
+          w='100%'
+          h='90%'
+          paddingLeft={20}
+          paddingTop={20}
+          color='white'
+          style={{ y: transformY }}
+          alignItems='start'
+          justifyContent='start'
+        >
+          <motion.div variants={cardInView}>
+            <ClientWrapper>{data.client}</ClientWrapper>
+            <TitleWrapper>{data.title}</TitleWrapper>
+            <OverviewWrapper>{data.overview}</OverviewWrapper>
+          </motion.div>
+          <TEST variants={cardInView}>Click and Scroll</TEST>
+        </MotionFlex>
+      </MotionBox>
+    </>
   );
 });
 
@@ -89,4 +89,13 @@ const OverviewWrapper = styled.div`
   font-family: 'pretendard-medium';
   font-size: 20px;
   color: white;
+`;
+
+const TEST = styled(motion.div)`
+  margin-left: auto;
+  margin-top: auto;
+  padding: 0 100px;
+  font-family: 'pretendard-light';
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.8);
 `;
