@@ -1,4 +1,4 @@
-import { IGetFAQData, getFAQData } from '@/apis/PromotionAdmin/faq';
+import { IGetFAQData, getFAQData, IFAQ } from '@/apis/PromotionAdmin/faq';
 import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { useQuery } from 'react-query';
@@ -9,10 +9,10 @@ export default function FAQCheckPage() {
   const navigator = useNavigate();
   const faqDetailMatch = useMatch(`${PA_ROUTES.FAQ}/:faqId`);
 
-  const { data, isLoading } = useQuery<IGetFAQData>(['faq', 'id'], getFAQData);
+  const { data, isLoading } = useQuery<IFAQ[]>(['faq', 'id'], getFAQData);
 
   const clickedFAQ =
-    faqDetailMatch?.params.faqId && data?.data.find((faq) => String(faq.id) === faqDetailMatch.params.faqId);
+    faqDetailMatch?.params.faqId && data && data.find((faq) => String(faq.id) === faqDetailMatch.params.faqId);
 
   return (
     <>
