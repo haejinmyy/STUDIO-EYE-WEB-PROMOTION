@@ -29,6 +29,7 @@ export const PP_ROUTES_CHILD = {
   ARTWORK_DETAIL: 'artwork/:id',
   CONTACT: 'contact',
   FAQ: 'faq',
+  LOGIN: 'login',
 };
 
 export const PP_ROUTES = {
