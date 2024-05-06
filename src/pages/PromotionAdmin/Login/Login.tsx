@@ -19,6 +19,7 @@ const Login = () => {
       console.log('보내는 데이터', formData);
       const response = await login(formData);
       setAuth({ accessToken: response.accessToken, userId: response.id });
+      window.alert('로그인 성공');
       navigate(PA_ROUTES.HOME);
     } catch (error) {
       const errorMessage = '로그인에 실패했습니다. 다시 시도해주세요.';
