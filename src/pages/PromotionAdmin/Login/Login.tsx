@@ -9,16 +9,17 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
   const setAuth = useSetRecoilState(authState);
-
   const navigate = useNavigate();
   const handleLogin = async () => {
     try {
-      const response: loginType = await login(email, pwd);
+      const formData = { email, pwd };
+      console.log('보내는 데이터', formData);
+      const response = await login(formData);
       setAuth({ accessToken: response.accessToken, userId: response.id });
       window.alert('로그인 성공');
       navigate('/pa-test/home');
     } catch (error) {
-      window.alert('이것은 에러');
+      window.alert(`이것은 에러 ${error}`);
       console.log('Login 실패', error);
     }
   };

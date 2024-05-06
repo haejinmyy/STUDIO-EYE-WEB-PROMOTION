@@ -117,9 +117,9 @@ const FaqPage = () => {
       </Header>
       <Content>
         <InputWrapper>
-          {faqQuestion === '' ? (
+          {faqQuestion.length === 0 ? (
             <SearchFaqQuestion
-              placeholder="컨텐츠 문의, 회사 위치 등의 검색어를 입력해 주세요."
+              placeholder='컨텐츠 문의, 회사 위치 등의 검색어를 입력해 주세요.'
               autoComplete='off'
               name='searchingfaqquestion'
               value={faqQuestion}
@@ -127,11 +127,7 @@ const FaqPage = () => {
             />
           ) : (
             <>
-              <SearchFaqQuestion
-                autoComplete='off'
-                name='searchingfaqquestion'
-                onChange={handleTextAreaDataChange}
-              />
+              <SearchFaqQuestion autoComplete='off' name='searchingfaqquestion' onChange={handleTextAreaDataChange} />
             </>
           )}
         </InputWrapper>
@@ -142,12 +138,18 @@ const FaqPage = () => {
             <FaqDetailButton
               key={i}
               initial={{ height: 30, opacity: 0.5, scale: 0.9 }}
-              animate={expandedItems.has(i) ? { height: 'auto', opacity: 1, scale: 1 } : { height: 30, opacity: 0.5, scale: 0.9 }}
+              animate={
+                expandedItems.has(i)
+                  ? { height: 'auto', opacity: 1, scale: 1 }
+                  : { height: 30, opacity: 0.5, scale: 0.9 }
+              }
               transition={{ duration: 0.4, ease: 'easeInOut' }}
               onClick={() => searchToggleItem(i)}
             >
               <FaqBrief>
-                <FaqBriefQuestion>{item.question.length >= 100 ? item.question.substring(0, 70) + '...' : item.question}</FaqBriefQuestion>
+                <FaqBriefQuestion>
+                  {item.question.length >= 100 ? item.question.substring(0, 70) + '...' : item.question}
+                </FaqBriefQuestion>
               </FaqBrief>
               {expandedItems.has(i) && (
                 <FaqDetailBox>
@@ -157,9 +159,8 @@ const FaqPage = () => {
             </FaqDetailButton>
           ))
         )}
-
       </Content>
-    </Container >
+    </Container>
   );
 };
 
@@ -282,7 +283,7 @@ const FaqBriefQuestion = styled.h2`
   font-weight: 800;
   font-size: 2rem;
   color: #ffa900;
-  
+
   transition: all 0.3s ease;
   &:hover {
     color: white;
