@@ -81,7 +81,7 @@ const LinkStyle = styled(Link)`
   margin-bottom: 20px;
 `;
 const ArtworkBoxWrapper = styled.div`
-  width: 600px;
+  width: 700px;
   height: fit-content;
   margin-right: 50px;
   display: flex;
