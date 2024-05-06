@@ -1,7 +1,7 @@
 import { getAllArtworks } from '@/apis/PromotionAdmin/artwork';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { ArtworkData } from '@/types/PromotionAdmin/artwork';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { Link, Outlet } from 'react-router-dom';
 import styled from 'styled-components';
@@ -74,7 +74,7 @@ export default Artwork;
 
 const Container = styled.div`
   display: flex;
-  justify-content: space-between;
+  width: 100%;
 `;
 const LinkStyle = styled(Link)`
   text-decoration: none;
@@ -83,7 +83,7 @@ const LinkStyle = styled(Link)`
 const ArtworkBoxWrapper = styled.div`
   width: 600px;
   height: fit-content;
-
+  margin-right: 50px;
   display: flex;
   flex-direction: column;
 `;

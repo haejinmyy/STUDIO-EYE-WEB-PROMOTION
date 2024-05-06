@@ -6,13 +6,13 @@ interface CategoryDropDownProps {
   setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const CategoryDropDown: React.FC<CategoryDropDownProps> = ({ setSelectedCategory }) => {
+const CategoryDropDown = ({ setSelectedCategory }: CategoryDropDownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCategory, setSelectedCategoryLocal] = useState('Category');
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategoryLocal(category);
-    setSelectedCategory(category === 'All' ? '' : category); // Update the parent component's state, set to empty string if "All" is selected
+    setSelectedCategory(category === 'All' ? '' : category);
     setIsOpen(false);
   };
 

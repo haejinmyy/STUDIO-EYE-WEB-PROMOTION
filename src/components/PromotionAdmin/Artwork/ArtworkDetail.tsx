@@ -4,6 +4,7 @@ import { ArtworkData, UpdateArtwork } from '@/types/PromotionAdmin/artwork';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import ArtworkInput from './ArtworkInput';
 
 const ArtworkDetail = () => {
   const { artworkId } = useParams();
@@ -191,58 +192,74 @@ const ArtworkDetail = () => {
       </BtnWrapper>
       <ContentWrapper>
         <div>
-          <h1>메인 썸네일 이미지</h1>
-          <MainImgWrapper>
-            {isEditMode ? (
-              <>
-                <input type='file' accept='image/*' onChange={handleImageChange} />
-                <img src={putData.file} alt='main img' />
-              </>
-            ) : (
-              <img src={artworkData?.mainImg} alt='main img' />
-            )}
-          </MainImgWrapper>
+          <ArtworkInput
+            label={'Main Image'}
+            mainFile={artworkData?.mainImg}
+            onChange={handleImageChange}
+            isEditMode={isEditMode}
+            isFile={true}
+          />
         </div>
-        <InputWrapper>
-          <InputHeader>제목</InputHeader>
-          {isEditMode ? (
-            <input name='name' value={putData.request.name} onChange={handleChange} />
-          ) : (
-            <div>{artworkData?.name}</div>
-          )}
-        </InputWrapper>
-        <InputWrapper>
-          <InputHeader>고객</InputHeader>
-          {isEditMode ? (
-            <input name='client' value={putData.request.client} onChange={handleChange} />
-          ) : (
-            <div>{artworkData?.client}</div>
-          )}
-        </InputWrapper>
-        <InputWrapper>
-          <InputHeader>날짜</InputHeader>
-          {isEditMode ? (
-            <input name='date' value={putData.request.date} onChange={handleChange} />
-          ) : (
-            <div>{artworkData?.date}</div>
-          )}
-        </InputWrapper>
-        <InputWrapper>
-          <InputHeader>카테고리</InputHeader>
-          {isEditMode ? (
-            <input name='category' value={putData.request.category} onChange={handleChange} />
-          ) : (
-            <div>{artworkData?.category}</div>
-          )}
-        </InputWrapper>
-        <InputWrapper>
-          <InputHeader>링크</InputHeader>
-          {isEditMode ? (
-            <input name='link' value={putData.request.link} onChange={handleChange} />
-          ) : (
-            <div>{artworkData?.link}</div>
-          )}
-        </InputWrapper>
+        <div>
+          <ArtworkInput
+            label={'제목'}
+            onChange={handleChange}
+            isEditMode={isEditMode}
+            isFile={false}
+            name={artworkData?.name}
+            value={putData.request.name}
+          />
+        </div>
+        <div>
+          <ArtworkInput
+            label={'클라이언트'}
+            onChange={handleChange}
+            isEditMode={isEditMode}
+            isFile={false}
+            name={artworkData?.client}
+            value={putData.request.client}
+          />
+        </div>
+        <div>
+          <ArtworkInput
+            label={'일시'}
+            onChange={handleChange}
+            isEditMode={isEditMode}
+            isFile={false}
+            name={artworkData?.date}
+            value={putData.request.date}
+          />
+        </div>
+        <div>
+          <ArtworkInput
+            label={'카테고리'}
+            onChange={handleChange}
+            isEditMode={isEditMode}
+            isFile={false}
+            name={artworkData?.category}
+            value={putData.request.category}
+          />
+        </div>
+        <div>
+          <ArtworkInput
+            label={'링크'}
+            onChange={handleChange}
+            isEditMode={isEditMode}
+            isFile={false}
+            name={artworkData?.link}
+            value={putData.request.link}
+          />
+        </div>
+        <div>
+          <ArtworkInput
+            label={'설명'}
+            onChange={handleChange}
+            isEditMode={isEditMode}
+            isFile={false}
+            name={artworkData?.overView}
+            value={putData.request.overView}
+          />
+        </div>
         {isEditMode ? (
           <>
             {[...Array(4)].map((_, index) => (
@@ -278,11 +295,14 @@ export default ArtworkDetail;
 const Container = styled.div`
   background-color: rgba(190, 190, 190, 0.07);
   backdrop-filter: blur(5px);
-  height: 600px;
-  width: 550px;
+  height: fit-content;
+  width: 600px;
+  padding: 20px 20px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 `;
 
 const BtnWrapper = styled.div``;
