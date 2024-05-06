@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import logo from '../../../assets/logo/mainLogo.png';
+import { PP_ROUTES } from '@/constants/routerConstants';
+import { useNavigate } from 'react-router-dom';
 
 interface ICircleProps {
   filled: boolean;
@@ -26,7 +28,19 @@ interface IFormData {
   // projectName: string;
 }
 const ContactUsPage = () => {
+  const navigator = useNavigate();
   const [requestStep, setRequestStep] = useState(0);
+  const [formData, setFormData] = useState<IFormData>({
+    category: '',
+    clientName: '',
+    organization: '',
+    email: '',
+    contact: '',
+    description: '',
+    position: '',
+    // projectName: '',
+  });
+  const [selectedCategory, setSelectedCategory] = useState('');
   // wheel event 관리
   const containerRef = useRef<HTMLDivElement | null>(null);
   const handleWheel = () => (e: WheelEvent) => {
@@ -63,7 +77,22 @@ const ContactUsPage = () => {
       };
     }
   }, [requestStep]);
-  // 의뢰 단계 표시
+  // 새로고침 경고
+  useEffect(() => {
+    const handleBeforeUnload = (e: any) => {
+      e.preventDefault();
+      e.returnValue = '';
+      return '';
+    };
+
+    if (formData.category !== '') {
+      window.addEventListener('beforeunload', handleBeforeUnload);
+    }
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [formData.category]);
+  // 문의 단계 표시
   const handleNext = (e: any) => {
     if (requestStep < 3) {
       if (requestStep === 0) {
@@ -74,14 +103,16 @@ const ContactUsPage = () => {
       } else if (requestStep === 1) {
         const isValidTel = telCheck(formData.contact);
         const isValidEmail = emailCheck(formData.email);
+        if (formData.clientName === '' || formData.organization === '') {
+          alert('직책을 제외한 모든 칸에 입력을 해주세요.');
+          return;
+        }
         if (!isValidTel || formData.contact === '') {
+          alert('연락처 형식이 올바르지 않습니다. 다시 입력해주세요.');
           return;
         }
         if (!isValidEmail) {
-          return;
-        }
-        if (formData.clientName === '' || formData.organization === '') {
-          alert('직책을 제외한 모든 칸에 입력을 해주세요.');
+          alert('이메일 형식이 올바르지 않습니다. 다시 입력해주세요.');
           return;
         }
       } else if (requestStep === 2) {
@@ -99,7 +130,6 @@ const ContactUsPage = () => {
       setRequestStep(requestStep - 1);
     }
   };
-
   const categories = [
     { value: 'Entertainment', label: 'Entertainment' },
     { value: 'Drama', label: 'Drama' },
@@ -110,17 +140,6 @@ const ContactUsPage = () => {
     { value: 'Animation', label: 'Animation' },
     { value: 'Live Commerce', label: 'Live Commerce' },
   ];
-  const [formData, setFormData] = useState<IFormData>({
-    category: '',
-    clientName: '',
-    organization: '',
-    email: '',
-    contact: '',
-    description: '',
-    position: '',
-    // projectName: '',
-  });
-  const [selectedCategory, setSelectedCategory] = useState('');
   const handleButtonClick = (category: string) => {
     setSelectedCategory(category);
     setFormData({
@@ -131,15 +150,13 @@ const ContactUsPage = () => {
   const emailCheck = (email: any) => {
     const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/;
     if (!emailRegEx.test(email)) {
-      alert('이메일 형식이 올바르지 않습니다. 다시 입력해주세요.');
       return false;
     }
     return true;
   };
   const telCheck = (tel: any) => {
-    const telRegEx = /^[0-9\b -]{0,13}$/;
+    const telRegEx = /^[0-9]*-[0-9]*-[0-9]{0,13}$/;
     if (!telRegEx.test(tel) || tel === '') {
-      alert('연락처 형식이 올바르지 않습니다. 다시 입력해주세요.');
       return false;
     }
     return true;
@@ -213,7 +230,6 @@ const ContactUsPage = () => {
 
   return (
     <Container ref={containerRef}>
-      <StickyHeader>고정 헤더</StickyHeader>
       <IntroSection>
         <div>
           <IntroTitleWrapper>
@@ -221,7 +237,7 @@ const ContactUsPage = () => {
             <IntroTitleUS>US</IntroTitleUS>
           </IntroTitleWrapper>
           <IntroSubTitleWrapper>
-            <IntroUbtitle>대한민국 No.1 뉴미디어 전문 제작사 스튜디오 아이와 함께 해보세요!</IntroUbtitle>
+            <IntroSubtitle>대한민국 No.1 뉴미디어 전문 제작사 스튜디오 아이와 함께 해보세요!</IntroSubtitle>
           </IntroSubTitleWrapper>
           <IntroAboutWrapper>
             <div>
@@ -266,7 +282,7 @@ const ContactUsPage = () => {
                     Project Request
                   </RequestExplanation>
                   {requestStep === 0 ? (
-                    <RequestExplanation>의뢰할 프로젝트 항목을 선택해주세요. *</RequestExplanation>
+                    <RequestExplanation>문의할 프로젝트 항목을 선택해주세요. *</RequestExplanation>
                   ) : requestStep === 1 ? (
                     <RequestExplanation>인적사항을 입력해주세요.</RequestExplanation>
                   ) : (
@@ -300,6 +316,7 @@ const ContactUsPage = () => {
               ) : requestStep === 1 ? (
                 <RequestInputWrapper>
                   <RequestInfoInput
+                    autoComplete='off'
                     type='text'
                     placeholder='성함을 입력해주세요 *'
                     value={formData.clientName}
@@ -307,6 +324,7 @@ const ContactUsPage = () => {
                     onChange={handleDataChange}
                   ></RequestInfoInput>
                   <RequestInfoInput
+                    autoComplete='off'
                     type='text'
                     placeholder='기관 혹은 기업명을 입력해주세요 *'
                     value={formData.organization}
@@ -314,6 +332,7 @@ const ContactUsPage = () => {
                     onChange={handleDataChange}
                   ></RequestInfoInput>
                   <RequestInfoInput
+                    autoComplete='off'
                     type='text'
                     placeholder='연락처를 입력해주세요 *'
                     value={formData.contact}
@@ -321,6 +340,7 @@ const ContactUsPage = () => {
                     onChange={handleDataChange}
                   ></RequestInfoInput>
                   <RequestInfoInput
+                    autoComplete='off'
                     type='email'
                     placeholder='@이하 도메인을 포함한 이메일 주소를 입력해주세요 *'
                     value={formData.email}
@@ -328,6 +348,7 @@ const ContactUsPage = () => {
                     onChange={handleDataChange}
                   ></RequestInfoInput>
                   <RequestInfoInput
+                    autoComplete='off'
                     type='position'
                     placeholder='직책을 입력해주세요'
                     value={formData.position}
@@ -338,6 +359,7 @@ const ContactUsPage = () => {
               ) : (
                 <RequestInputWrapper>
                   <RequestInfoInput
+                    autoComplete='off'
                     ///////////////////////////////////////// 삭제 예정
                     type='text'
                     value={inputValue}
@@ -362,9 +384,9 @@ const ContactUsPage = () => {
                     <RequestUploadLabel htmlFor='uploadfile'>파일 선택</RequestUploadLabel>
                   </RowWrapper>
                   <RequestInfoTextarea
+                    autoComplete='off'
                     id='myTextarea'
                     placeholder='프로젝트 설명을 적어주세요 *'
-                    autoComplete='off'
                     value={formData.description}
                     name='description'
                     onChange={handleDataChange}
@@ -395,6 +417,14 @@ const ContactUsPage = () => {
             <RequestLeftLogoWrapper style={{ width: '50%', alignItems: 'center' }}>
               <RequestLeftLogo src={logo} alt='로고' />
             </RequestLeftLogoWrapper>
+            <BackToMainButton
+              onClick={() => {
+                console.log(formData);
+                navigator(`/${PP_ROUTES.MAIN}`);
+              }}
+            >
+              메인화면으로
+            </BackToMainButton>
           </>
         ) : null}
       </RequestSection>
@@ -414,16 +444,6 @@ const Container = styled.div`
   &::-webkit-scrollbar {
     display: none; // 크롬/사파리 스크롤바 숨김
   }
-`;
-
-const StickyHeader = styled.div`
-  position: sticky;
-  top: 0;
-  background-color: transparent;
-  padding: 10px;
-  height: 80px;
-  z-index: 10;
-  color: white;
 `;
 
 const IntroSection = styled.div`
@@ -464,7 +484,7 @@ const IntroSubTitleWrapper = styled.div`
   justify-content: center;
   align-items: center;
 `;
-const IntroUbtitle = styled.div`
+const IntroSubtitle = styled.div`
   font-family: 'Pretendard-SemiBold';
   font-size: 20px;
   color: #ffffff;
@@ -618,6 +638,9 @@ const RequestCategoryButton = styled.button<IButtonProps>`
   font-size: 30px;
   color: white;
   margin-bottom: 30px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 const RequestInfoInput = styled.input`
   margin-bottom: 15px;
@@ -633,7 +656,6 @@ const RequestInfoInput = styled.input`
   font-size: 20px;
   color: white;
   line-height: 30px;
-  autocomplete: 'off';
 `;
 const RequestInfoTextarea = styled.textarea`
   box-sizing: border-box;
@@ -719,11 +741,28 @@ const RequestStepButton = styled.button<IButtonProps>`
   font-size: 30px;
   color: white;
 `;
-
 const RequestCompleteContentWrapper = styled.div`
   margin-top: 100px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-content: center;
+`;
+const BackToMainButton = styled.button`
+  margin-top: 50px;
+  border: 2px solid white;
+  transition: transform 0.2s;
+  &:hover {
+    cursor: pointer;
+    background-color: #ffa900;
+    transform: scale(1.01);
+  }
+  height: 70px;
+  width: 200px;
+  text-align: center;
+  align-items: center;
+  background-color: transparent;
+  font-family: 'Pretendard-SemiBold';
+  font-size: 25px;
+  color: white;
 `;
