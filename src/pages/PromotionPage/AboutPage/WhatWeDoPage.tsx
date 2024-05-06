@@ -56,9 +56,9 @@ const WhatWeDoPage = () => {
           </WhatWeDoInput>
           <WhatWeDoTitleInput leftInput={false}>WHATWEDO1</WhatWeDoTitleInput>
 
-          <WhatWeDoContentInput leftInput={false}>우리는 이런 일을 하면서 이런 일을 하는데</WhatWeDoContentInput>
+          <WhatWeDoContentInput leftInput={false}>스튜디오 아이가 하는 상세 업무</WhatWeDoContentInput>
 
-          <WhatWeDoContentInput leftInput={false}>이곳에는 최대 이정도 글자 수가 입력 가능하다</WhatWeDoContentInput>
+          <WhatWeDoContentInput leftInput={false}>5가지에 대해 작성할 수 있는 공간입니다.</WhatWeDoContentInput>
         </WhatWeDo>
         <WhatWeDo key={1} className='WhatWeDo' isHighlighted={highlighted === 1} style={{ left: '90%' }}>
           <WhatWeDoInput leftInput={false}>
@@ -66,9 +66,9 @@ const WhatWeDoPage = () => {
           </WhatWeDoInput>
           <WhatWeDoTitleInput leftInput={true}>WHATWEDO2</WhatWeDoTitleInput>
 
-          <WhatWeDoContentInput leftInput={true}>우리는 이런 일을 하면서 이런 일을 하는데</WhatWeDoContentInput>
+          <WhatWeDoContentInput leftInput={true}>스튜디오 아이가 하는 상세 업무</WhatWeDoContentInput>
 
-          <WhatWeDoContentInput leftInput={true}>이곳에는 최대 이정도 글자 수가 입력 가능하다</WhatWeDoContentInput>
+          <WhatWeDoContentInput leftInput={true}>5가지에 대해 작성할 수 있는 공간입니다.</WhatWeDoContentInput>
         </WhatWeDo>
         <WhatWeDo key={2} className='WhatWeDo' isHighlighted={highlighted === 2} style={{ left: '10%' }}>
           <WhatWeDoInput leftInput={true}>
@@ -76,9 +76,9 @@ const WhatWeDoPage = () => {
           </WhatWeDoInput>
           <WhatWeDoTitleInput leftInput={false}>WHATWEDO3</WhatWeDoTitleInput>
 
-          <WhatWeDoContentInput leftInput={false}>우리는 이런 일을 하면서 이런 일을 하는데</WhatWeDoContentInput>
+          <WhatWeDoContentInput leftInput={false}>스튜디오 아이가 하는 상세 업무</WhatWeDoContentInput>
 
-          <WhatWeDoContentInput leftInput={false}>이곳에는 최대 이정도 글자 수가 입력 가능하다</WhatWeDoContentInput>
+          <WhatWeDoContentInput leftInput={false}>5가지에 대해 작성할 수 있는 공간입니다.</WhatWeDoContentInput>
         </WhatWeDo>
         <WhatWeDo key={3} className='WhatWeDo' isHighlighted={highlighted === 3} style={{ left: '90%' }}>
           <WhatWeDoInput leftInput={false}>
@@ -86,9 +86,9 @@ const WhatWeDoPage = () => {
           </WhatWeDoInput>
           <WhatWeDoTitleInput leftInput={true}>WHATWEDO4</WhatWeDoTitleInput>
 
-          <WhatWeDoContentInput leftInput={true}>우리는 이런 일을 하면서 이런 일을 하는데</WhatWeDoContentInput>
+          <WhatWeDoContentInput leftInput={true}>스튜디오 아이가 하는 상세 업무</WhatWeDoContentInput>
 
-          <WhatWeDoContentInput leftInput={true}>이곳에는 최대 이정도 글자 수가 입력 가능하다</WhatWeDoContentInput>
+          <WhatWeDoContentInput leftInput={true}>5가지에 대해 작성할 수 있는 공간입니다.</WhatWeDoContentInput>
         </WhatWeDo>
         <WhatWeDo key={4} className='WhatWeDo' isHighlighted={highlighted === 4} style={{ left: '10%' }}>
           <WhatWeDoInput leftInput={true}>
@@ -96,9 +96,9 @@ const WhatWeDoPage = () => {
           </WhatWeDoInput>
           <WhatWeDoTitleInput leftInput={false}>WHATWEDO5</WhatWeDoTitleInput>
 
-          <WhatWeDoContentInput leftInput={false}>우리는 이런 일을 하면서 이런 일을 하는데</WhatWeDoContentInput>
+          <WhatWeDoContentInput leftInput={false}>스튜디오 아이가 하는 상세 업무</WhatWeDoContentInput>
 
-          <WhatWeDoContentInput leftInput={false}>이곳에는 최대 이정도 글자 수가 입력 가능하다</WhatWeDoContentInput>
+          <WhatWeDoContentInput leftInput={false}>5가지에 대해 작성할 수 있는 공간입니다.</WhatWeDoContentInput>
         </WhatWeDo>
         <ScrollBar>
           <ScrollBarBox />

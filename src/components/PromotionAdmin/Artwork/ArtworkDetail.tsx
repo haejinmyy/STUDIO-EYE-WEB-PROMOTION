@@ -58,7 +58,7 @@ const ArtworkDetail = () => {
     setIsEditMode(true);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setPutData((prevData) => ({
       ...prevData,
@@ -67,7 +67,6 @@ const ArtworkDetail = () => {
         [name]: value,
       },
     }));
-    console.log('onChange', putData);
   };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -98,34 +97,61 @@ const ArtworkDetail = () => {
     }
   };
 
-  async function urlToFile(url: string, fileName: string): Promise<File> {
-    // const slicedUrl = url.substring(url.lastIndexOf('/') + 1);
-    // console.log(slicedUrl);
+  async function urlToFile(url: string, fileName: string): Promise<File | null> {
     try {
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error('Failed to fetch');
+      }
       const blob = await response.blob();
       return new File([blob], fileName);
     } catch (error) {
-      console.error('Errordddddddhing URL to file:', error);
-      throw error;
+      console.error('Error converting URL to file:', error);
+      return null;
     }
   }
   const handleSaveClick = async () => {
     const formData = new FormData();
 
     // 기본 정보 추가
-    formData.append('request', new Blob([JSON.stringify(putData.request)], { type: 'application/json' }));
+    formData.append(
+      'request',
+      new Blob(
+        [
+          JSON.stringify({
+            projectId: putData.request.projectId, // putData.request에는 변경된 속성만 있어야 합니다.
+            department: putData.request.department,
+            category: putData.request.category,
+            name: putData.request.name,
+            client: putData.request.client,
+            date: putData.request.date,
+            link: putData.request.link,
+            overView: putData.request.overView,
+          }),
+        ],
+        { type: 'application/json' },
+      ),
+    );
+
     console.log('넣는 request', putData.request);
 
     // 이미지를 변경했는지 확인하고 추가
     if (putData.file && putData.file !== artworkData?.mainImg) {
       const file = await urlToFile(putData.file, 'mainImg.png');
-      formData.append('file', file);
+      if (file) {
+        formData.append('file', file);
+      } else {
+        console.error('메인 이미지 가져오기 실패');
+      }
     } else {
       // 이미지를 변경하지 않은 경우에는 기존의 이미지를 그대로 전송
       if (artworkData?.mainImg) {
         const mainImgBlob = await urlToFile(artworkData.mainImg, 'mainImg.png');
-        formData.append('file', mainImgBlob);
+        if (mainImgBlob) {
+          formData.append('file', mainImgBlob);
+        } else {
+          console.error('메인 이미지 가져오기 실패');
+        }
       } else {
         formData.append('file', ''); // 이미지가 없는 경우 빈 값 추가
       }
@@ -146,22 +172,28 @@ const ArtworkDetail = () => {
         }
         if (isImageChanged) {
           const file = await urlToFile(projectImage, 'projectImage.png');
-          formData.append('files', file);
+          if (file) {
+            formData.append('files', file);
+          } else {
+            console.error('프로젝트 이미지 가져오기 실패');
+            // 사용자에게 메시지 표시 등, 에러를 graceful하게 처리할 수 있습니다.
+          }
         } else {
           // 이미지를 변경하지 않은 경우에는 기존의 이미지를 그대로 전송
           if (projectImage) {
             const imageBlob = await urlToFile(projectImage, 'projectImage.png');
-            formData.append('files', imageBlob);
+            if (imageBlob) {
+              formData.append('files', imageBlob);
+            } else {
+              console.error('프로젝트 이미지 가져오기 실패');
+              // 사용자에게 메시지 표시 등, 에러를 graceful하게 처리할 수 있습니다.
+            }
           } else {
             formData.append('files', ''); // 이미지가 없는 경우 빈 값 추가
           }
         }
       }
-    } else {
-      // 이미지 목록이 없는 경우에도 빈 배열 추가
-      formData.append('files', new Blob());
     }
-
     if (window.confirm('수정하시겠습니까?')) {
       try {
         const response = await putArtwork(formData);
@@ -187,8 +219,8 @@ const ArtworkDetail = () => {
   return (
     <Container>
       <BtnWrapper>
-        {!isEditMode && <button onClick={handleEditClick}>수정하기</button>}
-        {isEditMode && <button onClick={handleSaveClick}>저장하기</button>}
+        {!isEditMode && <EditButton onClick={handleEditClick}>수정하기</EditButton>}
+        {isEditMode && <EditButton onClick={handleSaveClick}>저장하기</EditButton>}
       </BtnWrapper>
       <ContentWrapper>
         <div>
@@ -203,88 +235,97 @@ const ArtworkDetail = () => {
         <div>
           <ArtworkInput
             label={'제목'}
-            onChange={handleChange}
+            onTextAreaChange={handleChange}
             isEditMode={isEditMode}
             isFile={false}
-            name={artworkData?.name}
+            name={'name'}
             value={putData.request.name}
           />
         </div>
         <div>
           <ArtworkInput
             label={'클라이언트'}
-            onChange={handleChange}
+            onTextAreaChange={handleChange}
             isEditMode={isEditMode}
             isFile={false}
-            name={artworkData?.client}
+            name={'client'}
             value={putData.request.client}
           />
         </div>
         <div>
           <ArtworkInput
             label={'일시'}
-            onChange={handleChange}
+            onTextAreaChange={handleChange}
             isEditMode={isEditMode}
             isFile={false}
-            name={artworkData?.date}
+            name={'date'}
             value={putData.request.date}
           />
         </div>
         <div>
           <ArtworkInput
             label={'카테고리'}
-            onChange={handleChange}
+            onTextAreaChange={handleChange}
             isEditMode={isEditMode}
             isFile={false}
-            name={artworkData?.category}
+            name={'category'}
             value={putData.request.category}
           />
         </div>
         <div>
           <ArtworkInput
             label={'링크'}
-            onChange={handleChange}
+            onTextAreaChange={handleChange}
             isEditMode={isEditMode}
             isFile={false}
-            name={artworkData?.link}
+            name={'link'}
             value={putData.request.link}
           />
         </div>
         <div>
           <ArtworkInput
             label={'설명'}
-            onChange={handleChange}
+            onTextAreaChange={handleChange}
             isEditMode={isEditMode}
             isFile={false}
-            name={artworkData?.overView}
+            name={'overView'}
             value={putData.request.overView}
           />
         </div>
-        {isEditMode ? (
-          <>
-            {[...Array(4)].map((_, index) => (
-              <div key={index}>
-                {putData.files[index] ? (
-                  <>
+        <LabelWrapper>공개 여부</LabelWrapper>
+        <LabelWrapper>프로젝트 타입</LabelWrapper>
+        <FileDes>Sub Images는 최대 3개까지 지정 가능합니다.</FileDes>
+        <FilesWrapper>
+          {isEditMode ? (
+            <>
+              {[...Array(3)].map((_, index) => (
+                <div key={index}>
+                  {putData.files[index] ? (
+                    <>
+                      <input type='file' accept='image/*' onChange={(e) => handleFileChange(e, index)} />
+                      <FilesImgWrapper>
+                        <img src={putData.files[index]} alt={`project image ${index + 1}`} />
+                        <button onClick={() => handleRemoveFile(index)}>지우기</button> {/* 파일 지우기 버튼 */}
+                      </FilesImgWrapper>
+                    </>
+                  ) : (
                     <input type='file' accept='image/*' onChange={(e) => handleFileChange(e, index)} />
-                    <FilesImgWrapper>
-                      <img src={putData.files[index]} alt={`project image ${index + 1}`} />
-                      <button onClick={() => handleRemoveFile(index)}>지우기</button> {/* 파일 지우기 버튼 */}
-                    </FilesImgWrapper>
-                  </>
-                ) : (
-                  <input type='file' accept='image/*' onChange={(e) => handleFileChange(e, index)} />
-                )}
-              </div>
-            ))}
-          </>
-        ) : (
-          artworkData?.projectImages.map((i, index) => (
-            <FilesImgWrapper key={index}>
-              <img src={i.imageUrlList} alt={`project image ${index + 1}`} />
-            </FilesImgWrapper>
-          ))
-        )}
+                  )}
+                </div>
+              ))}
+            </>
+          ) : artworkData?.projectImages && artworkData.projectImages.length > 0 ? (
+            <>
+              {artworkData?.projectImages.map((i, index) => (
+                <FilesImgWrapper key={index}>
+                  <img src={i.imageUrlList} alt={`project image ${index + 1}`} />
+                </FilesImgWrapper>
+              ))}
+            </>
+          ) : (
+            <>사진이 없습니다.</>
+          )}
+        </FilesWrapper>
       </ContentWrapper>
     </Container>
   );
@@ -296,7 +337,7 @@ const Container = styled.div`
   background-color: rgba(190, 190, 190, 0.07);
   backdrop-filter: blur(5px);
   height: fit-content;
-  width: 600px;
+  width: 800px;
   padding: 20px 20px;
   box-sizing: border-box;
   display: flex;
@@ -305,8 +346,25 @@ const Container = styled.div`
   justify-content: center;
 `;
 
-const BtnWrapper = styled.div``;
+const BtnWrapper = styled.div`
+  margin-left: auto;
+`;
+const EditButton = styled.button`
+  background-color: inherit;
+  outline: none;
+  border: none;
+  padding: 5px 15px;
+  background-color: white;
+  font-family: 'pretendard-medium';
+  font-size: 15px;
+  border-radius: 5px;
 
+  &:hover {
+    cursor: pointer;
+    opacity: 0.8;
+    transition: all 300ms ease-in-out;
+  }
+`;
 const ContentWrapper = styled.div`
   h1 {
     font-family: 'pretendard-bold';
@@ -355,10 +413,32 @@ const InputHeader = styled.div`
 
 const FilesImgWrapper = styled.div`
   display: flex;
-
+  align-items: center;
+  justify-content: start;
   img {
-    height: 150px;
-    width: 150px;
+    height: 300px;
+    width: 600px;
     object-fit: cover;
+    margin-bottom: 15px;
   }
+`;
+
+const FilesWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  margin-bottom: 40px;
+`;
+const LabelWrapper = styled.div`
+  font-family: 'pretendard-bold';
+  font-size: 20px;
+  margin-bottom: 15px;
+`;
+const FileDes = styled.div`
+  font-family: 'pretendard-light';
+  font-size: 15px;
+  opacity: 0.8;
+  margin-bottom: 15px;
 `;

@@ -127,13 +127,13 @@ const Index = () => {
         <NotiContainer ref={notiContainerRef}>
           <h1>Notification</h1>
           {!iconStatus && <NoDataConatiner>새로운 알림이 존재하지 않습니다.</NoDataConatiner>}
-          {sortedNotifications.map((notification, index) => (
+          {[...sortedNotifications].reverse().map((notification, index) => (
             <li key={index}>
               <NotificationList
                 requestId={notification.notification.requestId}
-                clientName={requests[index]?.clientName}
-                description={requests[index]?.description}
-                category={requests[index]?.category}
+                clientName={requests[sortedNotifications.length - 1 - index]?.clientName}
+                description={requests[sortedNotifications.length - 1 - index]?.description}
+                category={requests[sortedNotifications.length - 1 - index]?.category}
                 isRead={notification.isRead}
                 onClick={() => handleNotificationClick(notification.notification.id, auth.userId)}
                 onDelete={() => handleNotificationDelete(notification.notification.id, auth.userId)}

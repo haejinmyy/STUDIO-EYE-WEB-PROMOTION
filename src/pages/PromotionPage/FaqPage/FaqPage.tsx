@@ -295,7 +295,8 @@ const FaqDetailBox = styled.div`
 `;
 
 const FaqDetailAnswer = styled.p`
-  font-size: 1rem;
+  font-size: 1.4rem;
+  line-height: 30px;
   font-weight: 400;
   text-align: justify;
   color: white;

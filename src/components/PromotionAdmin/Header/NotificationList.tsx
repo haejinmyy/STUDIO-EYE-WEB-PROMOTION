@@ -1,3 +1,4 @@
+import { PA_ROUTES } from '@/constants/routerConstants';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -17,7 +18,7 @@ const NotificationList = ({ requestId, onClick, onDelete, isRead, clientName, de
 
   return (
     <>
-      <Container to={`/PA-TEST/request/${requestId}`} onClick={onClick} isRead={isRead}>
+      <Container to={`${PA_ROUTES.REQUEST}/${requestId}`} onClick={onClick} isRead={isRead}>
         <ContentWrapper>
           <TitleWrapper>
             <ClientWrapper>

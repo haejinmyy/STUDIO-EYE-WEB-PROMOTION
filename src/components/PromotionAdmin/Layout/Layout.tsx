@@ -1,11 +1,22 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Header from '../Header';
 import Navigation from '../Navigation';
 import backgroundImg from '@/assets/images/backgroundImg.png';
+import { authState } from '@/recoil/atoms';
+import { useRecoilValue } from 'recoil';
+import { PP_ADDRESS } from '@/constants/promotionpage';
 
 const Layout = () => {
+  const navigate = useNavigate();
+  const auth = useRecoilValue(authState);
+
+  if (!auth.accessToken || !auth.userId) {
+    alert('접근 권한이 없습니다.');
+    navigate(`/`);
+    return null;
+  }
   return (
     <Container>
       <Navigation />

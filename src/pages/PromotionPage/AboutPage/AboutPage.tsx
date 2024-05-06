@@ -78,7 +78,8 @@ const AboutPage = () => {
         <CorpLogoContainer>
           <CorpText>CORP</CorpText>
           {dataChunks.map((chunk, index) => (
-            <CorpLogoRowContainer key={index}>
+            // TODO 서버에서 사진과 함께 주소 넘겨달라고 할 것
+            <CorpLogoRowContainer target='_blank' href={'/'} key={index}>
               {chunk.map((item: any, subIndex: any) => (
                 <div key={subIndex}>
                   <img src={item} alt='CORP Logo' style={{ width: '300px', height: 'auto' }} />
@@ -138,7 +139,7 @@ const CorpLogoContainer = styled.div`
   flex-direction: column;
   align-items: center;
 `;
-const CorpLogoRowContainer = styled.div`
+const CorpLogoRowContainer = styled.a`
   margin-bottom: 80px;
   width: 80%;
   display: flex;

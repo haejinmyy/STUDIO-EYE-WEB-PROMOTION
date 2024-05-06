@@ -16,7 +16,6 @@ function FAQManagePage() {
   const { data, isLoading, refetch } = useQuery<IFAQ[]>(['faq', 'id'], getFAQData);
   const [editMode, setEditMode] = useState(false);
   const [id, setId] = useState<null | number>(null);
-  console.log('dpd', data);
 
   const handleDelete = (id: number) => {
     if (window.confirm('삭제하시겠습니까?')) {

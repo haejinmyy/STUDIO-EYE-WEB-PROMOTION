@@ -1,4 +1,4 @@
-import { IGetFAQData, getFAQData } from '@/apis/PromotionAdmin/faq';
+import { IGetFAQData, getFAQData, IFAQ } from '@/apis/PromotionAdmin/faq';
 import { useQuery } from 'react-query';
 import { useMatch, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -19,10 +19,10 @@ export default function FAQCEditPage() {
   const navigator = useNavigate();
   const faqEditMatch = useMatch(`${PA_ROUTES.FAQ}/write/:faqId`);
 
-  const { data, isLoading } = useQuery<IGetFAQData>(['faq', 'id'], getFAQData);
+  const { data, isLoading } = useQuery<IFAQ[]>(['faq', 'id'], getFAQData);
 
   const clickedFAQ =
-    faqEditMatch?.params.faqId && data?.data.find((faq) => String(faq.id) === faqEditMatch.params.faqId);
+    faqEditMatch?.params.faqId && data && data.find((faq) => String(faq.id) === faqEditMatch.params.faqId);
 
   const [editorState, setEditorState] = useState(() => {
     const blocksFromHtml = clickedFAQ && htmlToDraft(clickedFAQ.answer);

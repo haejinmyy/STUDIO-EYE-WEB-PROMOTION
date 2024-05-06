@@ -43,7 +43,7 @@ export default ArtworkBox;
 const Container = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   width: 100%;
   border-radius: 10px;
   background-color: #afafaf13;
@@ -99,6 +99,7 @@ const DescriptionWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  width: 500px;
   margin-left: 23px;
 `;
 const RightAlignWrapper = styled.div`
@@ -114,6 +115,7 @@ const TypeWrapper = styled.div<{ projectType: 'others' | 'top' | 'main' }>`
     projectType === 'main' ? '#ffaa007d' : projectType === 'top' ? '#d3002384' : '#33333321'};
   margin-bottom: 5px;
   margin-left: auto;
+  margin-top: 15px;
   font-family: 'pretendard-medium';
   font-size: 15px;
   color: ${({ projectType }) => (projectType === 'main' || projectType === 'top' ? 'white' : 'black')};
