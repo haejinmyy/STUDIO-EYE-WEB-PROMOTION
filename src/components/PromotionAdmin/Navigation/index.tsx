@@ -33,21 +33,23 @@ const linksData = [
     pathName: 'Data Edit',
     svgComponent: <PageEdit width={20} height={20} />,
   },
-  {
-    path: PA_ROUTES.STATISTICS,
-    pathName: 'Statistics',
-    svgComponent: <Statistics width={20} height={20} />,
-  },
+  // * 중간 데모를 위한 주석 처리
+  // {
+  //   path: PA_ROUTES.STATISTICS,
+  //   pathName: 'Statistics',
+  //   svgComponent: <Statistics width={20} height={20} />,
+  // },
   {
     path: PA_ROUTES.FAQ,
     pathName: 'Faq',
     svgComponent: <Faq width={20} height={20} />,
   },
-  {
-    path: PA_ROUTES.SETTING,
-    pathName: 'Setting',
-    svgComponent: <Setting width={20} height={20} />,
-  },
+  // * 중간 데모를 위한 주석 처리
+  // {
+  //   path: PA_ROUTES.SETTING,
+  //   pathName: 'Setting',
+  //   svgComponent: <Setting width={20} height={20} />,
+  // },
 ];
 
 const index = () => {

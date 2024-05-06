@@ -1,13 +1,13 @@
 // 추후에 진짜 PA, PP로 반영하여 추가
 
 export const PA_ROUTES = {
-  HOME: '/pa-test/home',
-  REQUEST: '/pa-test/request',
-  ARTWORK: '/pa-test/artwork',
-  DATA_EDIT: '/pa-test/dataEdit',
-  STATISTICS: '/pa-test/statistics',
-  FAQ: '/pa-test/faq',
-  SETTING: '/pa-test/setting',
+  HOME: '/promotion-admin/home',
+  REQUEST: '/promotion-admin/request',
+  ARTWORK: '/promotion-admin/artwork',
+  DATA_EDIT: '/promotion-admin/dataEdit',
+  STATISTICS: '/promotion-admin/statistics',
+  FAQ: '/promotion-admin/faq',
+  SETTING: '/promotion-admin/setting',
 };
 
 export const PA_ROUTES_CHILD = {
@@ -29,6 +29,7 @@ export const PP_ROUTES_CHILD = {
   ARTWORK_DETAIL: 'artwork/:id',
   CONTACT: 'contact',
   FAQ: 'faq',
+  LOGIN: 'login',
 };
 
 export const PP_ROUTES = {

@@ -13,6 +13,7 @@ export type ArtworkData = {
   date: string;
   link: string;
   overView: string;
+  projectType: 'top' | 'main' | 'others';
   isPosted: boolean;
   mainImg: string;
   projectImages: ArtworkImage[];

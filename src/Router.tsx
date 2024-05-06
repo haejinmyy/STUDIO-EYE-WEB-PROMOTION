@@ -74,14 +74,19 @@ const router = createBrowserRouter([
             path: PP_ROUTES_CHILD.CONTACT,
             element: <ContactUsPage />,
           },
+          {
+            path: PP_ROUTES_CHILD.FAQ,
+            element: <FaqPage />,
+          },
+          {
+            path: PP_ROUTES_CHILD.LOGIN,
+            element: <Login />,
+          },
         ],
       },
+
       {
-        path: '/login',
-        element: <Login />,
-      },
-      {
-        path: '/pa-test',
+        path: '/promotion-admin',
         element: <PALayout />,
         children: [
           {

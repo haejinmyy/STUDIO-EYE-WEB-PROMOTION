@@ -12,8 +12,8 @@ export type RequestData = {
 };
 
 export type WaitingRequestData = {
-  date: string | number | Date;
   id: number;
+  projectName: string;
   category: string;
   clientName: string;
   organization: string;
@@ -25,5 +25,6 @@ export type WaitingRequestData = {
   year: number;
   month: number;
   state: number;
-  fileUrlList: string[];
+  fileurlList: string[];
+  createdAt: string;
 };

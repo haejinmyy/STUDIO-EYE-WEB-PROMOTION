@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useQuery } from 'react-query';
-import { IGetFAQData, getFAQData } from '../../../apis/PromotionAdmin/faq';
+import { IGetFAQData, getFAQData, IFAQ } from '../../../apis/PromotionAdmin/faq';
 import { useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
@@ -13,9 +13,10 @@ import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 
 function FAQManagePage() {
   const navigator = useNavigate();
-  const { data, isLoading, refetch } = useQuery<IGetFAQData>(['faq', 'id'], getFAQData);
+  const { data, isLoading, refetch } = useQuery<IFAQ[]>(['faq', 'id'], getFAQData);
   const [editMode, setEditMode] = useState(false);
   const [id, setId] = useState<null | number>(null);
+  console.log('dpd', data);
 
   const handleDelete = (id: number) => {
     if (window.confirm('삭제하시겠습니까?')) {
@@ -35,7 +36,6 @@ function FAQManagePage() {
   const [postsPerPage, setPostsPerPage] = useState(10);
   const indexOfLast = currentPage * postsPerPage;
   const indexOfFirst = indexOfLast - postsPerPage;
-
   return (
     <Wrapper>
       <ContentBox>
@@ -60,7 +60,7 @@ function FAQManagePage() {
               </svg>
             </Icon>
             FAQ 게시글 관리
-            <Info>등록 게시글 {data?.data.length}건</Info>
+            <Info>등록된 게시글 {data && data.length > 0 ? data.length : 0}건 </Info>
           </Title>
           <ButtonsWrapper>
             <ButtonWrapper>
@@ -133,7 +133,8 @@ function FAQManagePage() {
         ) : (
           <>
             {data &&
-              data?.data.slice(indexOfFirst, indexOfLast).map((faq) => (
+              data.length > 0 &&
+              data.slice(indexOfFirst, indexOfLast).map((faq) => (
                 <ListWrapper
                   key={faq.id}
                   onClick={() => {
@@ -180,7 +181,7 @@ function FAQManagePage() {
         )}
         {data && (
           <PaginationWrapper>
-            <Pagination postsPerPage={postsPerPage} totalPosts={data?.data.length} paginate={setCurrentPage} />
+            <Pagination postsPerPage={postsPerPage} totalPosts={data.length} paginate={setCurrentPage} />
           </PaginationWrapper>
         )}
       </ContentBox>
@@ -188,7 +189,6 @@ function FAQManagePage() {
     </Wrapper>
   );
 }
-
 export default FAQManagePage;
 
 const VisibilityWrapper = styled.div`
