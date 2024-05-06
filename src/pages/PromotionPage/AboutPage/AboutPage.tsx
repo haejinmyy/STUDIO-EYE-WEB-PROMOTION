@@ -1,92 +1,158 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import axios from 'axios';
+import { motion, useAnimation } from 'framer-motion';
 
-const CenteredScrollExample = () => {
-  const [highlighted, setHighlighted] = useState(0);
+import IntroPage from './IntroPage';
+import WhatWeDoPage from './WhatWeDoPage';
 
-  // 스크롤 이벤트 감지
+interface IFontStyleProps {
+  fontSize?: string;
+  fontFamily?: string;
+}
+interface IContainerStyleProps {
+  backgroundColor?: string;
+}
+
+const chunkArray = (array: any, size: any) => {
+  const chunks = [];
+  for (let i = 0; i < array.length; i += size) {
+    const chunk = array.slice(i, i + size); // 배열을 size 만큼 나누기
+    chunks.push(chunk);
+  }
+  return chunks; // 배열의 부분들을 배열로 반환
+};
+
+const AboutPage = () => {
+  const [data, setData] = useState({ id: '', name: '', introduction: '', imageFileName: '', imageUrl: '' });
+  const [corpLogo, setCorpLogo] = useState([]);
+
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
+    const fetchData = async () => {
+      try {
+        const [response1, response2] = await Promise.all([
+          axios.get('http://3.36.95.109:8080/api/ceo'), // 첫 번째 요청
+          axios.get('http://3.36.95.109:8080/api/partners/logoImgList'), // 두 번째 요청
+        ]);
 
-      // 스크롤 위치에 따라 강조할 버튼 결정
-      if (scrollY < 100) {
-        setHighlighted(1);
-      } else if (scrollY < 200) {
-        setHighlighted(2);
-      } else if (scrollY < 300) {
-        setHighlighted(3);
-      } else if (scrollY < 400) {
-        setHighlighted(4);
-      } else {
-        setHighlighted(5);
+        const ceoInfo = response1.data.data;
+        const object = {
+          id: ceoInfo.id,
+          name: ceoInfo.name,
+          introduction: ceoInfo.introduction,
+          imageFileName: ceoInfo.imageFileName,
+          imageUrl: ceoInfo.imageUrl,
+        };
+        setData(object);
+
+        console.log(response2);
+        setCorpLogo(response2.data.data);
+      } catch (error) {
+        console.error('데이터 가져오기 오류:', error);
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    fetchData();
   }, []);
 
+  const dataChunks = chunkArray(corpLogo, 3);
+
   return (
-    <Container>
-      <ScrollableContainer>
-        <ScrollBar animate={{ top: `${5 + highlighted * 20}vh` }} /> {/* 스크롤바 이동 */}
-        {/* 스크롤바 왼쪽의 A, C, E */}
-        <Button style={{ top: '10%', left: '30%' }} animate={{ scale: highlighted === 1 ? 1.2 : 1 }}>
-          A
-        </Button>
-        <Button style={{ top: '50%', left: '30%' }} animate={{ scale: highlighted === 3 ? 1.2 : 1 }}>
-          C
-        </Button>
-        <Button style={{ top: '90%', left: '30%' }} animate={{ scale: highlighted === 5 ? 1.2 : 1 }}>
-          E
-        </Button>
-        {/* 스크롤바 오른쪽의 B, D */}
-        <Button style={{ top: '30%', left: '70%' }} animate={{ scale: highlighted === 2 ? 1.2 : 1 }}>
-          B
-        </Button>
-        <Button style={{ top: '70%', left: '70%' }} animate={{ scale: highlighted === 4 ? 1.2 : 1 }}>
-          D
-        </Button>
-      </ScrollableContainer>
-    </Container>
+    <ScrollContainer>
+      <IntroPage />
+      <WhatWeDoPage />
+      <Section>
+        <RowCoontainer backgroundColor='#1a1a1a'>
+          <CeoInfoContainer>
+            <CeoInfo fontFamily='Pretendard-SemiBold' fontSize='70px'>
+              CEO&nbsp;{data.name}
+            </CeoInfo>
+            <CeoInfo>{data.introduction}</CeoInfo>
+          </CeoInfoContainer>
+          <CeoImageContainer>
+            <img src={data.imageUrl} alt='CEO Character' style={{ width: '350px', height: 'auto' }} />
+          </CeoImageContainer>
+        </RowCoontainer>
+      </Section>
+      <Section>
+        <CorpLogoContainer>
+          <CorpText>CORP</CorpText>
+          {dataChunks.map((chunk, index) => (
+            <CorpLogoRowContainer key={index}>
+              {chunk.map((item: any, subIndex: any) => (
+                <div key={subIndex}>
+                  <img src={item} alt='CORP Logo' style={{ width: '300px', height: 'auto' }} />
+                </div>
+              ))}
+            </CorpLogoRowContainer>
+          ))}
+        </CorpLogoContainer>
+      </Section>
+    </ScrollContainer>
   );
 };
 
-export default CenteredScrollExample;
+export default AboutPage;
 
-const Container = styled.div`
-  width: 100%;
-  background-size: cover;
-  background-position: center;
+const ScrollContainer = styled.div`
   display: flex;
+  flex-direction: column;
+`;
+const Section = styled.div`
+  width: 100%;
+  display: flex;
+  margin-top: 150px;
+  margin-bottom: 50px;
+  overflow-x: hidden;
+`;
+const RowCoontainer = styled.div<IContainerStyleProps>`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
   justify-content: center;
+  background-color: ${(props) => props.backgroundColor || 'black'};
+  padding-top: 80px;
+  padding-bottom: 80px;
+`;
+
+const CeoInfoContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  justify-content: center;
+`;
+const CeoImageContainer = styled.div`
+  padding-left: 70px;
+`;
+const CeoInfo = styled.div<IFontStyleProps>`
+  white-space: pre-line;
+  margin-bottom: 30px;
+  font-family: ${(props) => props.fontFamily || 'Pretendard-regular'};
+  font-size: ${(props) => props.fontSize || '24px'};
+  color: #ffffff;
+`;
+
+const CorpLogoContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  background-color: black;
 `;
-const ScrollableContainer = styled.div`
-  height: 200vh; // 충분한 스크롤 공간
+const CorpLogoRowContainer = styled.div`
+  margin-bottom: 80px;
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  gap: 50px;
+  flex-wrap: wrap;
 `;
-const ScrollBar = styled(motion.div)`
-  position: fixed;
-  left: 50%; // 화면 중앙
-  transform: translateX(-50%); // 중앙 정렬
-  width: 10px; // 폭
-  height: 90vh; // 높이
-  background-color: white; // 색상
-`;
-const Button = styled(motion.button)`
-  position: absolute;
-  width: 100px; // 폭
-  height: 70px; // 높이
-  border: 1px solid black;
-  background-color: white;
-  font-size: 24px;
-  padding: 20px;
-  margin: 10px;
-  transition: all 0.2s; // 애니메이션 전환 속도
+const CorpText = styled.div`
+  margin-bottom: 30px;
+  font-family: 'pretendard-regular';
+  font-size: 120px;
+  letter-spacing: 5px;
+  opacity: 0.1;
+  filter: blur(3px);
+  color: '#FFFFFF';
 `;

@@ -237,7 +237,7 @@ const ContactUsPage = () => {
             <IntroTitleUS>US</IntroTitleUS>
           </IntroTitleWrapper>
           <IntroSubTitleWrapper>
-            <IntroUbtitle>대한민국 No.1 뉴미디어 전문 제작사 스튜디오 아이와 함께 해보세요!</IntroUbtitle>
+            <IntroSubtitle>대한민국 No.1 뉴미디어 전문 제작사 스튜디오 아이와 함께 해보세요!</IntroSubtitle>
           </IntroSubTitleWrapper>
           <IntroAboutWrapper>
             <div>
@@ -484,7 +484,7 @@ const IntroSubTitleWrapper = styled.div`
   justify-content: center;
   align-items: center;
 `;
-const IntroUbtitle = styled.div`
+const IntroSubtitle = styled.div`
   font-family: 'Pretendard-SemiBold';
   font-size: 20px;
   color: #ffffff;
