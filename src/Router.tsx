@@ -85,7 +85,7 @@ const router = createBrowserRouter([
       },
 
       {
-        path: '/pa-test',
+        path: '/promotion-admin',
         element: <PALayout />,
         children: [
           {
