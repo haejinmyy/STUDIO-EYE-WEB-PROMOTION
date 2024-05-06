@@ -5,25 +5,24 @@ import WaitingRequestsList from './WaitingRequestsList';
 import { fetchWaitingRequests } from '@/apis/PromotionAdmin/dashboard';
 import { WaitingRequestData } from '@/types/PromotionAdmin/statistics';
 import { ReactComponent as Sort } from '@/assets/images/sortImg.svg';
+import { useQuery } from 'react-query';
 
 const WatingRequests = () => {
-  const [waitingRequests, setWaitingRequests] = useState<WaitingRequestData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { data, isLoading } = useQuery<WaitingRequestData[]>(['waitingRequest'], fetchWaitingRequests);
+  const [sortByRecent, setSortByRecent] = useState(true);
+  const sortedData =
+    data && data.length > 0
+      ? data.slice().sort((a, b) => {
+          const dateA = new Date(a.createdAt).getTime();
+          const dateB = new Date(b.createdAt).getTime();
+          return sortByRecent ? dateB - dateA : dateA - dateB;
+        })
+      : [];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchWaitingRequests();
-        setWaitingRequests(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching waiting requests:', error);
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
+  const handleSort = () => {
+    setSortByRecent((prev) => !prev);
+  };
+  console.log(data);
   return (
     <Container>
       <HeaderWrapper>
@@ -32,35 +31,27 @@ const WatingRequests = () => {
             <Icon width={20} height={20} stroke='#595959' />
             <h1>의뢰 통계 요약</h1>
           </div>
-          <span>승인 대기 의뢰 총 {waitingRequests ? waitingRequests.length : 0}건</span>
+          <span>승인 대기 의뢰 총 {data && data.length > 0 ? data.length : 0}건</span>
         </TitleWrapper>
         <BtnWrapper>
-          <SortWrapper>
-            <SortNameWrapper>최신순</SortNameWrapper>
-            <Sort width={20} height={20} />
-          </SortWrapper>
-          <SortWrapper>
-            <SortNameWrapper>최신순</SortNameWrapper>
-            <Sort width={20} height={20} />
-          </SortWrapper>
-          <SortWrapper>
-            <SortNameWrapper>최신순</SortNameWrapper>
+          <SortWrapper onClick={handleSort} rotate={!sortByRecent}>
+            <SortNameWrapper>{sortByRecent ? '최신순' : '오래된 순'}</SortNameWrapper>
             <Sort width={20} height={20} />
           </SortWrapper>
         </BtnWrapper>
       </HeaderWrapper>
       <BodyWrapper>
-        {loading ? (
+        {isLoading ? (
           <LoadingWrapper>Loading...</LoadingWrapper>
-        ) : waitingRequests && waitingRequests.length > 0 ? (
-          waitingRequests.map((request) => (
+        ) : sortedData && sortedData.length > 0 ? (
+          sortedData.map((request) => (
             <WaitingRequestsList
               key={request.id}
               organization={request.organization}
               clientName={request.clientName}
               description={request.description}
               category={request.category}
-              date={`${request.year}-${request.month}`} // year와 month를 합쳐서 date로 전달
+              date={request.createdAt}
               email={request.email}
               requestId={request.id.toString()}
             />
@@ -76,7 +67,7 @@ const WatingRequests = () => {
 export default WatingRequests;
 
 const Container = styled.div`
-  width: 1000px;
+  width: 100%;
   height: fit-content;
   transition: all ease-in-out 300ms;
   margin-right: 15px;
@@ -139,7 +130,7 @@ const LoadingWrapper = styled.div`
   font-size: 17px;
 `;
 
-const SortWrapper = styled.button`
+const SortWrapper = styled.button<{ rotate: boolean }>`
   border-style: none;
   background: inherit;
   display: flex;
@@ -154,6 +145,10 @@ const SortWrapper = styled.button`
     cursor: pointer;
     background-color: #afafaf1d;
     transition: all ease-in-out 200ms;
+  }
+  svg {
+    transform: ${(props) => (props.rotate ? 'rotate(180deg)' : 'none')};
+    transition: all 300ms ease-in-out;
   }
 `;
 

@@ -14,9 +14,10 @@ type Props = {
 
 const WaitingRequestsList = ({ requestId, organization, clientName, description, category, date, email }: Props) => {
   const limitedOrganization = organization.length > 13 ? organization.slice(0, 13) + '...' : organization;
-  const limitedDescription = description.length > 30 ? description.slice(0, 30) + '...' : description;
-  const limitedName = clientName.length > 8 ? clientName.slice(0, 8) + '...' : clientName;
+  const limitedDescription = description.length > 33 ? description.slice(0, 33) + '...' : description;
+  const limitedName = clientName.length > 7 ? clientName.slice(0, 7) + '...' : clientName;
   const limitedEmail = email.length > 20 ? email.slice(0, 29) + '...' : email;
+  const slicedDate = date.slice(0, 10);
   return (
     <Container to={`/pa-test/request/${requestId}`}>
       <OrganizationWrapper>{limitedOrganization}</OrganizationWrapper>
@@ -24,7 +25,7 @@ const WaitingRequestsList = ({ requestId, organization, clientName, description,
         <h2>{limitedDescription}</h2>
         <h3>{category}</h3>
       </DetailWrapper>
-      <h4>{date}</h4>
+      <h4>{slicedDate}</h4>
       <h4>{limitedName}</h4>
       <span>{limitedEmail}</span>
     </Container>
@@ -37,9 +38,9 @@ const Container = styled(Link)`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 900px;
+  width: 90%;
   height: 31px;
-  padding: 20px;
+  padding: 20px 30px;
   background-color: none;
   border-top: 0.1px solid rgba(0, 0, 0, 0.05);
   text-decoration: none;

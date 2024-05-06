@@ -13,6 +13,7 @@ import { Request } from '@/types/request';
 import NotificationList from '@/components/PromotionAdmin/Header/NotificationList';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { authState, notiState } from '@/recoil/atoms';
+import { PP_ADDRESS } from '@/constants/promotionpage';
 
 const CircleBtns = [
   {
@@ -103,7 +104,7 @@ const Index = () => {
           <h1>오늘도 스튜디오 아이와 함께 좋은 하루 되세요, 엉금엉금님!</h1>
         </LeftWrapper>
         <RightWrapper>
-          <OpenLinkWrapper href='http://ec2-3-35-22-220.ap-northeast-2.compute.amazonaws.com/' target='_blank'>
+          <OpenLinkWrapper href={PP_ADDRESS} target='_blank'>
             <img src={openIcon} alt='pa-header-open' /> <span>Open Promotion Page</span>
           </OpenLinkWrapper>
           <CircleBtnWrapper>
