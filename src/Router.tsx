@@ -33,6 +33,7 @@ import ClientPage from './pages/PromotionAdmin/DataEditPage/ClientPage/ClientPag
 import PartnerEditPage from './pages/PromotionAdmin/DataEditPage/PartnerPage/PartnerEditPage';
 import ClientEditPage from './pages/PromotionAdmin/DataEditPage/ClientPage/ClientEditPage';
 import PartnerWritePage from './pages/PromotionAdmin/DataEditPage/PartnerPage/PartnerWritePage';
+import Login from './pages/PromotionAdmin/Login/Login';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -78,7 +79,10 @@ const router = createBrowserRouter([
           },
         ],
       },
-
+      {
+        path: '/login',
+        element: <Login />,
+      },
       {
         path: '/pa-test',
         element: <PALayout />,

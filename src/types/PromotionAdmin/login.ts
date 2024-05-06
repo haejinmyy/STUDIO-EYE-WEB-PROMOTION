@@ -4,4 +4,5 @@ export type loginType = {
   refreshToken: string;
   accessTokenExpireDate: number;
   id: number;
+  approved: boolean;
 };
