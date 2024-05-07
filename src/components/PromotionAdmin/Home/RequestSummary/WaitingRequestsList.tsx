@@ -1,3 +1,4 @@
+import { PA_ROUTES } from '@/constants/routerConstants';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -19,7 +20,7 @@ const WaitingRequestsList = ({ requestId, organization, clientName, description,
   const limitedEmail = email.length > 25 ? email.slice(0, 25) + '...' : email;
   const slicedDate = date.slice(0, 10);
   return (
-    <Container to={`/pa-test/request/${requestId}`}>
+    <Container to={`${PA_ROUTES.REQUEST}/${requestId}`}>
       <OrganizationWrapper>{limitedOrganization}</OrganizationWrapper>
       <DetailWrapper>
         <h2>{limitedDescription}</h2>
