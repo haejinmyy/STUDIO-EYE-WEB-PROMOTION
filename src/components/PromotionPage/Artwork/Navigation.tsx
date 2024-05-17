@@ -40,7 +40,6 @@ function Navigation() {
   };
 
   useEffect(() => {
-    // console.log(`Selected category ID: ${categoryId}`);
     if (categoryId === null) {
       setSelectedCategory(ARTWORK_CATECORY.ALL);
     }
@@ -53,7 +52,6 @@ function Navigation() {
           navigator(`/${PP_ROUTES_CHILD.ARTWORK}`);
           setSelectedCategory(artwork_categories[0].label);
           handleRefresh();
-          // window.location.replace(`/${PP_ROUTES_CHILD.ARTWORK}`);
         }}
         selected={selectedCategory === artwork_categories[0].label && categoryId !== null + '' ? true : false}
       >
@@ -67,7 +65,6 @@ function Navigation() {
             navigator(`?category=${category.key}`);
             setSelectedCategory(category.label);
             handleRefresh();
-            // window.location.reload();
           }}
           selected={categoryId === category.key + '' ? true : false}
         >
@@ -97,6 +94,8 @@ const CategoryItem = styled.div<{ selected: boolean }>`
     display: inline-block;
     font-weight: 200;
     font-size: 23px;
+    font-family: ${(props) => props.theme.font.light};
+
     color: ${({ selected }) => (selected ? theme.color.white.bold : 'none')};
     border-bottom: 1.5px solid ${({ selected }) => (selected ? theme.color.white.bold : 'none')};
     transition: color 0.3s;

@@ -79,6 +79,7 @@ const Info = styled(motion.div)`
     display: block;
     padding-bottom: 5px;
     font-size: 20px;
+    font-family: ${(props) => props.theme.font.medium};
     color: ${(props) => props.theme.color.black.light};
     padding: 10px 0 8px 0;
   }
@@ -86,5 +87,6 @@ const Info = styled(motion.div)`
   .info_name {
     font-size: 27px;
     color: ${(props) => props.theme.color.white.bold};
+    font-family: ${(props) => props.theme.font.semiBold};
   }
 `;

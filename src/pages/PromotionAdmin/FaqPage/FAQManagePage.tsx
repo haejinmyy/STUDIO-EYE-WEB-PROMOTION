@@ -130,11 +130,11 @@ function FAQManagePage() {
         {isLoading ? (
           <>is Loading...</>
         ) : (
-          <>
+          <ListWrapper>
             {data &&
               data.length > 0 &&
               data.slice(indexOfFirst, indexOfLast).map((faq) => (
-                <ListWrapper
+                <ListItemWrapper
                   key={faq.id}
                   onClick={() => {
                     !editMode && navigator(`${PA_ROUTES.FAQ}/${faq.id}`);
@@ -174,9 +174,9 @@ function FAQManagePage() {
                     </QuestionTitle>
                     <VisibilityWrapper>{faq.visibility ? '공개' : '비공개'}</VisibilityWrapper>
                   </QuestionTitleWrapper>
-                </ListWrapper>
+                </ListItemWrapper>
               ))}
-          </>
+          </ListWrapper>
         )}
         {data && (
           <PaginationWrapper>
@@ -197,8 +197,9 @@ const VisibilityWrapper = styled.div`
 
 const PaginationWrapper = styled.div`
   width: 100%;
-  position: absolute;
-  bottom: 10px;
+  justify-content: center;
+  align-items: end;
+  display: flex;
 `;
 const Wrapper = styled.div`
   display: grid;
@@ -336,16 +337,14 @@ const Button = styled.div`
   }
 `;
 
-const ListWrapper = styled.div<{ selected: boolean }>`
+const ListWrapper = styled.div`
+  height: 60vh;
+`;
+
+const ListItemWrapper = styled.div<{ selected: boolean }>`
   display: flex;
   width: 100%;
   border-bottom: 1px solid #f1f1f1;
-
-  /* &:hover {
-    color: ${(props) => props.theme.color.yellow.bold};
-    font-weight: 900;
-    transition: all 0.2s ease-out;
-  } */
   background-color: ${({ selected }) => (selected ? theme.color.yellow.light : 'none')};
 `;
 

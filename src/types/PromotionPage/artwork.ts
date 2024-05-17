@@ -1,4 +1,4 @@
-interface IArtwork {
+export interface IArtwork {
   id: number;
   department: string;
   category: string;

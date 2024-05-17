@@ -8,16 +8,14 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 
 interface IFormData {
-  is_main: boolean;
-  link: string;
+  name: string;
 }
 
-function PartnerWritePage() {
+function ClientWritePage() {
   const navigator = useNavigate();
   const [postData, setPostData] = useState({
-    partnerInfo: {
-      is_main: true,
-      link: '',
+    clientInfo: {
+      name: '',
     },
     logoImg: '',
   });
@@ -26,11 +24,7 @@ function PartnerWritePage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<IFormData>({
-    defaultValues: {
-      is_main: true,
-    },
-  });
+  } = useForm<IFormData>();
 
   const [isInvalid, setInvalid] = useState(true);
 
@@ -38,26 +32,15 @@ function PartnerWritePage() {
     handleSaveClick(data);
   };
 
-  // URL 유효성 검사 함수
-  const validateUrl = (value: string) => {
-    try {
-      new URL(value);
-      return true; // 유효한 URL일 경우
-    } catch (e) {
-      return '유효한 URL을 입력해주세요.'; // 잘못된 URL일 경우
-    }
-  };
-
   const handleSaveClick = async (data: IFormData) => {
     const formData = new FormData();
 
     formData.append(
-      'partnerInfo',
+      'clientInfo',
       new Blob(
         [
           JSON.stringify({
-            is_main: data.is_main,
-            link: data.link,
+            name: data.name,
           }),
         ],
         { type: 'application/json' },
@@ -65,7 +48,7 @@ function PartnerWritePage() {
     );
 
     // 이미지를 변경했는지 확인하고 추가
-    const file = await urlToFile(postData.logoImg, 'PartnerLogo.png');
+    const file = await urlToFile(postData.logoImg, 'ClientLogo.png');
     formData.append('logoImg', file);
 
     if (postData.logoImg === '') {
@@ -78,13 +61,13 @@ function PartnerWritePage() {
     if (!isInvalid) {
       if (window.confirm('등록하시겠습니까?')) {
         axios
-          .post(`${PROMOTION_BASIC_PATH}/api/partners`, formData)
+          .post(`${PROMOTION_BASIC_PATH}/api/client`, formData)
           .then((response) => {
-            console.log('Partenr posted:', response);
+            console.log('Client posted:', response);
             alert('등록되었습니다.');
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}`);
+            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
           })
-          .catch((error) => console.error('Error updating partner:', error));
+          .catch((error) => console.error('Error updating client:', error));
       }
     }
   };
@@ -128,7 +111,7 @@ function PartnerWritePage() {
             />
           </svg>
         </Icon>
-        <Title>Partner 등록</Title>
+        <Title>Client 등록</Title>
       </TitleWrapper>
 
       <FormContainer onSubmit={handleSubmit(onValid)}>
@@ -144,21 +127,16 @@ function PartnerWritePage() {
         </Content>
 
         <Content>
-          <Title>Link</Title>
+          <Title>Name</Title>
           <LinkInput
-            {...register('link', {
-              required: '링크를 입력해주세요',
-              validate: validateUrl,
+            {...register('name', {
+              required: '이름을 입력해주세요',
             })}
+            placeholder='이름을 입력해주세요'
           />
-          {errors.link && <p>{errors.link.message}</p>}
+          {errors.name && <p>{errors.name.message}</p>}
         </Content>
-        <Content>
-          <VisibilityWrapper>
-            공개여부
-            <input type='checkbox' id='switch' defaultChecked {...register('is_main')} />
-          </VisibilityWrapper>
-        </Content>
+
         <ButtonWrapper>
           <Button>등록하기</Button>
         </ButtonWrapper>
@@ -167,11 +145,7 @@ function PartnerWritePage() {
   );
 }
 
-export default PartnerWritePage;
-
-const VisibilityWrapper = styled.div`
-  font-size: 12px;
-`;
+export default ClientWritePage;
 
 const Wrapper = styled.div`
   border-radius: 0.5rem;

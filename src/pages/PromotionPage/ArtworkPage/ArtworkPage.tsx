@@ -12,26 +12,27 @@ import NullException from '@/components/PromotionPage/Artwork/NullException';
 function ArtworkPage() {
   const location = useLocation();
   const categoryId = new URLSearchParams(location.search).get('category');
-  const { data, isLoading } = useQuery<IArtworksData>(['artwork', 'id'], getArtworkData);
+  const { data, isLoading, error } = useQuery<IArtworksData, Error>(['artwork', 'id'], getArtworkData);
   const category = artwork_categories.find((category) => category.key + '' === categoryId);
 
-  const postedData = data && data?.data.filter((artwork) => artwork.isPosted === false);
-  const filteredData = postedData?.filter(
-    (artworks) => artworks.category.toLowerCase() === category?.label.toLocaleLowerCase(),
-  );
+  const postedData = data && data?.data.filter((artwork) => artwork.isPosted === true);
+  const filteredData =
+    postedData &&
+    postedData?.filter((artworks) => artworks.category.toLowerCase() === category?.label.toLocaleLowerCase());
 
   function ScrollToTop() {
     useEffect(() => {
       window.scrollTo(0, 0);
     }, [location]); // pathname이 변경될 때마다 실행
-
     return null;
   }
 
+  if (isLoading) return <div>is Loading...</div>;
+  if (error) return <>{error.message}</>;
   return (
     <>
-      {isLoading ? (
-        <div>is Loading...</div>
+      {postedData === null || postedData === undefined ? (
+        <>Artwork 데이터가 없습니다.</>
       ) : (
         <>
           <ScrollToTop />
@@ -92,20 +93,4 @@ const ArtworkWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 33px;
-`;
-
-const Info = styled(motion.div)`
-  padding-top: 10px;
-  .info_client {
-    display: block;
-    padding-bottom: 5px;
-    font-size: 20px;
-    color: ${(props) => props.theme.color.black.light};
-  }
-
-  .info_name {
-    font-size: 27px;
-
-    color: ${(props) => props.theme.color.white.bold};
-  }
 `;
