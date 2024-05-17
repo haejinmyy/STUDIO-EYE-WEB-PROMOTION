@@ -18,4 +18,13 @@ export const theme: DefaultTheme = {
       light: '#FFF0D1',
     },
   },
+
+  font: {
+    thin: 'pretendard-thin',
+    light: 'pretendard-light',
+    regular: 'pretendard-regular',
+    medium: 'pretendard-medium',
+    semiBold: 'pretendard-semiBold',
+    bold: 'pretendard-bold',
+  },
 };

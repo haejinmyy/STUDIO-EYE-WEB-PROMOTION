@@ -19,5 +19,13 @@ declare module 'styled-components' {
         light: string;
       };
     };
+    font: {
+      thin: string;
+      light: string;
+      regular: string;
+      medium: string;
+      semiBold: string;
+      bold: string;
+    };
   }
 }
