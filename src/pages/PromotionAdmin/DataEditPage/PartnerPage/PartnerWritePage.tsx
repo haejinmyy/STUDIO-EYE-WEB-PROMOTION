@@ -3,10 +3,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { PA_ROUTES } from '@/constants/routerConstants';
+import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
-import { DATAEDIT_PATH } from '@/components/PromotionAdmin/DataEdit/DetailNavigator';
 
 interface IFormData {
   is_main: boolean;
@@ -83,7 +82,7 @@ function PartnerWritePage() {
           .then((response) => {
             console.log('Partenr posted:', response);
             alert('등록되었습니다.');
-            navigator(`${PA_ROUTES.DATA_EDIT}/partner?${DATAEDIT_PATH.PARTNER}`);
+            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}`);
           })
           .catch((error) => console.error('Error updating partner:', error));
       }
@@ -134,17 +133,6 @@ function PartnerWritePage() {
 
       <FormContainer onSubmit={handleSubmit(onValid)}>
         <Content>
-          <Title>Link</Title>
-          <LinkInput
-            {...register('link', {
-              required: '링크를 입력해주세요',
-              validate: validateUrl,
-            })}
-          />
-          {errors.link && <p>{errors.link.message}</p>}
-        </Content>
-
-        <Content>
           <Title>Logo</Title>
           <LogoWrapper>
             <img src={postData.logoImg} />
@@ -155,6 +143,16 @@ function PartnerWritePage() {
           </LogoWrapper>
         </Content>
 
+        <Content>
+          <Title>Link</Title>
+          <LinkInput
+            {...register('link', {
+              required: '링크를 입력해주세요',
+              validate: validateUrl,
+            })}
+          />
+          {errors.link && <p>{errors.link.message}</p>}
+        </Content>
         <Content>
           <VisibilityWrapper>
             공개여부
