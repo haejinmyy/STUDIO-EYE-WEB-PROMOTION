@@ -1,16 +1,16 @@
-import DetailNavigator from '@/components/PromotionAdmin/DataEdit/DetailNavigator';
-// import Overview from '@/components/PromotionAdmin/DataEdit/Overview';
+import Navigation from '@/components/PromotionAdmin/DataEdit/Navigation';
+import { PA_ROUTES } from '@/constants/routerConstants';
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import styled from 'styled-components';
 
 const index = () => {
   return (
     <>
-      <DetailNavigator />
+      <Navigate to={`${PA_ROUTES.DATA_EDIT}/ceo`} />
+      <Navigation />
       <Layout>
         <Outlet />
-        {/* <Overview /> */}
       </Layout>
     </>
   );
