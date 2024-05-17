@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { useMatch, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 // import { Request } from '@/types/request';
-import { IGetRequestData, getRequestsData } from '@/apis/PromotionAdmin/request';
+import { getRequestsData } from '@/apis/PromotionAdmin/request';
 import { ContentBox } from '@/components/PromotionAdmin/Request/Components';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
 import TextEditor from '@/components/PromotionAdmin/Request/TextEditor';
-import { IEditorData } from '../../../types/PromotionAdmin/request';
+import { IEditorData, IRequestData } from '../../../types/PromotionAdmin/request';
 import htmlToDraft from 'html-to-draftjs';
 import draftToHtml from 'draftjs-to-html';
 import { EditorState, convertToRaw, ContentState } from 'draft-js';
@@ -17,7 +17,7 @@ const RequestDetailPage = () => {
   const navigator = useNavigate();
   const requestDetailMatch = useMatch(`${PA_ROUTES.REQUEST}/:requestId`);
 
-  const { data, isLoading } = useQuery<IGetRequestData>(['request', 'id'], getRequestsData);
+  const { data, isLoading } = useQuery<IRequestData>(['request', 'id'], getRequestsData);
 
   const clickedRequest =
     requestDetailMatch?.params.requestId &&
