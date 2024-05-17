@@ -11,6 +11,9 @@ import ImageSlider from '@/components/PromotionPage/ArtworkDetail/ImageSlider';
 import { NavWrapper } from '@/components/PromotionPage/ArtworkDetail/Components';
 import { useEffect } from 'react';
 
+import { ReactComponent as PrevArrowIcon } from '@/assets/images/PP/leftArrow.svg';
+import { ReactComponent as NextArrowIcon } from '@/assets/images/PP/rightArrow.svg';
+
 function ArtworkDetailPage() {
   const navigator = useNavigate();
   const artworkDetailMatch = useMatch(`${PP_ROUTES_CHILD.ARTWORK}/:id`);
@@ -122,26 +125,7 @@ function ArtworkDetailPage() {
                           navigator(`/${PP_ROUTES_CHILD.ARTWORK}/${prevIndex}`);
                         }}
                       >
-                        <svg
-                          width='100'
-                          height='80'
-                          viewBox='0 0 100 80'
-                          fill='none'
-                          xmlns='http://www.w3.org/2000/svg'
-                        >
-                          <rect width='100' height='80' fill='url(#pattern0_4_14032)' />
-                          <defs>
-                            <pattern id='pattern0_4_14032' patternContentUnits='objectBoundingBox' width='1' height='1'>
-                              <use href='#image0_4_14032' transform='scale(0.01 0.0125)' />
-                            </pattern>
-                            <image
-                              id='image0_4_14032'
-                              width='100'
-                              height='80'
-                              href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABQCAYAAADvCdDvAAAAAXNSR0IArs4c6QAAAxxJREFUeF7t3b+LFDEUB/BvOLhqd9vxb7hG/UMsbTy0sFJLwcL/wEIQLPwBB4IiFgq2Nna2nn/HLVyje+1GsjLH3rKZZCYvyXPme+3NZt68z75MMhk2Bmr/jg5nOP8M2G8rLF+rDVM4MCPcnlBzR4dznH8BcMs1aGEfTQVFIchVjFZ4KijKQPZjbKE8XGH5RqgMVTajCKQbA8DawN77jeVHlZkUCkoJCDFaTwUgxNgursogQQw3wnqwwvKtUI+gvpmKIFEYkxnuVu6yiOEr1QoVQoyufrM0yMECzScL3PYFNZUJoIYKOZiheW+AO8Tw10ipCiFG5PiuBAgxIjHcYblBiNEDIzcIMXpi5AQhxgCMXCDEGIiRA4QYCRjSIMRIxJAEIYYAhhQIMYQwJECCGGvg8QXOXgjGPOqmUiaGQQwAT//g7NmoMyh8cUNBiCEMkbJARYxMGEPuIWaO5gTA/Y6Y2E0lgPXpsswC1165lw6IkZDxwEdjQYiRz+BKyzEgxCiEEXMPIUZBjBAIMQpjdIEQowKGD4QYlTD2gRCjIsYuiJv0/QJw3ReTBV5arN9VjnnUp2+Hva4yflrYm6O+2v/g4hwIMRRBOYxTVoYeEYLosdhEwi5LIcgGJnRTN8B3wPxQFv/owtl+uGgWaE4tcIOP1+s57z7t5cSwnsXlPWQ3BKJURPGthxClEkrXAhVRKqCEVgyJUhglBNIOiflyQyGYGBCiFMLwLVD5Ts/uqwBMbIW0oZgZmg8GOObkMY9OXxAXBV8lzWPhnRjGnI4oMVkacMyQCmlPQ5QBCQ99JAUkqvtawz65wPJ5KBD+/18GUkGiUKb+Cz99vmwSIETpk/HAsVIgRBFCkQQhigCKNAhRElFygBAlASUXCFEGouQEIcoAlNwgROmJUgKEKD1QSoEQJRKlJMgGZY7ma7uV0b4Yp/6YpTQIAP7UeFexVABx4RDFh1IJhCgKQYiyD6VihbThBLsva2Dvjn0zsDYbCkCiKmUSO7S5TCgBIYqyConrviwsN5aMnGAKHsatVwWTKdUUNyeWyqRgO9PcvvsvBkLTBbmnnIsAAAAASUVORK5CYII='
-                            />
-                          </defs>
-                        </svg>
+                        <PrevArrowIcon width={70} height={70} />
                         <Nav>
                           PREV PROJECT
                           <div className='nav_title'>{data?.data[currentIndex - 1].name}</div>
@@ -159,33 +143,7 @@ function ArtworkDetailPage() {
                           NEXT PROJECT
                           <div className='nav_title'>{data?.data[currentIndex + 1].name}</div>
                         </Nav>
-                        <svg
-                          width='100'
-                          height='80'
-                          viewBox='0 0 100 80'
-                          fill='none'
-                          xmlns='http://www.w3.org/2000/svg'
-                        >
-                          <rect
-                            x='100'
-                            y='80'
-                            width='100'
-                            height='80'
-                            transform='rotate(-180 100 80)'
-                            fill='url(#pattern0_4_14038)'
-                          />
-                          <defs>
-                            <pattern id='pattern0_4_14038' patternContentUnits='objectBoundingBox' width='1' height='1'>
-                              <use href='#image0_4_14038' transform='scale(0.01 0.0125)' />
-                            </pattern>
-                            <image
-                              id='image0_4_14038'
-                              width='100'
-                              height='80'
-                              href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABQCAYAAADvCdDvAAAAAXNSR0IArs4c6QAAAxxJREFUeF7t3b+LFDEUB/BvOLhqd9vxb7hG/UMsbTy0sFJLwcL/wEIQLPwBB4IiFgq2Nna2nn/HLVyje+1GsjLH3rKZZCYvyXPme+3NZt68z75MMhk2Bmr/jg5nOP8M2G8rLF+rDVM4MCPcnlBzR4dznH8BcMs1aGEfTQVFIchVjFZ4KijKQPZjbKE8XGH5RqgMVTajCKQbA8DawN77jeVHlZkUCkoJCDFaTwUgxNgursogQQw3wnqwwvKtUI+gvpmKIFEYkxnuVu6yiOEr1QoVQoyufrM0yMECzScL3PYFNZUJoIYKOZiheW+AO8Tw10ipCiFG5PiuBAgxIjHcYblBiNEDIzcIMXpi5AQhxgCMXCDEGIiRA4QYCRjSIMRIxJAEIYYAhhQIMYQwJECCGGvg8QXOXgjGPOqmUiaGQQwAT//g7NmoMyh8cUNBiCEMkbJARYxMGEPuIWaO5gTA/Y6Y2E0lgPXpsswC1165lw6IkZDxwEdjQYiRz+BKyzEgxCiEEXMPIUZBjBAIMQpjdIEQowKGD4QYlTD2gRCjIsYuiJv0/QJw3ReTBV5arN9VjnnUp2+Hva4yflrYm6O+2v/g4hwIMRRBOYxTVoYeEYLosdhEwi5LIcgGJnRTN8B3wPxQFv/owtl+uGgWaE4tcIOP1+s57z7t5cSwnsXlPWQ3BKJURPGthxClEkrXAhVRKqCEVgyJUhglBNIOiflyQyGYGBCiFMLwLVD5Ts/uqwBMbIW0oZgZmg8GOObkMY9OXxAXBV8lzWPhnRjGnI4oMVkacMyQCmlPQ5QBCQ99JAUkqvtawz65wPJ5KBD+/18GUkGiUKb+Cz99vmwSIETpk/HAsVIgRBFCkQQhigCKNAhRElFygBAlASUXCFEGouQEIcoAlNwgROmJUgKEKD1QSoEQJRKlJMgGZY7ma7uV0b4Yp/6YpTQIAP7UeFexVABx4RDFh1IJhCgKQYiyD6VihbThBLsva2Dvjn0zsDYbCkCiKmUSO7S5TCgBIYqyConrviwsN5aMnGAKHsatVwWTKdUUNyeWyqRgO9PcvvsvBkLTBbmnnIsAAAAASUVORK5CYII='
-                            />
-                          </defs>
-                        </svg>
+                        <NextArrowIcon width={70} height={70} />
                       </NavWrapper>
                     )}
 
@@ -223,13 +181,14 @@ const Thumbnail = styled.div<{ bgPhoto: string }>`
   justify-content: center;
   align-items: center;
   padding: 50px;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0)), url(${(props) => props.bgPhoto});
+  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4)), url(${(props) => props.bgPhoto});
   background-size: cover;
 `;
 
 const Title = styled.div`
   font-size: 80px;
   font-weight: 800;
+  font-family: ${(props) => props.theme.font.bold};
   color: ${(props) => props.theme.color.white.bold};
 `;
 
@@ -243,21 +202,23 @@ const InfoWrapper = styled.div`
 
 const Info = styled(motion.div)`
   display: flex;
-  justify-content: space-between;
-  width: 250px;
   height: 40px;
+  font-family: ${(props) => props.theme.font.light};
+
   .attribute {
-    font-weight: 900;
+    width: 130px;
+    font-family: ${(props) => props.theme.font.bold};
   }
 `;
 
 const OverviewWrapper = styled(motion.div)`
   position: relative;
-  height: 55vh;
+  min-height: 65vh;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 26px;
+  font-family: ${(props) => props.theme.font.bold};
   color: ${(props) => props.theme.color.white.bold};
   background-color: ${(props) => props.theme.color.black.bold};
 `;
@@ -292,11 +253,12 @@ const Content = styled.div`
   position: relative;
   width: 53vw;
   color: ${(props) => props.theme.color.white.bold};
+  font-family: ${(props) => props.theme.font.semiBold};
+
   p {
     display: flex;
     justify-content: center;
     font-size: 40px;
-    font-weight: 800;
     padding-top: 100px;
     padding-bottom: 100px;
   }
@@ -315,9 +277,12 @@ const Nav = styled.div`
   color: ${(props) => props.theme.color.black.light};
   .nav_title {
     color: ${(props) => props.theme.color.yellow.bold};
-    font-size: 40px;
+    font-size: 56px;
     font-weight: 900;
     padding-top: 10px;
+    font-family: ${(props) => props.theme.font.bold};
+  }
+  &:hover {
   }
 `;
 

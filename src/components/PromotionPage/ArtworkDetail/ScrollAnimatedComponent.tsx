@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import styled from 'styled-components';
 
 function ScrollAnimatedComponent({ article }: string | any) {
   return (
@@ -13,9 +14,13 @@ function ScrollAnimatedComponent({ article }: string | any) {
         y: { duration: 1 },
       }}
     >
-      <div>{article}</div>
+      <Article>{article}</Article>
     </motion.div>
   );
 }
 
 export default ScrollAnimatedComponent;
+
+const Article = styled.div`
+  font-family: ${(props) => props.theme.font.semiBold};
+`;

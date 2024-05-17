@@ -23,7 +23,11 @@ const RotatedCircle = ({ label, link }: Props) => {
 
   return (
     <Container href={link} target='_blank'>
-      <RotatingWrapper animate={rotateAnimation}>
+      <RotatingWrapper
+        animate={rotateAnimation}
+        whileHover={{ scale: 0.9 }} // 호버 시 90% 크기로 변경
+        transition={{ duration: 0.2 }} // 애니메이션 지속 시간 설정
+      >
         <RotatingImage src={circle} alt='circle' />
       </RotatingWrapper>
       <LabelWrapper>{label}</LabelWrapper>
@@ -55,5 +59,6 @@ const RotatingWrapper = styled(motion.div)`
 `;
 
 const RotatingImage = styled(motion.img)`
+  cursor: pointer;
   position: relative;
 `;
