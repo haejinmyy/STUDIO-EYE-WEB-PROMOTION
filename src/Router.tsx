@@ -3,7 +3,7 @@ import Root from './Root';
 import PAHomePage from './pages/PromotionAdmin/HomePage/index';
 import PARequestPage from './pages/PromotionAdmin/RequestPage/index';
 import PAArtworkPage from './pages/PromotionAdmin/ArtworkPage/Artwork';
-import PAPageEditPage from './pages/PromotionAdmin/DataEditPage/index';
+import PADataEditPage from './pages/PromotionAdmin/DataEditPage/index';
 import PAStatisticsPage from './pages/PromotionAdmin/StatisticsPage/index';
 import PAFaqPage from './pages/PromotionAdmin/FaqPage/index';
 import PASettingPage from './pages/PromotionAdmin/SettingPage/index';
@@ -35,6 +35,9 @@ import ClientEditPage from './pages/PromotionAdmin/DataEditPage/ClientPage/Clien
 import PartnerWritePage from './pages/PromotionAdmin/DataEditPage/PartnerPage/PartnerWritePage';
 
 import Login from './pages/PromotionAdmin/Login/Login';
+import ClientWritePage from './pages/PromotionAdmin/DataEditPage/ClientPage/ClientWritePage';
+import CompanyEditPage from './components/PromotionAdmin/DataEdit/Company/EditForm';
+import CEOEditPage from './pages/PromotionAdmin/DataEditPage/CEOPage/CEOEditPage';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -123,15 +126,23 @@ const router = createBrowserRouter([
           },
           {
             path: PA_ROUTES_CHILD.DATA_EDIT,
-            element: <PAPageEditPage />,
+            element: <PADataEditPage />,
             children: [
               {
                 path: `${PA_ROUTES.DATA_EDIT}/ceo`,
                 element: <CEOPage />,
               },
               {
+                path: `${PA_ROUTES.DATA_EDIT}/ceo/edit`,
+                element: <CEOEditPage />,
+              },
+              {
                 path: `${PA_ROUTES.DATA_EDIT}/company`,
                 element: <CompanyPage />,
+              },
+              {
+                path: `${PA_ROUTES.DATA_EDIT}/company/edit`,
+                element: <CompanyEditPage />,
               },
               {
                 path: `${PA_ROUTES.DATA_EDIT}/partner`,
@@ -156,6 +167,10 @@ const router = createBrowserRouter([
                     element: <ClientEditPage />,
                   },
                 ],
+              },
+              {
+                path: `${PA_ROUTES.DATA_EDIT}/client/write`,
+                element: <ClientWritePage />,
               },
             ],
           },
