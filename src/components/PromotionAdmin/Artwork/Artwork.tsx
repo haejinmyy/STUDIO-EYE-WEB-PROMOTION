@@ -59,6 +59,7 @@ const Artwork = () => {
                   overView={artwork.overView}
                   projectType={artwork.projectType}
                   projectImages={artwork.projectImages}
+                  sequence={artwork.sequence}
                 />
               </LinkStyle>
             ))}
