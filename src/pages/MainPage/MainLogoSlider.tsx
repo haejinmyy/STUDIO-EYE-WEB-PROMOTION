@@ -114,7 +114,7 @@ const MainLogoSlider = () => {
 
   useEffect(() => {
     axios
-      .get(`http://3.35.54.100:8080/api/partners`)
+      .get(`http://3.36.95.109:8080/api/partners`)
       .then((response) => {
         const data = response.data;
         const objects = [];

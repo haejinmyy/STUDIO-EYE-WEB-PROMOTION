@@ -127,10 +127,10 @@ const MainContents = () => {
 
   useEffect(() => {
     axios
-      .get(`http://3.35.54.100:8080/api/projects`)
+      .get(`http://3.36.95.109:8080/api/projects`)
       .then((response) => {
         const data = response.data;
-        console.log(data);
+        console.log("MainContents: "+data);
         const objects: any = [];
         const imgObjects: any = [];
 
