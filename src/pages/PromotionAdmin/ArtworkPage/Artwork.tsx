@@ -1,12 +1,26 @@
 import ArtworkComponent from '@/components/PromotionAdmin/Artwork/Artwork';
-import React from 'react';
+import ArtworkHeader from '@/components/PromotionAdmin/Artwork/ArtworkHeader';
+import ArtworkSequence from '@/components/PromotionAdmin/Artwork/ArtworkSequence';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const Artwork = () => {
+  const [isEditingSequence,setIsEditingSequence]=useState<boolean>(false);
+
+  const handleEditingSequence=(isEditing:boolean)=>{
+    setIsEditingSequence(isEditing)
+    console.log(isEditing)
+  }
+
   return (
     <Container>
-      <HeaderWrapper>Artwork</HeaderWrapper>
+      {/* <HeaderWrapper>Artwork</HeaderWrapper> */}
+      <ArtworkHeader initialCheck={isEditingSequence} control={handleEditingSequence}/>
+      {isEditingSequence==false?
       <ArtworkComponent />
+      :<ArtworkSequence />
+      }
+      
     </Container>
   );
 };
