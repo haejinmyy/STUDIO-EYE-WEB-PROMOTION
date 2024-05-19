@@ -12,10 +12,11 @@ const MainAbout = () => {
 
   const fetchData = () => {
     axios
-      .get(`http://3.35.54.100:8080/api/projects`)
+      .get(`http://3.36.95.109:8080/api/projects`)
       .then((response) => {
         const data = response.data;
         const urlList: any = [];
+        console.log("MainAbout: " + data);
 
         for (let i = 0; i < data.data.length; i++) {
           //썸네일만 가져오기
