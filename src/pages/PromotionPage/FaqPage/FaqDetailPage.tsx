@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Body from '../../../components/Common/Body';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -27,13 +26,11 @@ const FaqDetailPage = () => {
   }, []);
 
   return (
-    <Body>
-      <Wrapper>
-        <Label>FAQ</Label>
-        <Title>{data.title}</Title>
-        <SubContent>{data.content}</SubContent>
-      </Wrapper>
-    </Body>
+    <Wrapper>
+      <Label>FAQ</Label>
+      <Title>{data.title}</Title>
+      <SubContent>{data.content}</SubContent>
+    </Wrapper>
   );
 };
 
