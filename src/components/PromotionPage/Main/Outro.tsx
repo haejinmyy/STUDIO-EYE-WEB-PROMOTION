@@ -6,9 +6,7 @@ import ClientRowAnimation from '../Client/ClientRowAnimation';
 import WorkWithUs from '../WorkWithUs/WorkWithUs';
 
 const Outro = () => {
-  const { data, isLoading, error } = useQuery<string[], Error>(['clientLogoImgList'], getClientLogoImgList, {
-    staleTime: 1000 * 60 * 10,
-  });
+  const { data, isLoading, error } = useQuery<string[], Error>(['clientLogoImgList'], getClientLogoImgList, {});
 
   return (
     <Container>
@@ -22,6 +20,7 @@ export default Outro;
 
 const Container = styled.div`
   width: 100%;
+
   height: 100vh;
   overflow-x: hidden;
   display: flex;
