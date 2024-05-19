@@ -17,6 +17,7 @@ export type ArtworkData = {
   isPosted: boolean;
   mainImg: string;
   projectImages: ArtworkImage[];
+  sequence: number;
 };
 
 export type UpdateArtwork = {

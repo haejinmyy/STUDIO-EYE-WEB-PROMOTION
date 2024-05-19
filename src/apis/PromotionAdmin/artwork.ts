@@ -36,3 +36,13 @@ export const putArtwork = async (artworkData: FormData) => {
     throw error;
   }
 };
+
+export const putArtworkSequence = async (data:any) =>{
+  try{
+    const response=await axios.put(`${PROMOTION_BASIC_PATH}/api/projects/sequence`,data)
+    return response.data;
+  }catch (error){
+    console.error('[❌ Error updating artwork sequence]', error);
+    throw error;
+  }
+}

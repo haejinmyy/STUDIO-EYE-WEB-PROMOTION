@@ -17,6 +17,7 @@ const ArtworkBox = ({
   isPosted,
   mainImg,
   projectImages,
+  sequence
 }: ArtworkData) => {
   return (
     <Container>
