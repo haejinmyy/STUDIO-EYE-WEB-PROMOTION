@@ -8,7 +8,6 @@ import { theme } from './styles/theme';
 import './App.css';
 import reset from 'styled-reset';
 import { RecoilRoot } from 'recoil';
-import { HelmetProvider } from 'react-helmet-async';
 
 const client = new QueryClient();
 const element = document.getElementById('root');
@@ -21,11 +20,10 @@ root.render(
   <QueryClientProvider client={client}>
     <RecoilRoot>
       <GlobalStyle />
-      <HelmetProvider>
-        <ThemeProvider theme={theme}>
-          <RouterProvider router={router} />
-        </ThemeProvider>
-      </HelmetProvider>
+
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router} />
+      </ThemeProvider>
     </RecoilRoot>
   </QueryClientProvider>,
   // </React.StrictMode>
