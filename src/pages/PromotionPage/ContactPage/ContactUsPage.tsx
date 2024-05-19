@@ -4,6 +4,7 @@ import axios from 'axios';
 import logo from '../../../assets/logo/mainLogo.png';
 import { PP_ROUTES } from '@/constants/routerConstants';
 import { useNavigate } from 'react-router-dom';
+import { getCompanyBasicData } from '../../../apis/PromotionAdmin/dataEdit';
 
 interface ICircleProps {
   filled: boolean;
@@ -27,6 +28,12 @@ interface IFormData {
   position: string;
   // projectName: string;
 }
+type ICompanyBasic = {
+  address: string;
+  phone: string;
+  fax: string;
+};
+
 const ContactUsPage = () => {
   const navigator = useNavigate();
   const [requestStep, setRequestStep] = useState(0);
@@ -40,6 +47,22 @@ const ContactUsPage = () => {
     position: '',
     // projectName: '',
   });
+  const [companyBasicData, setCompanyBasicData] = useState<ICompanyBasic>({
+    address: '',
+    phone: '',
+    fax: '',
+  });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getCompanyBasicData();
+        setCompanyBasicData(data);
+      } catch (error) {
+        console.error('Error fetching company data: ', error);
+      }
+    };
+    fetchData();
+  }, []);
   const [selectedCategory, setSelectedCategory] = useState('');
   // wheel event 관리
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -242,18 +265,18 @@ const ContactUsPage = () => {
           <IntroAboutWrapper>
             <div>
               <IntroAdress>Address</IntroAdress>
-              <IntroAdress style={{ color: '#FFFFFF' }}>서울시 성동구 광나루로 162 BS성수타워 5층</IntroAdress>
-              <IntroAdress style={{ color: '#FFFFFF' }}>5F, 162, Gwangnaru-ro, Seongdong-gu, Seoul, Korea</IntroAdress>
+              <IntroAdress style={{ color: '#FFFFFF' }}>{companyBasicData.address}</IntroAdress>
+              <IntroAdress style={{ color: '#FFFFFF' }}>8F, 162, Gwangnaru-ro, Seongdong-gu, Seoul, Korea</IntroAdress>
             </div>
           </IntroAboutWrapper>
           <IntroNumberWrapper>
             <div>
               <IntroNumber>tel</IntroNumber>
-              <IntroNumber style={{ color: '#FFFFFF' }}>02-1234-1234</IntroNumber>
+              <IntroNumber style={{ color: '#FFFFFF' }}>{companyBasicData.phone}</IntroNumber>
             </div>
             <div style={{ marginLeft: '200px' }}>
               <IntroNumber>fax</IntroNumber>
-              <IntroNumber style={{ color: '#FFFFFF' }}>070-1234-1234</IntroNumber>
+              <IntroNumber style={{ color: '#FFFFFF' }}>{companyBasicData.fax}</IntroNumber>
             </div>
           </IntroNumberWrapper>
         </div>

@@ -7,6 +7,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import HeaderDetail from './HeaderDetail';
 import Menubar from './Menubar';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getCompanyLogoData } from '../../../apis/PromotionAdmin/dataEdit';
 interface ContainerProps {
   isScrolled: boolean;
 }
@@ -15,6 +16,20 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useRecoilState(ppHeaderScrolledState);
   const headerRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+  const [companyLogo, setCompanyLogo] = useState<string>('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getCompanyLogoData();
+        setCompanyLogo(data);
+      } catch (error) {
+        console.error('Error fetching company data: ', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
@@ -59,7 +74,7 @@ const Header = () => {
       <Container ref={headerRef} isScrolled={isScrolled}>
         <HeaderContainer>
           <HomeLinkWrapper to={'/'}>
-            <LogoImg src={defaultLogo} alt='logo' />
+            <LogoImg src={companyLogo} alt='Company Logo' />
           </HomeLinkWrapper>
           <Menubar />
         </HeaderContainer>
@@ -122,7 +137,7 @@ const HeaderDetailContainer = styled(motion.div)`
 const HomeLinkWrapper = styled(NavLink)``;
 const LinkWrapper = styled.div``;
 const LogoImg = styled.img`
-  width: 172px;
-  height: 55px;
+  // width: 172px;
+  height: 60px;
   object-fit: cover;
 `;

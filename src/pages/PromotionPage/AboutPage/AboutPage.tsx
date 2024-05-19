@@ -67,7 +67,7 @@ const AboutPage = () => {
             <CeoInfo fontFamily='Pretendard-SemiBold' fontSize='70px'>
               CEO&nbsp;{data.name}
             </CeoInfo>
-            <CeoInfo>{data.introduction}</CeoInfo>
+            <CeoInfo dangerouslySetInnerHTML={{ __html: data.introduction }}></CeoInfo>
           </CeoInfoContainer>
           <CeoImageContainer>
             <img src={data.imageUrl} alt='CEO Character' style={{ width: '350px', height: 'auto' }} />
@@ -78,7 +78,6 @@ const AboutPage = () => {
         <CorpLogoContainer>
           <CorpText>CORP</CorpText>
           {dataChunks.map((chunk, index) => (
-            // TODO 서버에서 사진과 함께 주소 넘겨달라고 할 것
             <CorpLogoRowContainer target='_blank' href={'/'} key={index}>
               {chunk.map((item: any, subIndex: any) => (
                 <div key={subIndex}>
@@ -153,7 +152,7 @@ const CorpText = styled.div`
   font-family: 'pretendard-regular';
   font-size: 120px;
   letter-spacing: 5px;
-  opacity: 0.1;
+  opacity: 0.2;
   filter: blur(3px);
   color: '#FFFFFF';
 `;

@@ -1,8 +1,9 @@
 import styled from 'styled-components';
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Circle from './ArrowCircle';
 import MissionLabel from '../../../assets/images/Mission.png';
+import { getCompanyData } from '../../../apis/PromotionAdmin/dataEdit';
 
 interface IFontStyleProps {
   color?: string;
@@ -14,6 +15,21 @@ function IntroPage() {
 
   const aboutInView = useInView(aboutRef);
   const missionInView = useInView(missionRef);
+
+  const [companyIntroData, setCompanyIntroData] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getCompanyData();
+        setCompanyIntroData(data.introduction);
+      } catch (error) {
+        console.error('Error fetching company data: ', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <Container>
@@ -39,14 +55,7 @@ function IntroPage() {
             transition={{ duration: 1, delay: 0.3 }}
           >
             <BackgroundText>ABOUT</BackgroundText>
-            <AboutText>2010년 설립된 스튜디오 아이는 다양한 장르를 소화할 수 있는 PD들이 모여</AboutText>
-            <RowTextContainer>
-              <AboutText color='#ffa900'>클라이언트 맞춤형 콘텐츠 제작</AboutText>
-              <AboutText>과</AboutText>
-              <AboutText color='#ffa900'>&nbsp;운영 대행 서비스</AboutText>
-              <AboutText>를 제공하고 있으며</AboutText>
-            </RowTextContainer>
-            <AboutText>드라마, 애니메이션 등을 전문으로 하는 여러 계열사들과도 협력하고 있습니다.</AboutText>
+            <AboutText>{companyIntroData}</AboutText>
           </motion.div>
         </AboutWrapper>
         <MissionWrapper ref={missionRef}>
@@ -121,6 +130,7 @@ const BackgroundText = styled.div`
   opacity: 0.2;
   filter: blur(5px);
   color: '#FFFFFF';
+  user-select: none;
 `;
 const AboutWrapper = styled.div`
   text-align: left;

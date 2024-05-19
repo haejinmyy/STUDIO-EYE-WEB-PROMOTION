@@ -1,7 +1,9 @@
 import { motion, useInView } from 'framer-motion';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Circle from '../Circle/Circle';
+import { getCompanyData } from '../../../apis/PromotionAdmin/dataEdit';
+
 const Intro = () => {
   const introRef = useRef(null);
   const desRef = useRef(null);
@@ -11,6 +13,23 @@ const Intro = () => {
   const desInView = useInView(desRef);
   const circleInView = useInView(circleRef);
 
+  const [companyMainOverview, setCompanyMainOverview] = useState<string[]>([]);
+  const [companyCommitment, setCompanyCommitment] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getCompanyData();
+        setCompanyMainOverview(data.mainOverview);
+        setCompanyCommitment(data.commitment);
+      } catch (error) {
+        console.error('Error fetching company data: ', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <Container>
       <IntroWrapper ref={introRef}>
@@ -18,10 +37,8 @@ const Intro = () => {
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: introInView ? 1 : 0, y: introInView ? 0 : 100 }}
           transition={{ duration: 1, delay: 0.2 }}
-        >
-          <YellowText>STUDIO EYE</YellowText> IS THE <YellowText>BEST</YellowText> <br />
-          NEW MEDIA PRODUCTION BASED ON OTT & YOUTUBE
-        </motion.div>
+          dangerouslySetInnerHTML={{ __html: companyMainOverview }}
+        ></motion.div>
       </IntroWrapper>
       <DesWrapper ref={desRef}>
         <motion.div
@@ -29,7 +46,7 @@ const Intro = () => {
           animate={{ opacity: desInView ? 1 : 0, y: desInView ? 0 : 100 }}
           transition={{ duration: 2, delay: 0.6 }}
         >
-          우리는 급변하는 뉴 미디어 시대를 반영한 콘텐츠 제작을 위해 끊임없이 고민하고 변화합니다.
+          {companyCommitment}
         </motion.div>
       </DesWrapper>
       <CircleWrapper ref={circleRef}>
