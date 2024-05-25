@@ -1,4 +1,4 @@
-import { getAllArtworks } from '@/apis/PromotionAdmin/artwork';
+import { getAllArtworks, putArtworkSequence } from '@/apis/PromotionAdmin/artwork';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { ArtworkData } from '@/types/PromotionAdmin/artwork';
 import React, { useState } from 'react';
@@ -60,6 +60,7 @@ const Artwork = () => {
                   projectType={artwork.projectType}
                   projectImages={artwork.projectImages}
                   sequence={artwork.sequence}
+                  mainSequence={artwork.mainSequence}
                 />
               </LinkStyle>
             ))}

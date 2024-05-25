@@ -2,7 +2,7 @@ import { theme } from "@/styles/theme";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-const ArtworkHeader=({initialCheck,control}:{initialCheck:boolean,control:(isEditing:boolean)=>void})=>{
+const ArtworkHeader=({initialCheck,control}:{initialCheck:number,control:(isEditing:number)=>void})=>{
 const [isChecked,setIsChecked]=useState(initialCheck);
 useEffect(()=>{ //초기값 변경될 때 상태 업데이트
     setIsChecked(initialCheck);
@@ -11,10 +11,12 @@ useEffect(()=>{ //초기값 변경될 때 상태 업데이트
     return(
         <HeaderWrapper>
         <div className="tabs">
-            <input type='radio' id='radio1' name='tabs' onClick={()=>control(false)} checked={!isChecked}/>
+            <input type='radio' id='radio1' name='tabs' onClick={()=>control(0)} checked={isChecked==0}/>
             <label className='tab' htmlFor='radio1'>Artwork</label>
-            <input type='radio' id='radio2' name='tabs' onClick={()=>control(true)} checked={isChecked}/>
-            <label className='tab' htmlFor='radio2'>Edit Sequence</label>
+            <input type='radio' id='radio2' name='tabs' onClick={()=>control(1)} checked={isChecked==1}/>
+            <label className='tab' htmlFor='radio2'>Main<br/>Sequence</label>
+            <input type='radio' id='radio3' name='tabs' onClick={()=>control(2)} checked={isChecked==2}/>
+            <label className='tab' htmlFor='radio3'>Other<br/>Sequence</label>
             <span className="glider"></span>
         </div>
         </HeaderWrapper>
@@ -30,7 +32,7 @@ color: #595959;
 margin-bottom: 21px;
 
 .tabs {
-width: 300px;
+width: 450px;
 display: flex;
 flex-direction:row;
 // position: relative;
@@ -75,6 +77,12 @@ input[id="radio2"] {
     transform: translateX(100%);
   }
 }}
+input[id="radio3"] {
+  &:checked {
+    & ~ .glider {
+      transform: translateX(200%);
+    }
+  }}
 
 .glider {
 position: absolute;

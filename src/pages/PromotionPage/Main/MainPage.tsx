@@ -7,7 +7,7 @@ import Top from '@/components/PromotionPage/Main/Top';
 import Intro from '@/components/PromotionPage/Main/Intro';
 import useWindowSize from '@/hooks/useWindowSize';
 import ArtworkList from '@/components/PromotionPage/Main/ArtworkList';
-import { getArtworkData } from '@/apis/PromotionPage/artwork';
+import { getArtworkData, getArtworkMainData } from '@/apis/PromotionPage/artwork';
 import { MIArtworksData } from '@/types/PromotionPage/artwork';
 import { useQuery } from 'react-query';
 import defaultTopImg from '@/assets/images/PP/defaultTopImg.jpg';
@@ -19,7 +19,7 @@ const MainPage = () => {
   const [elementHeight, setElementHeight] = useState(window.innerHeight);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLastArtworkVisible, setIsLastArtworkVisible] = useState(false);
-  const { data, isLoading } = useQuery<MIArtworksData>(['artwork', 'id'], getArtworkData, {
+  const { data, isLoading } = useQuery<MIArtworksData>(['artwork', 'id'], getArtworkMainData, {
     staleTime: 1000 * 60 * 10, // 10분
   });
   const sectionsRef = useRef<HTMLElement[]>([]);
