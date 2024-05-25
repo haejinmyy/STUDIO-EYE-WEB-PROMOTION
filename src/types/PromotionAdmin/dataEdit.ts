@@ -26,11 +26,7 @@ export interface ICompanyData {
   phone: string;
   sloganImageFileName: string;
   sloganImageUrl: string;
-  detailInformation: {
-    additionalProp1: string;
-    additionalProp2: string;
-    additionalProp3: string;
-  };
+  detailInformation: { key: string; value: string }[];
 }
 export interface IPartnersData {
   logoImg: string;
