@@ -8,25 +8,25 @@ import HoverInfo from './HoverInfo';
 export const COMPANY_COLUMNS = {
   Basic: {
     title: 'Basic',
-    description: 'Contact 화면과 Footer에 노출됩니다.',
+    description: 'Contact 화면과 Footer에 반영됩니다.',
   },
   Logo: {
     title: 'Logo',
-    description: 'Header, Footer에 노출됩니다.',
+    description: 'Header, Footer에 반영됩니다.',
   },
   Slogan: {
     title: 'Slogan',
-    description: 'About 화면에 노출됩니다.',
+    description: 'About 화면에 반영됩니다.',
   },
   Detail: {
     title: 'Detail',
-    description: 'About 화면에 노출됩니다.',
+    description: 'About 화면에 반영됩니다.',
   },
 
   Introduction: {
     title: 'Introduction',
     description:
-      'Main Overview: Main 화면에 노출됩니다. \n Commitment: Main 화면에 노출됩니다. \n Introduction: About 화면에 노출됩니다. ',
+      'Main Overview: Main 화면에 반영됩니다. \n Commitment: Main 화면에 반영됩니다. \n Introduction: About 화면 반영됩니다. ',
   },
 };
 
