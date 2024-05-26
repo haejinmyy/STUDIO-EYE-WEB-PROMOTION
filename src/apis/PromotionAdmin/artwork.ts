@@ -10,6 +10,15 @@ export const getAllArtworks = async () => {
     throw error;
   }
 };
+export const getMainArtworks = async () =>{
+  try {
+    const response = await axios.get(`${PROMOTION_BASIC_PATH}/api/projects/main`);
+    return response.data.data;
+  } catch (error) {
+    console.log('[❌ Error fetching all artworks]', error);
+    throw error;
+  }
+};
 
 export const getArtworkDetail = async (artworkId: number) => {
   try {
@@ -40,6 +49,15 @@ export const putArtwork = async (artworkData: FormData) => {
 export const putArtworkSequence = async (data:any) =>{
   try{
     const response=await axios.put(`${PROMOTION_BASIC_PATH}/api/projects/sequence`,data)
+    return response.data;
+  }catch (error){
+    console.error('[❌ Error updating artwork sequence]', error);
+    throw error;
+  }
+}
+export const putArtworkMainSequence=async(data:any) =>{
+  try{
+    const response=await axios.put(`${PROMOTION_BASIC_PATH}/api/projects/main/sequence`,data)
     return response.data;
   }catch (error){
     console.error('[❌ Error updating artwork sequence]', error);

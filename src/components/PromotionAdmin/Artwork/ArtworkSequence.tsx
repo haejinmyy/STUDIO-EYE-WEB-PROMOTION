@@ -1,71 +1,87 @@
 import { getAllArtworks, putArtworkSequence } from "@/apis/PromotionAdmin/artwork";
 import { ArtworkData } from "@/types/PromotionAdmin/artwork";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import styled from "styled-components";
 import ArtworkSequenceBox from "./ArtworkSequenceBox";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import {DragDropContext,Draggable,Droppable} from 'react-beautiful-dnd'
+import { DResult,DragProvied,DropProvied } from "@/types/PromotionAdmin/react-beautiful-dnd-types";
+import { theme } from "@/styles/theme";
 
 const ArtworkSequence=()=>{
     const { data, isLoading, error } = useQuery<ArtworkData[], Error>('artworks', getAllArtworks,);
+    const [realData,setRealData]=useState<ArtworkData[]>(data!!.sort((a,b)=>a.sequence-b.sequence));
     if (isLoading) return <LoadingWrapper>Loading...</LoadingWrapper>;
     if (error) return <div>Error: {error.message}</div>;
 
-    // 컴포넌트 드래그...를 해보려고 했으나 나중에
-    // function DraggableList({ items }: { items: string[] }) {
-    //     const order = useRef(items.map((_, index) => index)) // Store indicies as a local ref, this represents the item order
-    //     const [springs, api] = useSprings(items.length, fn(order.current)) // Create springs, each corresponds to an item, controlling its transform, scale, etc.
-    //     const bind = useDrag(({ args: [originalIndex], active, movement: [, y] }) => {
-    //       const curIndex = order.current.indexOf(originalIndex)
-    //       const curRow = clamp(Math.round((curIndex * 100 + y) / 100), 0, items.length - 1)
-    //       const newOrder = swap(order.current, curIndex, curRow)
-    //       api.start(fn(newOrder, active, originalIndex, curIndex, y)) // Feed springs new style data, they'll animate the view without causing a single render
-    //       if (!active) order.current = newOrder
-    //     })
+    const sequenceReset=()=>{
+      console.log(data)
+    }
 
-    const handleUpdateSequence=(projectId:number,oldSequence:number,newSequence:number)=>{
-      const tempData=data?.filter((i)=>{
-        if(i.id!=projectId) return true
+    const handleSequence=()=>{
+      const sequenceData=realData.map((i)=>{
+        return Object.fromEntries([["projectId",i.id],["sequence",i.sequence]])
       })
+      // console.log(sequenceData)
+      putArtworkSequence(sequenceData)
+    }
 
-      if(oldSequence===newSequence){
-        return
-      }else if(oldSequence<newSequence){//더 큰 걸로 옮기기
-        const sequenceData=tempData?.map((i)=>{
-        if(i.sequence>=oldSequence&&i.sequence<=newSequence){
-          return Object.fromEntries([["projectId",i.id],["sequence",i.sequence-1]])
-        }else{
-          return Object.fromEntries([["projectId",i.id],["sequence",i.sequence]])
-        }})
-        sequenceData?.push(Object.fromEntries([["projectId",projectId],["sequence",newSequence]]))
-        // console.log(sequenceData)
-        putArtworkSequence(sequenceData)
-      }else if(oldSequence>newSequence){//더 작은 걸로 옮기기
-        const sequenceData=tempData?.map((i)=>{
-          if(i.sequence<=oldSequence&&i.sequence>=newSequence){
-            return Object.fromEntries([["projectId",i.id],["sequence",i.sequence+1]])
-          }
-          else{
-            return Object.fromEntries([["projectId",i.id],["sequence",i.sequence]])
-        }})
-        sequenceData?.push(Object.fromEntries([["projectId",projectId],["sequence",newSequence]]))
-        // console.log(sequenceData)
-        putArtworkSequence(sequenceData)
-      }
+    const onDragEnd=({draggableId,destination,source}:DResult)=>{
+      if(!destination) return;
+      setRealData((oldData)=>{
+        const copyData=[...oldData]
+        copyData.splice(source.index,1)
+        // if(source.index<destination.index){//더 큰 걸로 옮기기
+        //   copyData.map((i)=>{
+        //   if(i.sequence>=source.index&&i.sequence<=destination.index){
+        //     return {...i,sequence:i.sequence-1}
+        //   }else{
+        //     return {...i,sequence:i.sequence}
+        //   }
+        // })
+        // }else if(source.index>destination.index){//더 작은 걸로 옮기기
+        //   copyData.map((i)=>{
+        //     if(i.sequence<=source.index&&i.sequence>=destination.index){
+        //       return {...i,sequence:i.sequence+1}
+        //     }
+        //     else{
+        //       return {...i,sequence:i.sequence}
+        //   }})
+        // }
+        copyData.splice(destination?.index,0,{...realData[source.index],sequence:destination.index+1})
+        return copyData.map((data,index)=>{
+          return {...data,sequence:index+1}
+        })
+      })
     }
 
     return(
         <div>
+          <SendButton onClick={
+            handleSequence
+            }>완료</SendButton>
         {data?.length===0?
         (<NoDataWrapper>😊 아트워크 데이터가 존재하지 않습니다.</NoDataWrapper>)
-        :data?.map((artwork) => (
-            <>
-            <ArtworkSequenceBox
-              artworkData={artwork}
-              updateSequence={handleUpdateSequence}
-            />
-            <div style={{margin:'2px'}}/>
-            </>
-        ))
+        :<DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="one">
+          {(provided:DropProvied)=>(
+            <div ref={provided.innerRef} {...provided.droppableProps}>
+              {realData.map((data,index)=>(
+                <div style={{marginBottom:"3px"}}>
+                <Draggable key={data.id} draggableId={data.id.toString()} index={index}>
+                  {(provided:DragProvied)=>(
+                    <div ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>
+                      <ArtworkSequenceBox type={"other"} artworkData={data}/>
+                    </div>
+                  )}
+                </Draggable>
+                {provided.placehodler}
+                </div>
+              ))}
+            </div>
+          )}
+        </Droppable>
+        </DragDropContext>
         }
         </div>
     )
@@ -80,4 +96,20 @@ const LoadingWrapper = styled.div`
 const NoDataWrapper = styled.div`
   font-family: 'pretendard-medium';
   font-size: 17px;
+`;
+
+const SendButton=styled.button`
+  width:100%;
+  margin-bottom:10px;
+  font-family: 'pretendard-medium';
+  font-size:15px;
+  padding: 2px 5px;
+  background-color: ${theme.color.yellow.light};
+  color: ${theme.color.black.bold};
+  border-radius:5px;
+  border:0;
+  box-shadow: 0px 0px 2px ${theme.color.black.bold};
+  &:hover{
+    cursor:pointer;
+  }
 `;

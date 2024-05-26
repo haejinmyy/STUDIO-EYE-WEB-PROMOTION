@@ -10,6 +10,15 @@ export const getArtworkData = async () => {
     throw error;
   }
 };
+export const getArtworkMainData = async () => {
+  try {
+    const response = await axios.get(`${PROMOTION_BASIC_PATH}/api/projects/main`);
+    return response.data;
+  } catch (error) {
+    console.log('[❌ Error fetching all artworks]', error);
+    throw error;
+  }
+};
 
 export const getArtworkDetailData = async (id: number) => {
   try {

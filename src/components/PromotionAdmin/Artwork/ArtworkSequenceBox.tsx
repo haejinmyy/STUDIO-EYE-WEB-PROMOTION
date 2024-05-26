@@ -6,27 +6,16 @@ import { ArtworkData } from '@/types/PromotionAdmin/artwork';
 import { theme } from '@/styles/theme';
 
 const ArtworkSequenceBox = (
-    {artworkData,updateSequence}
-    :{artworkData:ArtworkData,
-      updateSequence:(projectId:number,oldSequence:number,newSequence:number)=>void}) => {
-
-  const [isEditing,setIsEditing]=useState<boolean>(false);
-  const [newSequence,setNewSequence]=useState<number>(artworkData.sequence);
-  const handleEditing=()=>{
-    if(isEditing){
-        setIsEditing(false)
-        updateSequence(artworkData.id,artworkData.sequence,newSequence)
-    }else{
-        setIsEditing(true)
-    }
-  }
-  const handleSequence=(e:ChangeEvent<HTMLInputElement>)=>{
-    setNewSequence(parseInt(e.target.value))
-  }
+    {type,artworkData,}
+    :{type:string,
+      artworkData:ArtworkData,
+      // updateSequence:(projectId:number,oldSequence:number,newSequence:number)=>void
+    }) => {
 
   return (
     <Container>
-      <Sequence>{artworkData.sequence}</Sequence>
+      <Sequence>{type=="main"?(artworkData.mainSequence===999?"-":artworkData.mainSequence)
+      :artworkData.sequence}</Sequence>
       {artworkData.mainImg ? <img src={artworkData.mainImg} alt='mainImg' /> : <NoMainImageWrapper>No Image</NoMainImageWrapper>}
       <DescriptionWrapper>
         <RightAlignWrapper>
@@ -40,10 +29,10 @@ const ArtworkSequenceBox = (
           </div>
         </Wrapper>
       </DescriptionWrapper>
-      <EditWrapper>
+      {/* <EditWrapper>
         {isEditing&&<SequenceInput type='number' placeholder='숫자 입력' onChange={handleSequence}/>}
         <Button onClick={handleEditing}>{isEditing?"완료":"순서 수정"}</Button>
-      </EditWrapper>
+      </EditWrapper> */}
     </Container>
   );
 };
@@ -51,12 +40,16 @@ const ArtworkSequenceBox = (
 export default ArtworkSequenceBox;
 
 const Container = styled.div`
+-webkit-user-select: none;
+ -moz-user-select: none;
+ -ms-use-select: none;
+ user-select: none;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   min-width: 350px;
-  height: 50px;
   border-radius: 10px;
   background-color: #afafaf13;
   padding: 20 20 20 0px;
@@ -97,22 +90,6 @@ const Container = styled.div`
     line-height: 18px;
     transition: 0.3s;
   }
-
-  @media(max-width: 800px){
-    width:130%;
-    height:100px;
-    transition: 0.3s;
-    img{
-        width: 100px;
-        height: 100px;
-        object-fit: cover;
-        border-radius: 5px;
-    }
-  }
-
-  @media(min-width: 800px){
-    transition: 0.3s;
-  }
 `;
 
 const Sequence=styled.h2`
@@ -125,11 +102,6 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  @media(max-width: 800px){
-    margin-top:10px;
-    transition:0.3s;
-    justify-content: flex-start;
-  }
 `;
 
 const NoMainImageWrapper = styled.div`
@@ -145,11 +117,9 @@ const DescriptionWrapper = styled.div`
   flex-direction: row;
   justify-content: flex-start;
   width: 100%;
+  
   margin-left: 15px;
   transition: 1s;
-  @media(max-width: 800px){
-    flex-direction:column;
-  }
 `;
 const EditWrapper = styled.div`
   display: flex;
@@ -158,9 +128,6 @@ const EditWrapper = styled.div`
   justify-content: flex-end;
   margin-left: 15px;
   transition: 1s;
-  @media(max-width: 800px){
-    flex-direction:column;
-  }
 `;
 const RightAlignWrapper = styled.div`
 //   text-align: right;
@@ -197,10 +164,6 @@ const Button=styled.button`
     opacity: 0.7;
     transition: 0.2s;
     cursor:pointer;
-  }
-
-  @media(max-width: 800px){
-    height:50px;
   }
 `;
 
