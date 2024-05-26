@@ -91,7 +91,7 @@ const MainPage: React.FC = () => {
                       elementHeight={elementHeight}
                       index={index}
                       scroll={scroll}
-                      ref={(element) => (sectionsRef.current[index] = element as HTMLElement)}
+                      ref={(element: HTMLElement) => (sectionsRef.current[index] = element as HTMLElement)}
                       isFirst={index === 0}
                       isLast={index === filteredMainData.length - 1}
                     />
