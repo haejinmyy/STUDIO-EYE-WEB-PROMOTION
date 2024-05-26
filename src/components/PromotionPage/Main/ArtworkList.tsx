@@ -17,25 +17,26 @@ interface SectionProps {
   isLast: boolean;
 }
 
-const ArtworkList = React.forwardRef<HTMLElement, SectionProps>(({ elementHeight, index, scroll, data, isFirst, isLast }, ref) => {
-  const MotionBox = motion<BoxProps>(Box);
-  const MotionFlex = motion<FlexProps>(Flex);
-  const cardInView: Variants = {
-    offscreen: {
-      opacity: 0,
-    },
-    onscreen: {
-      opacity: 1,
-    },
-  };
+const ArtworkList = React.forwardRef<HTMLElement, SectionProps>(
+  ({ elementHeight, index, scroll, data, isFirst, isLast }, ref) => {
+    const MotionBox = motion<BoxProps>(Box);
+    const MotionFlex = motion<FlexProps>(Flex);
+    const cardInView: Variants = {
+      offscreen: {
+        opacity: 0,
+      },
+      onscreen: {
+        opacity: 1,
+      },
+    };
 
-  const containerRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleWheel = (e: React.WheelEvent) => {
-    if (containerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-      const atTop = scrollTop === 0;
-      const atBottom = scrollTop + clientHeight >= scrollHeight;
+    const handleWheel = (e: React.WheelEvent) => {
+      if (containerRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+        const atTop = scrollTop === 0;
+        const atBottom = scrollTop + clientHeight >= scrollHeight;
 
       if ((!isFirst && !isLast && ((atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0))) ||
         (isFirst && atBottom && e.deltaY > 0) ||
@@ -52,24 +53,32 @@ const ArtworkList = React.forwardRef<HTMLElement, SectionProps>(({ elementHeight
 
     const handleWheelEvent = (e: WheelEvent) => {
       handleWheel(e as unknown as React.WheelEvent);
+
     };
 
-    if (container) {
-      container.addEventListener('wheel', handleWheelEvent, { passive: false });
-    }
+    useEffect(() => {
+      const container = containerRef.current;
 
-    return () => {
+      const handleWheelEvent = (e: WheelEvent) => {
+        handleWheel(e as unknown as React.WheelEvent);
+      };
+
       if (container) {
-        container.removeEventListener('wheel', handleWheelEvent);
+        container.addEventListener('wheel', handleWheelEvent, { passive: false });
       }
-    };
-  }, []);
 
-  const transformY = useTransform(
-    scroll,
-    [elementHeight * (index + 1) - elementHeight, elementHeight * (index + 1)],
-    ['0vh', '100vh']
-  );
+      return () => {
+        if (container) {
+          container.removeEventListener('wheel', handleWheelEvent);
+        }
+      };
+    }, []);
+
+    const transformY = useTransform(
+      scroll,
+      [elementHeight * (index + 1) - elementHeight, elementHeight * (index + 1)],
+      ['0vh', '100vh'],
+    );
 
   return (
     <MotionBox
@@ -117,7 +126,7 @@ export default ArtworkList;
 const TextWrapper = styled.div`
   margin-top: 40px;
 `;
-
+        
 const TitleWrapper = styled.div`
   font-family: 'pretendard-bold';
   font-size: 80px;

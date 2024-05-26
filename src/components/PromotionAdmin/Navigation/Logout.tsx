@@ -3,8 +3,14 @@ import { ReactComponent as LogoutSvg } from '@/assets/images/PA-Navigation/logou
 import styled from 'styled-components';
 
 const Logout = () => {
+  const logout = () => {
+    if (window.confirm('로그아웃하시겠습니끼?')) {
+      localStorage.removeItem('recoil-persist');
+      window.location.reload();
+    }
+  };
   return (
-    <Container>
+    <Container onClick={logout}>
       <LogoutSvg width={15} height={15} />
       <span>Logout</span>
     </Container>

@@ -166,8 +166,9 @@ const FaqPage = () => {
 
 const Container = styled.div`
   font-family: 'Pretendard';
-  height: 100vh;
-  overflow-y: scroll;
+  min-height: 100vh;
+  overflow-y: auto;
+  max-height: 'fit-content';
   scroll-snap-type: y mandatory;
   background-color: black;
   color: white;

@@ -2,96 +2,202 @@ import { getCompanyData } from '@/apis/PromotionAdmin/dataEdit';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import { ICompanyData } from '@/types/PromotionAdmin/dataEdit';
 import axios from 'axios';
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
-
 import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import htmlToDraft from 'html-to-draftjs';
 import draftToHtml from 'draftjs-to-html';
-import TextEditor from '@/components/PromotionAdmin/FAQ/TextEditor';
 import { IEditorData } from '@/types/PromotionAdmin/faq';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import { useNavigate } from 'react-router-dom';
+import TextColorEditor from '../TextColorEditor';
+import { ReactComponent as DeleteIcon } from '@/assets/images/PA/minusIcon.svg';
+import { ReactComponent as AddedIcon } from '@/assets/images/PA/plusIcon.svg';
+import HoverInfo from './HoverInfo';
+import { COMPANY_COLUMNS } from './CompanyInfo';
+import {
+  Wrapper,
+  ContentBlock,
+  TitleWrapper,
+  InputWrapper,
+  InputImgWrapper,
+  InputTitle,
+  ImgBox,
+  Button,
+  LogoWrapper,
+  SaveButton,
+  DetailItem,
+  DetailTitleInputWrapper,
+  Form,
+  Box,
+  LeftContentWrapper,
+  RightContentWrapper,
+} from './CompanyFormStyleComponents';
 
 interface IFormData {
-  mainOverview: string;
-  commitment: string;
-  address: string;
-  fax: string;
-  introduction: string;
-  phone: string;
-  detailInformation: {
-    additionalProp1: string;
-    additionalProp2: string;
-    additionalProp3: string;
-  };
+  mainOverview?: string;
+  commitment?: string;
+  address?: string;
+  fax?: string;
+  introduction?: string;
+  phone?: string;
+  detailInformation: { key: string; value: string }[];
 }
 
 const EditForm = () => {
   const navigator = useNavigate();
   const { data, isLoading, error } = useQuery<ICompanyData, Error>(['company', 'id'], getCompanyData);
+  const [imgChange, setImgChange] = useState(false);
   const [putData, setPutData] = useState({
     request: {
-      address: data?.address,
-      phone: data?.phone,
-      fax: data?.fax,
-      //   mainOverview: data?.mainOverview,
-      commitment: data?.commitment,
-      introduction: data?.introduction,
-      detailInformation: {
-        additionalProp1: data?.detailInformation.additionalProp1,
-        additionalProp2: data?.detailInformation.additionalProp2,
-        additionalProp3: data?.detailInformation.additionalProp3,
-      },
-    },
-    logoImageUrl: data ? data?.logoImageUrl : '',
-    sloganImageUrl: data ? data?.sloganImageUrl : '',
-  });
-
-  const { register, handleSubmit } = useForm<IFormData>({
-    defaultValues: {
       address: data?.address,
       phone: data?.phone,
       fax: data?.fax,
       mainOverview: data?.mainOverview,
       commitment: data?.commitment,
       introduction: data?.introduction,
-      detailInformation: {
-        additionalProp1: data?.detailInformation.additionalProp1,
-        additionalProp2: data?.detailInformation.additionalProp2,
-        additionalProp3: data?.detailInformation.additionalProp3,
-      },
+      detailInformation: data?.detailInformation,
     },
+    logoImageUrl: data ? data?.logoImageUrl : '',
+    sloganImageUrl: data ? data?.sloganImageUrl : '',
   });
 
-  const [editorState, setEditorState] = useState(() => {
-    const blocksFromHtml = data && htmlToDraft(data.mainOverview);
-    if (blocksFromHtml) {
-      const { contentBlocks, entityMap } = blocksFromHtml;
-      const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
-      return EditorState.createWithContent(contentState);
-    } else {
-      return EditorState.createEmpty();
+  const {
+    control,
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<IFormData>();
+
+  useEffect(() => {
+    if (data) {
+      const obj = data.detailInformation;
+      reset({
+        address: data.address,
+        phone: data.phone,
+        fax: data.fax,
+        mainOverview: data.mainOverview,
+        commitment: data.commitment,
+        introduction: data.introduction,
+        detailInformation: Object.keys(obj).map((key) => ({
+          key: key,
+          value: obj[key as keyof typeof obj] + '',
+        })),
+      });
+      setPutData({
+        request: {
+          address: data.address,
+          phone: data.phone,
+          fax: data.fax,
+          mainOverview: data.mainOverview,
+          commitment: data.commitment,
+          introduction: data.introduction,
+          detailInformation: data.detailInformation,
+        },
+        logoImageUrl: data.logoImageUrl,
+        sloganImageUrl: data.sloganImageUrl,
+      });
+
+      setMainOverviewState(() => {
+        const blocksFromHtml = htmlToDraft(data.mainOverview);
+        if (blocksFromHtml) {
+          const { contentBlocks, entityMap } = blocksFromHtml;
+          const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
+          return EditorState.createWithContent(contentState);
+        } else {
+          return EditorState.createEmpty();
+        }
+      });
+
+      setCommitmentState(() => {
+        const blocksFromHtml = htmlToDraft(data.commitment);
+        if (blocksFromHtml) {
+          const { contentBlocks, entityMap } = blocksFromHtml;
+          const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
+          return EditorState.createWithContent(contentState);
+        } else {
+          return EditorState.createEmpty();
+        }
+      });
+
+      setIntroductionState(() => {
+        const blocksFromHtml = htmlToDraft(data.introduction);
+        if (blocksFromHtml) {
+          const { contentBlocks, entityMap } = blocksFromHtml;
+          const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
+          return EditorState.createWithContent(contentState);
+        } else {
+          return EditorState.createEmpty();
+        }
+      });
     }
-  });
-  const [blocks, setBlocks] = useState<IEditorData[]>([]);
+  }, [data, reset]);
 
-  const updateTextDescription = async (state: any) => {
-    await setEditorState(state);
-    setBlocks(convertToRaw(editorState.getCurrentContent()).blocks);
+  // 글자수 확인
+  const watchFields = watch('detailInformation');
+  const INPUT_MAX_LENGTH = {
+    BASIC_ADDRESS: 10,
+    BASIC_PHONE: 10,
+    BASIC_FAX: 10,
+    DETAIL_TITLE: 15,
+    DETAIL_CONTENT: 100,
   };
 
-  const [isInvalid, setInvalid] = useState(true);
+  // detail 요소 추가 삭제
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'detailInformation',
+  });
+
+  // detail 요소 삭제
+  const safeRemove = (index: number) => {
+    if (fields.length > 1 && window.confirm('삭제하시겠습니까?')) {
+      remove(index);
+    } else {
+      alert('Detail 항목은 최소 1개 이상 등록되어야 합니다.');
+    }
+  };
+
+  // introduction
+  const [mainOverviewState, setMainOverviewState] = useState(EditorState.createEmpty());
+  const [commitmentState, setCommitmentState] = useState(EditorState.createEmpty());
+  const [introductionState, setIntroductionState] = useState(EditorState.createEmpty());
+  const [blocks, setBlocks] = useState<IEditorData[]>([]);
+  const updateMainOverview = async (state: any) => {
+    await setMainOverviewState(state);
+    setBlocks(convertToRaw(mainOverviewState.getCurrentContent()).blocks);
+  };
+  const updateCommitment = async (state: any) => {
+    await setCommitmentState(state);
+    setBlocks(convertToRaw(commitmentState.getCurrentContent()).blocks);
+  };
+  const updateIntroduction = async (state: any) => {
+    await setIntroductionState(state);
+    setBlocks(convertToRaw(introductionState.getCurrentContent()).blocks);
+  };
+
   const onValid = (data: IFormData) => {
-    console.log(data);
+    if (data.detailInformation.length < 1) {
+      alert('Detail 항목은 최소 1개 이상 등록되어야 합니다.');
+      return;
+    }
     handleSaveClick(data);
   };
 
   const handleSaveClick = async (data: IFormData) => {
     const formData = new FormData();
+    const transformedDetailInformation = data.detailInformation.reduce(
+      (acc, item) => {
+        acc[item.key] = item.value;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
 
     formData.append(
       'request',
@@ -101,42 +207,48 @@ const EditForm = () => {
             address: data.address,
             phone: data.phone,
             fax: data.fax,
-            mainOverview: draftToHtml(convertToRaw(editorState.getCurrentContent())),
-            commitment: data.commitment,
-            introduction: data.introduction,
-            detailInformation: {
-              additionalProp1: data.detailInformation.additionalProp1,
-              additionalProp2: data.detailInformation.additionalProp2,
-              additionalProp3: data.detailInformation.additionalProp3,
-            },
+            mainOverview: draftToHtml(convertToRaw(mainOverviewState.getCurrentContent())),
+            commitment: draftToHtml(convertToRaw(commitmentState.getCurrentContent())),
+            introduction: draftToHtml(convertToRaw(introductionState.getCurrentContent())),
+            detailInformation: transformedDetailInformation,
           }),
         ],
         { type: 'application/json' },
       ),
     );
 
-    // 이미지를 변경했는지 확인하고 추가
-    const logoFile = await urlToFile(putData.logoImageUrl, 'Logo.png');
-    formData.append('logoImageUrl', logoFile);
-    const sloganFile = await urlToFile(putData.sloganImageUrl, 'Slogan.png');
-    formData.append('sloganImageUrl', sloganFile);
-
-    if (putData.logoImageUrl === '' || putData.sloganImageUrl === '') {
-      alert('파일을 업로드해주세요');
-      setInvalid(true);
-    } else {
-      setInvalid(false);
-    }
-
     if (window.confirm('수정하시겠습니까?')) {
-      axios
-        .post(`${PROMOTION_BASIC_PATH}/api/company/information`, formData)
-        .then((response) => {
-          console.log('Company Information posted:', response);
-          alert('수정되었습니다.');
-          navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_COMPANY}`);
-        })
-        .catch((error) => console.error('Error updating partner:', error));
+      if (imgChange) {
+        const logoFile = await urlToFile(putData.logoImageUrl, 'Logo.png');
+        if (logoFile) {
+          formData.append('logoImageUrl', logoFile);
+        } else {
+          console.error('로고 이미지 가져오기 실패');
+        }
+        const sloganFile = await urlToFile(putData.sloganImageUrl, 'Slogan.png');
+        if (sloganFile) {
+          formData.append('sloganImageUrl', sloganFile);
+        } else {
+          console.error('슬로건 이미지 가져오기 실패');
+        }
+        axios
+          .put(`${PROMOTION_BASIC_PATH}/api/company/information`, formData)
+          .then((response) => {
+            console.log('Company Information updated:', response);
+            alert('수정되었습니다.');
+            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_COMPANY}`);
+          })
+          .catch((error) => console.error('Error updating company:', error));
+      } else {
+        axios
+          .put(`${PROMOTION_BASIC_PATH}/api/company/information/modify`, formData)
+          .then((response) => {
+            console.log('Company Information updated:', response);
+            alert('수정되었습니다.');
+            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_COMPANY}`);
+          })
+          .catch((error) => console.error('Error updating company:', error));
+      }
     }
   };
 
@@ -151,6 +263,7 @@ const EditForm = () => {
         }));
       };
       reader.readAsDataURL(logoImageUrl);
+      setImgChange(true);
     }
   };
 
@@ -165,6 +278,7 @@ const EditForm = () => {
         }));
       };
       reader.readAsDataURL(sloganImageUrl);
+      setImgChange(true);
     }
   };
 
@@ -186,104 +300,166 @@ const EditForm = () => {
     <>
       <Wrapper>
         {data && (
-          <form onSubmit={handleSubmit(onValid)}>
-            <ContentBlock>
-              <Title>Basic</Title>
-              <InputWrapper>
-                <p>Address</p>
-                <input
-                  {...register('address', {
-                    required: '주소를 입력해주세요',
-                  })}
-                  placeholder='주소를 입력해주세요'
-                />
-                <p>Phone Number</p>
-                <input
-                  {...register('phone', {
-                    required: '전화번호를 입력해주세요',
-                  })}
-                  placeholder='전화번호를 입력해주세요'
-                />
-                <p>Fax Number</p>
-                <input
-                  {...register('fax', {
-                    required: '팩스번호를 입력해주세요',
-                  })}
-                  placeholder='팩스번호를 입력해주세요'
-                />
-              </InputWrapper>
-            </ContentBlock>
+          <>
+            <Form onSubmit={handleSubmit(onValid)}>
+              <LeftContentWrapper>
+                {/* Basic */}
+                <ContentBlock>
+                  <HoverInfo title={COMPANY_COLUMNS.Basic.title} description={COMPANY_COLUMNS.Basic.description} />
+                  <InputWrapper>
+                    <InputTitle>
+                      <p>Address</p>
+                    </InputTitle>
+                    <input
+                      {...register('address', {
+                        required: '주소를 입력해주세요',
+                      })}
+                      placeholder='주소를 입력해주세요'
+                    />
 
-            <ContentBlock>
-              <Title>Introduction</Title>
-              <InputWrapper>
-                <p>Main Overview</p>
-                <TextEditor editorState={editorState} onEditorStateChange={updateTextDescription} />
-                <p>Commitment</p>
-                <input
-                  {...register('commitment', {
-                    required: 'commitment를 입력해주세요',
-                  })}
-                  placeholder='commitment를 입력해주세요'
-                />
-                <p>Introduction</p>
-                <input
-                  {...register('introduction', {
-                    required: 'introduction를 입력해주세요',
-                  })}
-                  placeholder='introduction를 입력해주세요'
-                />
-              </InputWrapper>
-            </ContentBlock>
+                    <InputTitle>
+                      <p>Phone Number</p>
+                    </InputTitle>
 
-            <ContentBlock>
-              <Title>Detail</Title>
-              <InputWrapper>
-                <p>1</p>
-                <input
-                  {...register('detailInformation.additionalProp1', {
-                    required: 'additionalProp1를 입력해주세요',
-                  })}
-                  placeholder='additionalProp1를 입력해주세요'
-                />
-                <p>2</p>
-                <input
-                  {...register('detailInformation.additionalProp2', {
-                    required: 'additionalProp2를 입력해주세요',
-                  })}
-                  placeholder='additionalProp2를 입력해주세요'
-                />
-                <p>3</p>
-                <input
-                  {...register('detailInformation.additionalProp3', {
-                    required: 'additionalProp3를 입력해주세요',
-                  })}
-                  placeholder='additionalProp3를 입력해주세요'
-                />
-              </InputWrapper>
-            </ContentBlock>
+                    <input
+                      {...register('phone', {
+                        required: '전화번호를 입력해주세요',
+                      })}
+                      placeholder='전화번호를 입력해주세요'
+                    />
 
-            <ContentBlock>
-              <Title>Logo & Slogan</Title>
-              <InputWrapper>
-                <LogoWrapper>
-                  <img src={putData.logoImageUrl} />
-                  <label htmlFor='logoFile'>
-                    <div>Logo Upload</div>
-                    <input id='logoFile' type='file' accept='image/*' onChange={handleLogoImageChange} />
-                  </label>
-                </LogoWrapper>
-                <LogoWrapper>
-                  <img src={putData.sloganImageUrl} />
-                  <label htmlFor='sloganFile'>
-                    <div>Slogan Upload</div>
-                    <input id='sloganFile' type='file' accept='image/*' onChange={handleSloganImageChange} />
-                  </label>
-                </LogoWrapper>
-              </InputWrapper>
-            </ContentBlock>
-            <button>저장하기</button>
-          </form>
+                    <InputTitle>
+                      <p>Fax Number</p>
+                    </InputTitle>
+
+                    <input
+                      {...register('fax', {
+                        required: '팩스번호를 입력해주세요',
+                      })}
+                      placeholder='팩스번호를 입력해주세요'
+                    />
+                  </InputWrapper>
+                </ContentBlock>
+
+                {/* Logo & Slogan */}
+                <ContentBlock>
+                  <InputImgWrapper>
+                    <Box>
+                      <HoverInfo title={COMPANY_COLUMNS.Logo.title} description={COMPANY_COLUMNS.Logo.description} />
+
+                      <LogoWrapper>
+                        <label htmlFor='logoFile'>
+                          <Button>Logo Upload</Button>
+                          <input id='logoFile' type='file' accept='image/*' onChange={handleLogoImageChange} />
+                        </label>
+                        <ImgBox>
+                          <img src={putData.logoImageUrl} />
+                        </ImgBox>
+                      </LogoWrapper>
+                    </Box>
+                    <Box>
+                      <HoverInfo
+                        title={COMPANY_COLUMNS.Slogan.title}
+                        description={COMPANY_COLUMNS.Slogan.description}
+                      />
+
+                      <LogoWrapper>
+                        <label htmlFor='sloganFile'>
+                          <Button>Slogan Upload</Button>
+                          <input id='sloganFile' type='file' accept='image/*' onChange={handleSloganImageChange} />
+                        </label>
+                        <ImgBox>
+                          <img src={putData.sloganImageUrl} />
+                        </ImgBox>
+                      </LogoWrapper>
+                    </Box>
+                  </InputImgWrapper>
+                </ContentBlock>
+              </LeftContentWrapper>
+
+              <RightContentWrapper>
+                {/* Introduntion */}
+                <ContentBlock>
+                  <HoverInfo
+                    title={COMPANY_COLUMNS.Introduction.title}
+                    description={COMPANY_COLUMNS.Introduction.description}
+                  />
+
+                  <InputWrapper>
+                    <InputTitle>Main Overview</InputTitle>
+                    <TextColorEditor editorState={mainOverviewState} onEditorStateChange={updateMainOverview} />
+                    <InputTitle>Commitment</InputTitle>
+                    <TextColorEditor editorState={commitmentState} onEditorStateChange={updateCommitment} />
+                    <InputTitle>Introduction</InputTitle>
+                    <TextColorEditor editorState={introductionState} onEditorStateChange={updateIntroduction} />
+                  </InputWrapper>
+                </ContentBlock>
+
+                {/* Detail */}
+                <ContentBlock>
+                  <TitleWrapper>
+                    <HoverInfo title={COMPANY_COLUMNS.Detail.title} description={COMPANY_COLUMNS.Detail.description} />
+
+                    <Button onClick={() => append({ key: '', value: '' })}>
+                      <AddedIcon width={14} height={14} />
+                      Add New Detail
+                    </Button>
+                  </TitleWrapper>
+                  <InputWrapper>
+                    <div>
+                      {fields.map((field, index) => (
+                        <DetailItem key={field.id}>
+                          <DeleteIcon width={15} height={15} onClick={() => safeRemove(index)} />
+                          <Controller
+                            name={`detailInformation.${index}.key`}
+                            control={control}
+                            defaultValue={field.key}
+                            render={({ field }) => (
+                              <DetailTitleInputWrapper>
+                                <input
+                                  {...register(`detailInformation.${index}.key`, {
+                                    required: '제목을 입력해주세요',
+                                    maxLength: INPUT_MAX_LENGTH.DETAIL_TITLE,
+                                  })}
+                                  className='detail_title'
+                                  {...field}
+                                  placeholder='제목을 입력해주세요.'
+                                  onChange={(e) => {
+                                    if (e.target.value.length <= INPUT_MAX_LENGTH.DETAIL_TITLE) {
+                                      field.onChange(e);
+                                    }
+                                  }}
+                                />
+                                <span>
+                                  {watchFields[index].key.length} / {INPUT_MAX_LENGTH.DETAIL_TITLE}자
+                                </span>
+                              </DetailTitleInputWrapper>
+                            )}
+                          />
+                          <Controller
+                            name={`detailInformation.${index}.value`}
+                            control={control}
+                            defaultValue={field.value}
+                            render={({ field }) => (
+                              <textarea
+                                {...register(`detailInformation.${index}.value`, {
+                                  required: '내용을 입력해주세요',
+                                })}
+                                className='detail_content'
+                                {...field}
+                                placeholder='내용을 입력해주세요.'
+                              />
+                            )}
+                          />
+                        </DetailItem>
+                      ))}
+                    </div>
+                  </InputWrapper>
+                </ContentBlock>
+              </RightContentWrapper>
+              <SaveButton>저장하기</SaveButton>
+            </Form>
+          </>
         )}
       </Wrapper>
     </>
@@ -291,65 +467,3 @@ const EditForm = () => {
 };
 
 export default EditForm;
-
-const Wrapper = styled.div`
-  width: 800px;
-`;
-const ContentBlock = styled.div`
-  display: flex;
-  /* background-color: pink; */
-  padding: 25px 10px;
-  /* border-top: 1px solid ${(props) => props.theme.color.black.pale}; */
-  border-bottom: 2px solid ${(props) => props.theme.color.black.pale};
-`;
-const Title = styled.div`
-  font-size: 22px;
-  font-family: 'pretendard-medium';
-  width: 300px;
-`;
-const InputWrapper = styled.div`
-  display: flex;
-  width: 400px;
-  flex-direction: column;
-  font-family: 'pretendard-light';
-  p {
-    font-size: 18px;
-    padding-top: 7px;
-    padding-bottom: 3px;
-  }
-  input {
-    height: 30px;
-  }
-`;
-
-const LogoWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  div {
-    cursor: pointer;
-    border: none;
-    background-color: ${(props) => props.theme.color.white.bold};
-    box-shadow: 1px 1px 4px 0.1px #c6c6c6;
-    padding: 0.4rem 1.4rem;
-    border-radius: 0.2rem;
-    transition: 0.2s;
-    width: 130px;
-    display: flex;
-    justify-content: center;
-    font-weight: 700;
-    margin-right: 20px;
-
-    &:hover {
-      background-color: ${(props) => props.theme.color.yellow.light};
-    }
-  }
-
-  input {
-    display: none;
-  }
-
-  img {
-    width: 200px;
-    margin-bottom: 10px;
-  }
-`;

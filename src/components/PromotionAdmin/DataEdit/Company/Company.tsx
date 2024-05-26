@@ -33,5 +33,23 @@ export default Company;
 const Wrapper = styled.div`
   button {
     cursor: pointer;
+    position: fixed;
+    right: 40px;
+    top: 195px;
+    background-color: ${(props) => props.theme.color.yellow.bold};
+    color: ${(props) => props.theme.color.white.bold};
+
+    width: 140px;
+    height: 40px;
+    font-size: 15px;
+    font-family: ${(props) => props.theme.font.semiBold};
+
+    border: none;
+    box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+
+    &:hover {
+      scale: 1.1;
+      transition: 0.2s;
+    }
   }
 `;
