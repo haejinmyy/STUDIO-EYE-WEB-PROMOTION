@@ -1,3 +1,4 @@
+import { CATEGORIES } from '@/constants/categories';
 export type ArtworkImage = {
   id: number;
   imageUrlList: string;
@@ -7,19 +8,21 @@ export type ArtworkImage = {
 export type ArtworkData = {
   id: number;
   department: string;
-  category: string;
+  category: typeof CATEGORIES;
   name: string;
   client: string;
   date: string;
   link: string;
   overView: string;
-  projectType: 'top' | 'main' | 'others';
+  projectType: projectType;
   isPosted: boolean;
   mainImg: string;
   projectImages: ArtworkImage[];
   sequence: number;
-  mainSequence:number
+  mainSequence: number;
 };
+
+export type projectType = 'top' | 'main' | 'others';
 
 export type UpdateArtwork = {
   request: {

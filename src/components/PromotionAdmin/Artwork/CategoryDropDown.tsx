@@ -8,7 +8,7 @@ interface CategoryDropDownProps {
 
 const CategoryDropDown = ({ setSelectedCategory }: CategoryDropDownProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedCategory, setSelectedCategoryLocal] = useState('Category');
+  const [selectedCategory, setSelectedCategoryLocal] = useState('All');
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategoryLocal(category);
@@ -39,11 +39,10 @@ export default CategoryDropDown;
 const Wrapper = styled.div`
   position: relative;
   height: 30px;
-  width: 150px;
-  padding: 0 10px;
+  width: 100%;
   text-align: center;
   border-radius: 5px;
-  z-index: 10000;
+  z-index: 90;
 `;
 
 const CategoryButton = styled.button`
@@ -53,6 +52,7 @@ const CategoryButton = styled.button`
   border: none;
   cursor: pointer;
   width: 100%;
+  padding: 0 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
