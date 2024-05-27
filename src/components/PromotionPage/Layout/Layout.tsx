@@ -1,12 +1,18 @@
 import React from 'react';
 import Header from '@/components/PromotionPage/Header/Header';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import CustomCursor from '../CustomCursor/CustomCursor';
 import ScrollToTop from '@/hooks/useScrollToTop';
 import Footer from '../Footer/Footer';
 
 const Layout = () => {
+  const location = useLocation();
+
+  const pathsWithoutFooter = ['/contact'];
+
+  const hideFooter = pathsWithoutFooter.includes(location.pathname);
+
   return (
     <Container className='promotion-cursor'>
       <ScrollToTop />
@@ -15,7 +21,7 @@ const Layout = () => {
         <Outlet />
         <CustomCursor />
       </BodyWrapper>
-      <Footer />
+      {!hideFooter && <Footer />}
     </Container>
   );
 };

@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Circle from '../Circle/Circle';
 import { getCompanyData } from '../../../apis/PromotionAdmin/dataEdit';
+import { Link } from 'react-router-dom';
 
 const Intro = () => {
   const introRef = useRef(null);
@@ -55,7 +56,9 @@ const Intro = () => {
           animate={{ opacity: circleInView ? 1 : 0, y: circleInView ? 0 : 100 }}
           transition={{ duration: 1, delay: 1 }}
         >
-          <Circle label='ABOUT STUDIO EYE' />
+          <Link to='/about'>
+            <Circle label='ABOUT STUDIO EYE' />
+          </Link>
         </motion.div>
       </CircleWrapper>
     </Container>

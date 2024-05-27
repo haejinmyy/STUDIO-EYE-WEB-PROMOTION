@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
-import { motion, useAnimation } from 'framer-motion';
+import { getCEOData, getPartnersData } from '../../../apis/PromotionAdmin/dataEdit';
 
 import IntroPage from './IntroPage';
 import WhatWeDoPage from './WhatWeDoPage';
@@ -13,49 +12,57 @@ interface IFontStyleProps {
 interface IContainerStyleProps {
   backgroundColor?: string;
 }
-
-const chunkArray = (array: any, size: any) => {
-  const chunks = [];
-  for (let i = 0; i < array.length; i += size) {
-    const chunk = array.slice(i, i + size); // 배열을 size 만큼 나누기
-    chunks.push(chunk);
-  }
-  return chunks; // 배열의 부분들을 배열로 반환
-};
+interface ICEOInfoData {
+  id: number;
+  name: string;
+  introduction: string;
+  imageFileName: string;
+  imageUrl: string;
+}
+interface ICorpInfoData {
+  partnerInfo: {
+    id: number;
+    is_main: boolean;
+    link: string;
+  };
+  logoImg: string;
+}
 
 const AboutPage = () => {
-  const [data, setData] = useState({ id: '', name: '', introduction: '', imageFileName: '', imageUrl: '' });
-  const [corpLogo, setCorpLogo] = useState([]);
+  const [CEOData, setCEOData] = useState<ICEOInfoData>({
+    id: 0,
+    name: '',
+    introduction: '',
+    imageFileName: '',
+    imageUrl: '',
+  });
+  const [corpInfoData, setCorpInfoData] = useState<ICorpInfoData[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [response1, response2] = await Promise.all([
-          axios.get('http://3.36.95.109:8080/api/ceo'), // 첫 번째 요청
-          axios.get('http://3.36.95.109:8080/api/partners/logoImgList'), // 두 번째 요청
-        ]);
-
-        const ceoInfo = response1.data.data;
-        const object = {
+        const [CEODataResponse, corpDataResponse] = await Promise.all([getCEOData(), getPartnersData()]);
+        const ceoInfo = CEODataResponse;
+        const object1 = {
           id: ceoInfo.id,
           name: ceoInfo.name,
           introduction: ceoInfo.introduction,
           imageFileName: ceoInfo.imageFileName,
           imageUrl: ceoInfo.imageUrl,
         };
-        setData(object);
+        setCEOData(object1);
 
-        console.log(response2);
-        setCorpLogo(response2.data.data);
+        const objects2 = corpDataResponse.map((item: any) => ({
+          partnerInfo: item.partnerInfo,
+          logoImg: item.logoImg,
+        }));
+        setCorpInfoData(objects2);
       } catch (error) {
         console.error('데이터 가져오기 오류:', error);
       }
     };
-
     fetchData();
   }, []);
-
-  const dataChunks = chunkArray(corpLogo, 3);
 
   return (
     <ScrollContainer>
@@ -65,27 +72,31 @@ const AboutPage = () => {
         <RowCoontainer backgroundColor='#1a1a1a'>
           <CeoInfoContainer>
             <CeoInfo fontFamily='Pretendard-SemiBold' fontSize='70px'>
-              CEO&nbsp;{data.name}
+              CEO&nbsp;{CEOData.name}
             </CeoInfo>
-            <CeoInfo dangerouslySetInnerHTML={{ __html: data.introduction }}></CeoInfo>
+            <CeoInfo dangerouslySetInnerHTML={{ __html: CEOData.introduction }}></CeoInfo>
           </CeoInfoContainer>
           <CeoImageContainer>
-            <img src={data.imageUrl} alt='CEO Character' style={{ width: '350px', height: 'auto' }} />
+            <img src={CEOData.imageUrl} alt='CEO Character' style={{ width: '350px', height: 'auto' }} />
           </CeoImageContainer>
         </RowCoontainer>
       </Section>
       <Section>
         <CorpLogoContainer>
           <CorpText>CORP</CorpText>
-          {dataChunks.map((chunk, index) => (
-            <CorpLogoRowContainer target='_blank' href={'/'} key={index}>
-              {chunk.map((item: any, subIndex: any) => (
-                <div key={subIndex}>
-                  <img src={item} alt='CORP Logo' style={{ width: '300px', height: 'auto' }} />
-                </div>
+          <CorpLogoRowContainer>
+            {corpInfoData
+              .filter((item: any) => item.partnerInfo.is_main === true)
+              .map((info) => (
+                <img
+                  key={info.partnerInfo.id}
+                  src={info.logoImg}
+                  alt='CORP Logo'
+                  style={{ width: '300px', height: '150px', cursor: 'pointer' }}
+                  onClick={() => window.open(info.partnerInfo.link, '_blank')}
+                />
               ))}
-            </CorpLogoRowContainer>
-          ))}
+          </CorpLogoRowContainer>
         </CorpLogoContainer>
       </Section>
     </ScrollContainer>
