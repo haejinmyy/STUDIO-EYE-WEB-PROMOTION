@@ -1,11 +1,17 @@
 import React from 'react';
 import Header from '@/components/PromotionPage/Header/Header';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import ScrollToTop from '@/hooks/useScrollToTop';
 import Footer from '../Footer/Footer';
 
 const Layout = () => {
+  const location = useLocation();
+
+  const pathsWithoutFooter = ['/contact'];
+
+  const hideFooter = pathsWithoutFooter.includes(location.pathname);
+
   return (
     <Container>
       <ScrollToTop />
@@ -13,7 +19,7 @@ const Layout = () => {
       <BodyWrapper>
         <Outlet />
       </BodyWrapper>
-      <Footer />
+      {!hideFooter && <Footer />}
     </Container>
   );
 };
