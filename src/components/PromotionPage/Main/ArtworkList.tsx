@@ -38,21 +38,11 @@ const ArtworkList = React.forwardRef<HTMLElement, SectionProps>(
         const atTop = scrollTop === 0;
         const atBottom = scrollTop + clientHeight >= scrollHeight;
 
-        if (!isFirst && !isLast) {
-          if ((atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0)) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
-        } else if (isFirst) {
-          if (atBottom && e.deltaY > 0) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
-        } else if (isLast) {
-          if (atTop && e.deltaY < 0) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
+        if ((!isFirst && !isLast && ((atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0))) ||
+          (isFirst && atBottom && e.deltaY > 0) ||
+          (isLast && atTop && e.deltaY < 0)) {
+          e.preventDefault();
+          e.stopPropagation();
         }
       }
     };
@@ -78,75 +68,72 @@ const ArtworkList = React.forwardRef<HTMLElement, SectionProps>(
     const transformY = useTransform(
       scroll,
       [elementHeight * (index + 1) - elementHeight, elementHeight * (index + 1)],
-      ['0vh', '100vh'],
+      ['0vh', '100vh']
     );
 
     return (
       <MotionBox
-        w='100%'
-        h='100vh'
-        scrollSnapAlign='center'
-        initial='offscreen'
-        whileInView='onscreen'
-        position='relative'
+        w="100%"
+        h="100vh"
+        scrollSnapAlign="center"
+        initial="offscreen"
+        whileInView="onscreen"
+        position="relative"
         viewport={{ once: false, amount: 0.7 }}
         ref={ref}
         zIndex={index + 1}
-        backgroundImage={`url(${data.backgroundImg})`}
-        backgroundSize='cover'
-        backgroundPosition='center'
-        opacity={0.8}
+        backgroundImage={`linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url(${data.backgroundImg})`}
+        backgroundSize="cover"
+        backgroundPosition="center"
         onWheel={handleWheel}
       >
         <MotionFlex
-          w='100%'
-          h='100%'
+          w="100%"
+          h="100%"
           paddingLeft={20}
           paddingTop={20}
-          color='white'
+          color="white"
           style={{ y: transformY }}
-          alignItems='start'
-          justifyContent='start'
+          alignItems="start"
+          justifyContent="start"
           ref={containerRef}
-          overflowX='auto'
-          overflowY='hidden'
+          overflowX="auto"
+          overflowY="hidden"
         >
           <motion.div variants={cardInView}>
-            <ClientWrapper>{data.client}</ClientWrapper>
-            <TitleWrapper>{data.title}</TitleWrapper>
-            <OverviewWrapper>{data.overview}</OverviewWrapper>
+            <TextWrapper>
+              <ClientWrapper>{data.client}</ClientWrapper>
+              <TitleWrapper>{data.title}</TitleWrapper>
+              <OverviewWrapper>{data.overview}</OverviewWrapper>
+            </TextWrapper>
           </motion.div>
-          {/* <TEST variants={cardInView}>Click and Scroll</TEST> */}
         </MotionFlex>
       </MotionBox>
     );
-  },
+  }
 );
 
 export default ArtworkList;
 
+const TextWrapper = styled.div`
+  margin-top: 40px;
+`;
+
 const TitleWrapper = styled.div`
   font-family: 'pretendard-bold';
-  font-size: 50px;
+  font-size: 80px;
   color: white;
   white-space: nowrap;
 `;
+
 const ClientWrapper = styled(motion.h2)`
   font-family: 'pretendard-bold';
   font-size: 25px;
   color: #cccccc;
 `;
+
 const OverviewWrapper = styled.div`
   font-family: 'pretendard-medium';
   font-size: 20px;
   color: white;
-`;
-
-const TEST = styled(motion.div)`
-  margin-left: auto;
-  margin-top: auto;
-  padding: 0 100px;
-  font-family: 'pretendard-light';
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.8);
 `;

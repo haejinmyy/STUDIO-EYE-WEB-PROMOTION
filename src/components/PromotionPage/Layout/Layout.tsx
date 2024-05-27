@@ -2,18 +2,16 @@ import React from 'react';
 import Header from '@/components/PromotionPage/Header/Header';
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
-import CustomCursor from '../CustomCursor/CustomCursor';
 import ScrollToTop from '@/hooks/useScrollToTop';
 import Footer from '../Footer/Footer';
 
 const Layout = () => {
   return (
-    <Container className='promotion-cursor'>
+    <Container>
       <ScrollToTop />
       <Header />
       <BodyWrapper>
         <Outlet />
-        <CustomCursor />
       </BodyWrapper>
       <Footer />
     </Container>

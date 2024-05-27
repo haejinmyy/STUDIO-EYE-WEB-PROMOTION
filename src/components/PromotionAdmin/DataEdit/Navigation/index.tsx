@@ -43,6 +43,7 @@ const Wrapper = styled.div`
   left: 120px;
   width: 100%;
   top: 80px;
+  z-index: 2;
 `;
 
 const SideBar = styled.div`
