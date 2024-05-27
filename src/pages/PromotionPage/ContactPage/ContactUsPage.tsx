@@ -263,8 +263,13 @@ const ContactUsPage = () => {
       });
   };
 
-  const notValidAddress = (address: string) => address.length > 80 || address === '';
-  const notValidString = (info: string) => info.length > 18 || info === '';
+  const notValidAddress = (address: string | undefined | null) => {
+    return !address || address.length > 80;
+  };
+
+  const notValidString = (info: string | undefined | null) => {
+    return !info || info.length > 18;
+  };
 
   return (
     <Container ref={containerRef}>
