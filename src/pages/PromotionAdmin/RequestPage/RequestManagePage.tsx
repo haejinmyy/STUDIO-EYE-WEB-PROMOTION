@@ -1,5 +1,5 @@
 import { getRequestsData } from '@/apis/PromotionAdmin/request';
-import { IRequestData } from '@/types/PromotionAdmin/request';
+import { IRequest } from '@/types/PromotionAdmin/request';
 import { useQuery } from 'react-query';
 import { ContentBox } from '../../../components/PromotionAdmin/Request/Components';
 import styled from 'styled-components';
@@ -10,7 +10,9 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function RequestList() {
-  const { data, isLoading } = useQuery<IRequestData>(['request', 'id'], getRequestsData);
+  const { data, isLoading } = useQuery<IRequest[]>('requests', getRequestsData);
+  console.log(data);
+
   const navigator = useNavigate();
 
   // pagination 구현에 사용되는 변수
@@ -41,12 +43,12 @@ function RequestList() {
     setModalVisible(!modalVisible);
   };
 
-  const closeModal = (e: React.MouseEvent, clientName: string, state: number, requestId: number) => {
+  const closeModal = (e: React.MouseEvent, clientName: string, state: string, requestId: number) => {
     e.stopPropagation();
     let answerText = '';
-    if (state === 1) {
+    if (state === 'APPROVED') {
       answerText = clientName + '님의 문의가 승인되었습니다.';
-    } else if (state === 2) {
+    } else if (state === 'REJECTED') {
       answerText =
         clientName +
         '님의 문의를 거절하게 되어 죄송합니다. 더 발전된 Studio-EYE가 되어 더욱 많은 문의를 진행할 수 있도록 노력하겠습니다.';
@@ -72,7 +74,7 @@ function RequestList() {
   return (
     <Wrapper>
       <ContentBox>
-        {data?.data.length === 0 || data === null ? (
+        {!data || data.length === 0 ? (
           <> 😊 의뢰 데이터가 존재하지 않습니다.</>
         ) : (
           <>
@@ -97,7 +99,7 @@ function RequestList() {
                   </svg>
                 </Icon>
                 Request 관리
-                <Info>문의 총 {data?.data.length}건</Info>
+                <Info>문의 총 {data.length}건</Info>
               </Title>
               <ButtonsWrapper>
                 <ButtonWrapper>
@@ -145,9 +147,10 @@ function RequestList() {
                 </tr>
               </thead>
               <tbody>
-                {data && showWaitingApproval === true
-                  ? data.data
-                      .filter((request) => request.state === 0)
+                {data &&
+                  (showWaitingApproval === true
+                    ? data
+                      .filter((request) => request.state === 'WAITING')
                       .slice(indexOfFirst, indexOfLast)
                       .map((request) => (
                         <tr key={request.id} onClick={() => navigator(`${PA_ROUTES.REQUEST}/${request.id}`)}>
@@ -163,20 +166,20 @@ function RequestList() {
                           <td>
                             {modalVisible === false ? (
                               <StateButton requestState={request.state} onClick={openModal}>
-                                {request.state === 0 ? '대기' : request.state === 2 ? '거부' : '승인'}
+                                {request.state === 'WAITING' ? '대기' : request.state === 'REJECTED' ? '거부' : '승인'}
                               </StateButton>
                             ) : (
                               <>
                                 <SelectButton
                                   onClick={(e) => {
-                                    closeModal(e, request.clientName, 1, request.id);
+                                    closeModal(e, request.clientName, 'APPROVED', request.id);
                                   }}
                                 >
                                   승인
                                 </SelectButton>
                                 <SelectButton
                                   onClick={(e) => {
-                                    closeModal(e, request.clientName, 2, request.id);
+                                    closeModal(e, request.clientName, 'REJECTED', request.id);
                                   }}
                                 >
                                   거부
@@ -184,12 +187,12 @@ function RequestList() {
                               </>
                             )}
                           </td>
-                          <td>{request.state === 3 || request.state === 2 ? '답변완료' : '대기'}</td>
+                          <td>{request.state === 'APPROVED' || request.state === 'WAITING' ? '답변완료' : '대기'}</td>
                         </tr>
                       ))
-                  : data && showCompletedRequest === true
-                    ? data.data
-                        .filter((request) => request.state === 3 || request.state === 2)
+                    : showCompletedRequest === true
+                      ? data
+                        .filter((request) => request.state === 'WAITING' || request.state === 'WAITING')
                         .slice(indexOfFirst, indexOfLast)
                         .map((request) => (
                           <tr key={request.id} onClick={() => navigator(`${PA_ROUTES.REQUEST}/${request.id}`)}>
@@ -205,20 +208,20 @@ function RequestList() {
                             <td>
                               {modalVisible === false ? (
                                 <StateButton requestState={request.state} onClick={openModal}>
-                                  {request.state === 0 ? '대기' : request.state === 2 ? '거부' : '승인'}
+                                  {request.state ==='WAITING' ? '대기' : request.state === 'REJECTED' ? '거부' : '승인'}
                                 </StateButton>
                               ) : (
                                 <>
                                   <SelectButton
                                     onClick={(e) => {
-                                      closeModal(e, request.clientName, 1, request.id);
+                                      closeModal(e, request.clientName, 'APPROVED', request.id);
                                     }}
                                   >
                                     승인
                                   </SelectButton>
                                   <SelectButton
                                     onClick={(e) => {
-                                      closeModal(e, request.clientName, 2, request.id);
+                                      closeModal(e, request.clientName, 'REJECTED', request.id);
                                     }}
                                   >
                                     거부
@@ -226,12 +229,11 @@ function RequestList() {
                                 </>
                               )}
                             </td>
-                            <td>{request.state === 3 || request.state === 2 ? '답변완료' : '대기'}</td>
+                            <td>{request.state ==='APPROVED' || request.state === 'WAITING' ? '답변완료' : '대기'}</td>
                           </tr>
                         ))
-                    : data &&
-                      data.data
-                        .filter((request) => request.state === 0 || request.state === 1)
+                      : data
+                        .filter((request) => request.state === 'WAITING' || request.state === 'WAITING')
                         .slice(indexOfFirst, indexOfLast)
                         .map((request) => (
                           <tr key={request.id} onClick={() => navigator(`${PA_ROUTES.REQUEST}/${request.id}`)}>
@@ -247,20 +249,20 @@ function RequestList() {
                             <td>
                               {modalVisible === false ? (
                                 <StateButton requestState={request.state} onClick={openModal}>
-                                  {request.state === 0 ? '대기' : request.state === 2 ? '거부' : '승인'}
+                                  {request.state === 'WAITING' ? '대기' : request.state === 'REJECTED' ? '거부' : '승인'}
                                 </StateButton>
                               ) : (
                                 <>
                                   <SelectButton
                                     onClick={(e) => {
-                                      closeModal(e, request.clientName, 1, request.id);
+                                      closeModal(e, request.clientName, 'APPROVED', request.id);
                                     }}
                                   >
                                     승인
                                   </SelectButton>
                                   <SelectButton
                                     onClick={(e) => {
-                                      closeModal(e, request.clientName, 2, request.id);
+                                      closeModal(e, request.clientName, 'REJECTED', request.id);
                                     }}
                                   >
                                     거부
@@ -268,20 +270,17 @@ function RequestList() {
                                 </>
                               )}
                             </td>
-                            <td>{request.state === 3 || request.state === 2 ? '답변완료' : '대기'}</td>
+                            <td>{request.state === 'APPROVED' || request.state === 'WAITING' ? '답변완료' : '대기'}</td>
                           </tr>
-                        ))}
+                        )))}
               </tbody>
             </StyledTable>
-            {data && (
-              <PaginationWrapper>
-                <Pagination postsPerPage={postsPerPage} totalPosts={data?.data.length} paginate={setCurrentPage} />
-              </PaginationWrapper>
-            )}
+            <PaginationWrapper>
+              <Pagination postsPerPage={postsPerPage} totalPosts={data.length} paginate={setCurrentPage} />
+            </PaginationWrapper>
           </>
         )}
       </ContentBox>
-      <Outlet />
     </Wrapper>
   );
 }
@@ -452,22 +451,22 @@ const PaginationWrapper = styled.div`
   bottom: 10px;
 `;
 
-const StateButton = styled.button<{ requestState: number }>`
+const StateButton = styled.button<{ requestState: string }>`
   padding: 5px 10px;
   border: 1px solid #c8c9cc;
   border-radius: 20px;
   cursor: pointer;
   background: ${({ requestState }) => {
-    if (requestState === 0) {
+    if (requestState === 'WAITING') {
       return 'transparent';
-    } else if (requestState === 2) {
+    } else if (requestState === 'REJECTED') {
       return 'red';
     } else {
       return 'green';
     }
   }};
   color: ${({ requestState }) => {
-    if (requestState === 0) {
+    if (requestState === 'WAITING') {
       return 'black';
     } else {
       return 'white';

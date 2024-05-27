@@ -23,6 +23,7 @@ const MainPage: React.FC = () => {
     staleTime: 1000 * 60 * 10, // 10분
   });
   const sectionsRef = useRef<HTMLElement[]>([]);
+  // 이거 처리해둬야 됨
   const filteredMainData = data?.data.filter((i) => i.projectType === 'main');
   const filteredTopData = data?.data.filter((i) => i.projectType === 'top');
   const { height } = useWindowSize();
