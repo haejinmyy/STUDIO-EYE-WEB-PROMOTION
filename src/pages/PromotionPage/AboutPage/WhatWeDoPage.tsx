@@ -63,7 +63,7 @@ const WhatWeDoPage = () => {
               <Circle />
             </WhatWeDoInput>
             <WhatWeDoTitleInput leftInput={index % 2 !== 0}>
-              {companyDetailDataTitle[index].length >= 10 ? `WHAT WE DO ${index + 1}` : companyDetailDataTitle[index]}
+              {companyDetailDataTitle[index].length >= 20 ? `WHAT WE DO ${index + 1}` : companyDetailDataTitle[index]}
             </WhatWeDoTitleInput>
             <WhatWeDoContentInput leftInput={index % 2 !== 0}>{info}</WhatWeDoContentInput>
           </WhatWeDo>
@@ -134,10 +134,10 @@ const WhatWeDoInput = styled.div<IWhatWeDoInputProps>`
 `;
 const WhatWeDoTitleInput = styled.div<IWhatWeDoInputProps>`
   margin-bottom: 30px;
-  display: flex;
   font-family: 'pretendard-semibold';
-  font-size: 70px;
-  justify-content: ${({ leftInput }) => (leftInput ? 'flex-start' : 'flex-end')};
+  font-size: 60px;
+  text-align: ${({ leftInput }) => (leftInput ? 'left' : 'right')};
+  word-wrap: break-word;
 `;
 const WhatWeDoContentInput = styled.div<IWhatWeDoInputProps>`
   margin-bottom: 8px;
