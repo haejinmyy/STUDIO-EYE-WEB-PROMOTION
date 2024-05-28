@@ -26,6 +26,16 @@ export const getFAQData = async () => {
   }
 };
 
+export const getFAQPaginateData = async (page: number, perPage: number) => {
+  try {
+    const response = await axios.get(`${PROMOTION_BASIC_PATH}/api/faq/page?page=${page}&size=${perPage}`);
+    return response.data;
+  } catch (error) {
+    console.log('[❌ Error fetching all artworks]', error);
+    throw error;
+  }
+};
+
 export const getFAQDetailData = async (id: number) => {
   try {
     const response = await axios.get(`${PROMOTION_BASIC_PATH}/api/faq/${id}`);
