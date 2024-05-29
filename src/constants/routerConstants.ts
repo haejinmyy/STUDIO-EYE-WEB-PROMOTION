@@ -1,5 +1,3 @@
-// 추후에 진짜 PA, PP로 반영하여 추가
-
 export const PA_ROUTES = {
   HOME: '/promotion-admin/home',
   REQUEST: '/promotion-admin/request',

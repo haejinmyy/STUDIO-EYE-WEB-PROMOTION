@@ -30,6 +30,7 @@ interface IFormData {
 }
 type ICompanyBasic = {
   address: string;
+  addressEnglish: string;
   phone: string;
   fax: string;
 };
@@ -49,6 +50,7 @@ const ContactUsPage = () => {
   });
   const [companyBasicData, setCompanyBasicData] = useState<ICompanyBasic>({
     address: '',
+    addressEnglish: '',
     phone: '',
     fax: '',
   });
@@ -56,7 +58,17 @@ const ContactUsPage = () => {
     const fetchData = async () => {
       try {
         const data = await getCompanyBasicData();
-        setCompanyBasicData(data);
+        console.log(data);
+        if (data !== null) {
+          setCompanyBasicData(data);
+        } else {
+          setCompanyBasicData({
+            address: '',
+            addressEnglish: '',
+            phone: '',
+            fax: '',
+          });
+        }
       } catch (error) {
         console.error('Error fetching company data: ', error);
       }
@@ -251,10 +263,18 @@ const ContactUsPage = () => {
       });
   };
 
+  const notValidAddress = (address: string | undefined | null) => {
+    return !address || address.length > 80;
+  };
+
+  const notValidString = (info: string | undefined | null) => {
+    return !info || info.length > 18;
+  };
+
   return (
     <Container ref={containerRef}>
       <IntroSection>
-        <div>
+        <div style={{ width: '40vw' }}>
           <IntroTitleWrapper>
             <IntroTitleCONTACT>CONTACT</IntroTitleCONTACT>
             <IntroTitleUS>US</IntroTitleUS>
@@ -265,18 +285,36 @@ const ContactUsPage = () => {
           <IntroAboutWrapper>
             <div>
               <IntroAdress>Address</IntroAdress>
-              <IntroAdress style={{ color: '#FFFFFF' }}>{companyBasicData.address}</IntroAdress>
-              <IntroAdress style={{ color: '#FFFFFF' }}>8F, 162, Gwangnaru-ro, Seongdong-gu, Seoul, Korea</IntroAdress>
+              {notValidAddress(companyBasicData.address) ? (
+                <IntroAdress style={{ color: '#FFFFFF' }}>서울시 성동구 광나루로 162 BS성수타워 5층</IntroAdress>
+              ) : (
+                <IntroAdress style={{ color: '#FFFFFF' }}>{companyBasicData.address}</IntroAdress>
+              )}
+              {notValidAddress(companyBasicData.addressEnglish) ? (
+                <IntroAdress style={{ color: '#FFFFFF' }}>
+                  5F, 162, Gwangnaru-ro, Seongdong-gu, Seoul, Korea
+                </IntroAdress>
+              ) : (
+                <IntroAdress style={{ color: '#FFFFFF' }}>{companyBasicData.addressEnglish}</IntroAdress>
+              )}
             </div>
           </IntroAboutWrapper>
           <IntroNumberWrapper>
             <div>
               <IntroNumber>tel</IntroNumber>
-              <IntroNumber style={{ color: '#FFFFFF' }}>{companyBasicData.phone}</IntroNumber>
+              {notValidString(companyBasicData.phone) ? (
+                <IntroNumber style={{ color: '#FFFFFF' }}>02-2038-2663</IntroNumber>
+              ) : (
+                <IntroNumber style={{ color: '#FFFFFF' }}>{companyBasicData.phone}</IntroNumber>
+              )}
             </div>
-            <div style={{ marginLeft: '200px' }}>
+            <div>
               <IntroNumber>fax</IntroNumber>
-              <IntroNumber style={{ color: '#FFFFFF' }}>{companyBasicData.fax}</IntroNumber>
+              {notValidString(companyBasicData.fax) ? (
+                <IntroNumber style={{ color: '#FFFFFF' }}>070-7549-2443</IntroNumber>
+              ) : (
+                <IntroNumber style={{ color: '#FFFFFF' }}>{companyBasicData.fax}</IntroNumber>
+              )}
             </div>
           </IntroNumberWrapper>
         </div>
@@ -489,6 +527,7 @@ const BlurryCircle = styled.div`
 const IntroTitleWrapper = styled.div`
   display: flex;
   flex-directrion: 'row';
+  justify-content: center;
 `;
 const IntroTitleCONTACT = styled.div`
   font-family: 'Pretendard-Bold';
@@ -525,21 +564,25 @@ const IntroAdress = styled.div`
   font-size: 20px;
   color: #8a8a8a;
   text-align: left;
+  max-width: 40vw;
+  word-wrap: break-word;
 `;
 const IntroNumberWrapper = styled.div`
   margin-top: 40px;
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   width: 100%;
 `;
 const IntroNumber = styled.div`
-  margin-bottom: 20px;
   font-family: 'Pretendard-Medium';
   font-size: 20px;
   color: #8a8a8a;
   text-align: left;
+  padding: 10px;
+  max-width: 20vw;
+  word-wrap: break-word;
 `;
 const RequestSection = styled.div`
   height: 100vh;

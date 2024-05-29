@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
-import { getCompanyDetailData } from '../../../apis/PromotionAdmin/dataEdit';
 
 interface IWhatWeDoProps {
   isHighlighted: boolean;
@@ -12,15 +11,17 @@ interface IWhatWeDoInputProps {
 }
 
 const WhatWeDoPage = () => {
+  const [companyDetailDataTitle, setCompanyDetailDataTitle] = useState<string[]>([]);
   const [companyDetailData, setCompanyDetailData] = useState<string[]>([]);
 
   useEffect(() => {
-    // 데이터 수신
     axios
       .get('http://3.36.95.109:8080/api/company/detail')
       .then((response) => {
         const responseData = response.data.data;
+        const dataKeys: string[] = Object.keys(responseData);
         const dataValues: string[] = Object.values(responseData);
+        setCompanyDetailDataTitle(dataKeys);
         setCompanyDetailData(dataValues);
       })
       .catch((error) => {
@@ -61,7 +62,9 @@ const WhatWeDoPage = () => {
             <WhatWeDoInput leftInput={index % 2 === 0}>
               <Circle />
             </WhatWeDoInput>
-            <WhatWeDoTitleInput leftInput={index % 2 !== 0}>{`WHATWEDO${index + 1}`}</WhatWeDoTitleInput>
+            <WhatWeDoTitleInput leftInput={index % 2 !== 0}>
+              {companyDetailDataTitle[index].length >= 20 ? `WHAT WE DO ${index + 1}` : companyDetailDataTitle[index]}
+            </WhatWeDoTitleInput>
             <WhatWeDoContentInput leftInput={index % 2 !== 0}>{info}</WhatWeDoContentInput>
           </WhatWeDo>
         ))}
@@ -131,21 +134,21 @@ const WhatWeDoInput = styled.div<IWhatWeDoInputProps>`
 `;
 const WhatWeDoTitleInput = styled.div<IWhatWeDoInputProps>`
   margin-bottom: 30px;
-  display: flex;
   font-family: 'pretendard-semibold';
-  font-size: 70px;
-  justify-content: ${({ leftInput }) => (leftInput ? 'flex-start' : 'flex-end')};
+  font-size: 60px;
+  text-align: ${({ leftInput }) => (leftInput ? 'left' : 'right')};
+  word-wrap: break-word;
 `;
 const WhatWeDoContentInput = styled.div<IWhatWeDoInputProps>`
   margin-bottom: 8px;
   font-family: 'pretendard-regular';
   font-size: 24px;
   text-align: ${({ leftInput }) => (leftInput ? 'left' : 'right')};
+  word-wrap: break-word;
 `;
 const Circle = styled.div`
   background-color: #ffa900;
   border-radius: 50%;
   width: 50px;
   height: 50px;
-  text-align: right;
 `;

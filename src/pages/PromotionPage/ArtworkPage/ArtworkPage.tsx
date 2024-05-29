@@ -4,7 +4,6 @@ import { useQuery } from 'react-query';
 import { getArtworkData } from '@/apis/PromotionPage/artwork';
 import styled from 'styled-components';
 import { useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { artwork_categories } from '@/components/PromotionPage/Artwork/Navigation';
 import ArtworkCard from '@/components/PromotionPage/Artwork/ArtworkCard';
 import NullException from '@/components/PromotionPage/Artwork/NullException';
@@ -15,10 +14,13 @@ function ArtworkPage() {
   const { data, isLoading, error } = useQuery<IArtworksData, Error>(['artwork', 'id'], getArtworkData);
   const category = artwork_categories.find((category) => category.key + '' === categoryId);
 
-  const postedData = data && data?.data.filter((artwork) => artwork.isPosted === true);
-  const filteredData =
-    postedData &&
-    postedData?.filter((artworks) => artworks.category.toLowerCase() === category?.label.toLocaleLowerCase());
+  // data가 유효한지 확인하여 postedData 계산
+  const postedData = data?.data?.filter((artwork) => artwork.isPosted === true) ?? [];
+
+  // postedData가 유효한지 확인하여 filteredData 계산
+  const filteredData = category
+    ? postedData.filter((artwork) => artwork.category.toLowerCase() === category.label.toLocaleLowerCase())
+    : [];
 
   function ScrollToTop() {
     useEffect(() => {

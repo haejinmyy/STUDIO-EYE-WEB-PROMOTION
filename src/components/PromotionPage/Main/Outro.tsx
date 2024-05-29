@@ -30,5 +30,5 @@ const Container = styled.div`
   padding: 20px 0;
   box-sizing: border-box;
   margin-top: 40px;
-  margin-bottom: 40px;
+  /* margin-bottom: 40px; */
 `;

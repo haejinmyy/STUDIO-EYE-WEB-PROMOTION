@@ -1,5 +1,5 @@
 import React from 'react';
-import ArtworkDetailComponent from '@/components/PromotionAdmin/Artwork/ArtworkDetail';
+import ArtworkDetailComponent from '@/components/PromotionAdmin/Artwork/ArtworkDefault/ArtworkDetail';
 
 const ArtworkDetail = () => {
   return (
