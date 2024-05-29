@@ -7,11 +7,16 @@ import { useState } from "react";
 import {DragDropContext,Draggable,Droppable} from 'react-beautiful-dnd'
 import { DResult,DragProvied,DropProvied } from "@/types/PromotionAdmin/react-beautiful-dnd-types";
 import { theme } from "@/styles/theme";
+import { authState } from "@/recoil/atoms";
+import { useRecoilValue } from "recoil";
 
 const ArtworkSequence=()=>{
     const { data, isLoading, error } = useQuery<ArtworkData[], Error>('artworks', getMainArtworks,);
-    const [realData,setRealData]=useState<ArtworkData[]>(data!!.filter(i=>i.projectType!=="top")
-    .sort((a:ArtworkData,b:ArtworkData)=>a.mainSequence-b.mainSequence));
+    const [realData,setRealData]=useState<ArtworkData[]>(data?data.filter(i=>i.projectType!=="top")
+    .sort((a:ArtworkData,b:ArtworkData)=>a.mainSequence-b.mainSequence):[]);
+
+    const auth = useRecoilValue(authState);
+
     if (isLoading) return <LoadingWrapper>Loading...</LoadingWrapper>;
     if (error) return <div>Error: {error.message}</div>;
 
@@ -39,8 +44,13 @@ const ArtworkSequence=()=>{
       })
     }
 
+    
+
     return(
         <div>
+          <button onClick={()=>{
+            console.log(auth)
+          }}>토큰 확인</button>
           <SendButton onClick={
             // sequenceReset
             handleSequence
