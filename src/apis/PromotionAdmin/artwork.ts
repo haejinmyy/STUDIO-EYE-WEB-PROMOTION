@@ -40,7 +40,7 @@ export const postArtwork = async (artworkData: ArtworkData) => {
       },
     };
     const response = await axios.post(`${PROMOTION_BASIC_PATH}/api/projects`, artworkData, config);
-    return response.data;
+    return response.data as ArtworkData;
   } catch (error) {
     console.error('[❌ Error creating artwork]', error);
     throw error;
