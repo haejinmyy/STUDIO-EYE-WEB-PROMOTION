@@ -87,27 +87,13 @@ const ArtworkList = React.forwardRef<HTMLElement, SectionProps>(
         backgroundPosition="center"
         onWheel={handleWheel}
       >
-        <MotionFlex
-          w="100%"
-          h="100%"
-          paddingLeft={20}
-          paddingTop={20}
-          color="white"
-          style={{ y: transformY }}
-          alignItems="start"
-          justifyContent="start"
-          ref={containerRef}
-          overflowX="auto"
-          overflowY="hidden"
-        >
-          <motion.div variants={cardInView}>
-            <TextWrapper>
-              <ClientWrapper>{data.client}</ClientWrapper>
-              <TitleWrapper>{data.title}</TitleWrapper>
-              <OverviewWrapper>{data.overview}</OverviewWrapper>
-            </TextWrapper>
-          </motion.div>
-        </MotionFlex>
+        <motion.div variants={cardInView}>
+          <TextWrapper>
+            <ClientWrapper>{data.client}</ClientWrapper>
+            <TitleWrapper>{data.title}</TitleWrapper>
+            <OverviewWrapper>{data.overview}</OverviewWrapper>
+          </TextWrapper>
+        </motion.div>
       </MotionBox>
     );
   }
@@ -116,7 +102,7 @@ const ArtworkList = React.forwardRef<HTMLElement, SectionProps>(
 export default ArtworkList;
 
 const TextWrapper = styled.div`
-  margin-top: 40px;
+  padding: 100px;
 `;
 
 const TitleWrapper = styled.div`
