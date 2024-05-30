@@ -1,4 +1,10 @@
 import { getPartnersData } from '@/apis/PromotionAdmin/dataEdit';
+import { ContentBlock } from '@/components/PromotionAdmin/DataEdit/Company/CompanyFormStyleComponents';
+import Button from '@/components/PromotionAdmin/DataEdit/StyleComponents/Button';
+import FileButton from '@/components/PromotionAdmin/DataEdit/StyleComponents/FileButton';
+import SubTitle from '@/components/PromotionAdmin/DataEdit/StyleComponents/SubTitle';
+import Title from '@/components/PromotionAdmin/DataEdit/StyleComponents/Title';
+import ToggleSwitch from '@/components/PromotionAdmin/DataEdit/StyleComponents/ToggleSwitch';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import { IPartnersData } from '@/types/PromotionAdmin/dataEdit';
@@ -8,10 +14,13 @@ import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
 import { useMatch, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { validateUrl } from './PartnerWritePage';
+import { DATAEDIT_NOTICE_COMPONENTS } from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
 
 interface IFormData {
   is_main: boolean;
   link: string;
+  name: string;
 }
 
 function PartnerEditPage() {
@@ -23,10 +32,16 @@ function PartnerEditPage() {
     data?.find((p) => String(p.partnerInfo.id) === partnerEditMatch.params.partnerId);
   const [imgChange, setImgChange] = useState(false);
 
-  const { register, handleSubmit, reset } = useForm<IFormData>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<IFormData>({
     defaultValues: {
       is_main: clickedPartner ? clickedPartner.partnerInfo.is_main : true,
       link: clickedPartner ? clickedPartner.partnerInfo.link : '',
+      name: clickedPartner ? clickedPartner.partnerInfo.name : '',
     },
   });
 
@@ -35,20 +50,26 @@ function PartnerEditPage() {
       id: clickedPartner && clickedPartner.partnerInfo.id,
       is_main: clickedPartner && clickedPartner.partnerInfo.is_main,
       link: clickedPartner && clickedPartner.partnerInfo.link,
+      name: clickedPartner && clickedPartner.partnerInfo.name,
     },
     logoImg: clickedPartner ? clickedPartner.logoImg : '',
   });
+
+  const [isVisibility, setIsVisibility] = useState(putData.partnerInfo.is_main);
 
   useEffect(() => {
     if (clickedPartner) {
       reset({
         link: clickedPartner.partnerInfo.link,
+        name: clickedPartner.partnerInfo.name,
+        is_main: clickedPartner.partnerInfo.is_main,
       });
       setPutData({
         partnerInfo: {
           id: clickedPartner.partnerInfo.id,
           is_main: clickedPartner.partnerInfo.is_main,
           link: clickedPartner.partnerInfo.link,
+          name: clickedPartner.partnerInfo.name,
         },
         logoImg: clickedPartner.logoImg,
       });
@@ -68,8 +89,9 @@ function PartnerEditPage() {
         [
           JSON.stringify({
             id: putData.partnerInfo.id,
-            is_main: data.is_main,
+            is_main: isVisibility,
             link: data.link,
+            name: data.name,
           }),
         ],
         { type: 'application/json' },
@@ -78,7 +100,6 @@ function PartnerEditPage() {
 
     if (window.confirm('수정하시겠습니까?')) {
       if (imgChange) {
-        // 이미지를 변경한 경우
         const file = await urlToFile(putData.logoImg, 'Logo.png');
         if (file) {
           formData.append('logoImg', file);
@@ -95,7 +116,6 @@ function PartnerEditPage() {
           })
           .catch((error) => console.error('Error updating partner:', error));
       } else {
-        // 이미지를 변경하지 않은 경우
         axios
           .put(`${PROMOTION_BASIC_PATH}/api/partners/modify`, formData)
           .then((response) => {
@@ -150,126 +170,156 @@ function PartnerEditPage() {
   if (isLoading) return <>is Loading..</>;
   if (error) return <>{error.message}</>;
   return (
-    <Wrapper>
+    <ContentBlock>
+      <TitleWrapper>
+        <Title description='Partner 수정' />
+      </TitleWrapper>
       {clickedPartner && (
-        <form onSubmit={handleSubmit(onValid)}>
-          <VisibilityWrapper>
-            공개여부
-            <input
-              type='checkbox'
-              defaultChecked={clickedPartner ? clickedPartner.partnerInfo.is_main : true}
-              {...register('is_main')}
+        <FormContainer onSubmit={handleSubmit(onValid)}>
+          <LeftContainer>
+            <LogoContainer>
+              <SubTitle description='Logo' />
+              {DATAEDIT_NOTICE_COMPONENTS.IMAGE.LOGO}
+              {DATAEDIT_NOTICE_COMPONENTS.COLOR.LOGO}
+
+              <ImgBox>{putData.logoImg && <img src={putData.logoImg} />}</ImgBox>
+              <FileButton description='Logo Upload' id='file' width={230} onChange={handleImageChange} />
+            </LogoContainer>
+          </LeftContainer>
+
+          <RightContainer>
+            <SubTitle description='Link' />
+            <InputWrapper>
+              <input
+                {...register('link', {
+                  required: '링크를 입력해주세요',
+                  validate: validateUrl,
+                })}
+              />
+              {errors.link && <p>{errors.link.message}</p>}
+
+              <SubTitle description='Name' />
+              <input
+                {...register('name', {
+                  required: '이름을 입력해주세요',
+                })}
+              />
+              {errors.name && <p>{errors.name.message}</p>}
+            </InputWrapper>
+            <VisibilityWrapper>
+              공개여부
+              <input type='checkbox' id='switch' defaultChecked {...register('is_main')} />
+              <ToggleSwitch
+                option1='공개'
+                option2='비공개'
+                selected={clickedPartner.partnerInfo.is_main}
+                onToggle={setIsVisibility}
+              />
+            </VisibilityWrapper>
+          </RightContainer>
+
+          <ButtonWrapper>
+            <Button description='저장하기' width={100} />
+            <Button
+              onClick={() => {
+                handleDelete(clickedPartner.partnerInfo.id);
+              }}
+              description='삭제하기'
+              width={100}
             />
-          </VisibilityWrapper>
-
-          <Content>
-            <Title>Link</Title>
-            <input
-              {...register('link', {
-                required: '링크를 입력해주세요',
-              })}
-              placeholder='링크를 입력해주세요'
-            />
-          </Content>
-
-          <Content>
-            <Title>Logo</Title>
-            {/* <input type='file' accept='image/*' onChange={handleImageChange} />
-            <ImgWrapper>
-              <img src={putData.logoImg} />
-            </ImgWrapper> */}
-
-            <LogoWrapper>
-              <img src={putData.logoImg} />
-              <label htmlFor='file'>
-                <div>Logo Upload</div>
-                <input id='file' type='file' accept='image/*' onChange={handleImageChange} />
-              </label>
-            </LogoWrapper>
-          </Content>
-          <button>Submit</button>
-          <button
-            onClick={() => {
-              handleDelete(clickedPartner.partnerInfo.id);
-            }}
-          >
-            Delete
-          </button>
-        </form>
+          </ButtonWrapper>
+        </FormContainer>
       )}
-    </Wrapper>
+    </ContentBlock>
   );
 }
 
 export default PartnerEditPage;
 
-const Title = styled.div`
-  display: flex;
-  align-items: center;
-  height: 4rem;
-  font-size: 1.3rem;
+const RightContainer = styled.div`
+  margin-left: 20px;
 `;
-
-const Content = styled.div`
+const LeftContainer = styled.div``;
+const LogoContainer = styled.div`
   display: flex;
-`;
-
-const Wrapper = styled.div`
-  position: fixed;
-  left: 50vw;
-  margin-left: 100px;
-  border-radius: 1rem;
-  background-color: ${(props) => props.theme.color.white.bold};
-  width: 40vw;
-  height: 70vh;
-  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
-`;
-
-const ImgWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  background-color: ${(props) => props.theme.color.black.bold};
-  margin-bottom: 20px;
-  border-radius: 10px;
-  width: 100%;
-
-  img {
-    width: 100px;
-  }
+  flex-direction: column;
+  height: 200px;
+  justify-content: space-between;
 `;
 
 const VisibilityWrapper = styled.div`
-  font-size: 12px;
+  #switch {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+
+  .switch_label {
+    display: flex;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  input {
+    margin-top: 20px;
+  }
 `;
 
-const LogoWrapper = styled.div`
+const TitleWrapper = styled.div`
+  margin-top: 20px;
+  margin-bottom: 30px;
+`;
+
+const ImgBox = styled.div`
+  background-color: ${(props) => props.theme.color.background};
+  width: 230px;
+  border-radius: 4px;
+  height: 120px;
   display: flex;
-  flex-direction: column;
-  div {
-    cursor: pointer;
-    border: none;
-    background-color: ${(props) => props.theme.color.white.bold};
-    box-shadow: 1px 1px 4px 0.1px #c6c6c6;
-    padding: 0.4rem 1.4rem;
-    border-radius: 0.2rem;
-    transition: 0.2s;
-    width: 130px;
-    display: flex;
-    justify-content: center;
-    font-weight: 700;
-    margin-right: 20px;
-
-    &:hover {
-      background-color: ${(props) => props.theme.color.yellow.light};
-    }
-  }
-
-  input {
-    display: none;
-  }
+  justify-content: center;
+  align-items: center;
 
   img {
-    width: 200px;
-    margin-bottom: 10px;
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+  }
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  bottom: -70px;
+  right: -10px;
+  width: 210px;
+`;
+const FormContainer = styled.form`
+  display: flex;
+  position: relative;
+  width: 100%;
+`;
+
+const InputWrapper = styled.div`
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  input {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    width: 100%;
+    outline: none;
+    font-family: ${(props) => props.theme.font.regular};
+    font-size: 14px;
+    height: 40px;
+    border: none;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  }
+  input:focus {
+    transition: 0.2s;
+    border-bottom: 3px solid ${(props) => props.theme.color.symbol};
+  }
+
+  p {
+    color: ${(props) => props.theme.color.symbol};
   }
 `;
