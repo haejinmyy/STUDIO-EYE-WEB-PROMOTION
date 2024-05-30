@@ -12,15 +12,15 @@ const ArtworkHeader = ({ initialCheck, control }: { initialCheck: number; contro
   return (
     <HeaderWrapper>
       <div className='tabs'>
-        <input type='radio' id='radio1' name='tabs' onClick={() => control(0)} checked={isChecked == 0} />
+        <input type='radio' id='radio1' name='tabs' onClick={() => control(0)} defaultChecked={isChecked === 0} />
         <label className='tab' htmlFor='radio1'>
           아트워크 관리
         </label>
-        <input type='radio' id='radio2' name='tabs' onClick={() => control(1)} checked={isChecked == 1} />
+        <input type='radio' id='radio2' name='tabs' onClick={() => control(1)} defaultChecked={isChecked === 1} />
         <label className='tab' htmlFor='radio2'>
           메인 순서 관리
         </label>
-        <input type='radio' id='radio3' name='tabs' onClick={() => control(2)} checked={isChecked == 2} />
+        <input type='radio' id='radio3' name='tabs' onClick={() => control(2)} defaultChecked={isChecked === 2} />
         <label className='tab' htmlFor='radio3'>
           전체 순서 관리
         </label>

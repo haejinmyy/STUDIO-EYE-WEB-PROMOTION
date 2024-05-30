@@ -1,9 +1,6 @@
-import React, { ChangeEvent, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { ReactComponent as IsPosted } from '@/assets/images/isPosted.svg';
-import { ReactComponent as IsNotPosted } from '@/assets/images/isNotPosted.svg';
 import { ArtworkData } from '@/types/PromotionAdmin/artwork';
-import { theme } from '@/styles/theme';
 
 const ArtworkSequenceBox = (
     {type,artworkData,}
@@ -14,8 +11,7 @@ const ArtworkSequenceBox = (
 
   return (
     <Container>
-      <Sequence>{type=="main"?(artworkData.mainSequence===999?"-":artworkData.mainSequence)
-      :artworkData.sequence}</Sequence>
+      <Sequence>{type==="top"?"-":(type==="main"?artworkData.mainSequence:artworkData.sequence)}</Sequence>
       {artworkData.mainImg ? <img src={artworkData.mainImg} alt='mainImg' /> : <NoMainImageWrapper>No Image</NoMainImageWrapper>}
       <DescriptionWrapper>
         <RightAlignWrapper>
@@ -23,7 +19,7 @@ const ArtworkSequenceBox = (
             <TypeWrapper projectType={artworkData.projectType}>{artworkData.projectType}</TypeWrapper>
         </RightAlignWrapper>
         <Wrapper>
-          <div>
+          <div style={{width:"80%",whiteSpace: "nowrap",textOverflow: "ellipsis",overflow : "hidden"}}>
             <h2>{artworkData.client}</h2>
             <h1>{artworkData.name}</h1>
           </div>
@@ -49,15 +45,15 @@ const Container = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  min-width: 350px;
+  min-width: 625px;
   border-radius: 10px;
   background-color: #afafaf13;
   padding: 20 20 20 0px;
   box-sizing: border-box;
 
+  white-space: nowrap;
   text-overflow: ellipsis;
-  white-space:nowrap;
-  overflow : hideen;
+  overflow : hidden;
 
   &:hover {
     cursor: pointer;
@@ -76,12 +72,14 @@ const Container = styled.div`
     color: black;
     margin-top: 3px;
     transition: 0.3s;
+    height:1.3rem;
   }
   h2 {
     font-family: 'pretendard-medium';
     font-size: 15px;
     color: #707070;
     transition: 0.3s;
+    height:1rem;
   }
   h3 {
     font-family: 'pretendard-medium';
@@ -99,9 +97,18 @@ const Sequence=styled.h2`
 `;
 
 const Wrapper = styled.div`
+  width:90%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow : hidden;
+
+  h1,h2{
+    white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow : hidden;
+  }
 `;
 
 const NoMainImageWrapper = styled.div`
@@ -117,23 +124,14 @@ const DescriptionWrapper = styled.div`
   flex-direction: row;
   justify-content: flex-start;
   width: 100%;
-  
-  margin-left: 15px;
-  transition: 1s;
-`;
-const EditWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-item:top;
-  justify-content: flex-end;
   margin-left: 15px;
   transition: 1s;
 `;
 const RightAlignWrapper = styled.div`
-//   text-align: right;
+  text-align: left;
 display:flex;
 flex-direction: column;
-width: 130px;
+min-width: 130px;
 align-item: center;
 `;
 
@@ -147,36 +145,4 @@ const TypeWrapper = styled.div<{ projectType: 'others' | 'top' | 'main' }>`
   font-family: 'pretendard-medium';
   font-size: 13px;
   color: ${({ projectType }) => (projectType === 'main' || projectType === 'top' ? 'white' : 'black')};
-`;
-
-const Button=styled.button`
-  width: 65px;
-  height: 30px;
-  text-color:${theme.color.black.light};
-  background-color:${theme.color.black.pale};
-  border:0;
-  border-radius: 10px;
-  margin-left:auto;
-  margin-right:10px;
-  transition: 0.5s;
-
-  &:hover{
-    opacity: 0.7;
-    transition: 0.2s;
-    cursor:pointer;
-  }
-`;
-
-const SequenceInput=styled.input`
-  text-align:center;
-  transition:0.3s;
-  width:60px;
-  height:20px;
-  margin: 5px 10px 5px 0;
-  border-radius: 10px;
-  border: solid 1px ${theme.color.black.bold};
-
-  &::placeholder{
-    font-family: 'pretendard-light';
-  }
 `;
