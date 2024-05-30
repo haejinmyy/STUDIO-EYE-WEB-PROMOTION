@@ -1,0 +1,156 @@
+import React, { useEffect, useState } from 'react';
+import { EditorState, convertToRaw, ContentState } from 'draft-js';
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import htmlToDraft from 'html-to-draftjs';
+import { IEditorData } from '@/types/PromotionAdmin/faq';
+import TextColorEditor from '../../TextColorEditor';
+import { useQuery } from 'react-query';
+import { getCompanyData } from '@/apis/PromotionAdmin/dataEdit';
+import { ICompanyData } from '@/types/PromotionAdmin/dataEdit';
+
+import { Wrapper, ContentBlock, InputWrapper, InputTitle } from '../CompanyFormStyleComponents';
+import axios from 'axios';
+import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
+import draftToHtml from 'draftjs-to-html';
+import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
+import Button from '../../StyleComponents/Button';
+
+interface IIntrodutionProps {
+  setEditIntroduction: (editMode: boolean) => void;
+}
+
+const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
+  const { data, isLoading, error } = useQuery<ICompanyData, Error>(['company', 'id'], getCompanyData);
+  const [putData, setPutData] = useState({
+    mainOverview: data?.mainOverview,
+    commitment: data?.commitment,
+    introduction: data?.introduction,
+  });
+
+  useEffect(() => {
+    if (data) {
+      setPutData({
+        mainOverview: data.mainOverview,
+        commitment: data.commitment,
+        introduction: data.introduction,
+      });
+
+      setMainOverviewState(() => {
+        const blocksFromHtml = htmlToDraft(data.mainOverview);
+        if (blocksFromHtml) {
+          const { contentBlocks, entityMap } = blocksFromHtml;
+          const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
+          return EditorState.createWithContent(contentState);
+        } else {
+          return EditorState.createEmpty();
+        }
+      });
+
+      setCommitmentState(() => {
+        const blocksFromHtml = htmlToDraft(data.commitment);
+        if (blocksFromHtml) {
+          const { contentBlocks, entityMap } = blocksFromHtml;
+          const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
+          return EditorState.createWithContent(contentState);
+        } else {
+          return EditorState.createEmpty();
+        }
+      });
+
+      setIntroductionState(() => {
+        const blocksFromHtml = htmlToDraft(data.introduction);
+        if (blocksFromHtml) {
+          const { contentBlocks, entityMap } = blocksFromHtml;
+          const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
+          return EditorState.createWithContent(contentState);
+        } else {
+          return EditorState.createEmpty();
+        }
+      });
+    }
+  }, [data]);
+
+  const [mainOverviewState, setMainOverviewState] = useState(EditorState.createEmpty());
+  const [commitmentState, setCommitmentState] = useState(EditorState.createEmpty());
+  const [introductionState, setIntroductionState] = useState(EditorState.createEmpty());
+  const [blocks, setBlocks] = useState<IEditorData[]>([]);
+  const updateMainOverview = async (state: any) => {
+    await setMainOverviewState(state);
+    setBlocks(convertToRaw(mainOverviewState.getCurrentContent()).blocks);
+  };
+  const updateCommitment = async (state: any) => {
+    await setCommitmentState(state);
+    setBlocks(convertToRaw(commitmentState.getCurrentContent()).blocks);
+  };
+  const updateIntroduction = async (state: any) => {
+    await setIntroductionState(state);
+    setBlocks(convertToRaw(introductionState.getCurrentContent()).blocks);
+  };
+
+  const checkIsEmpty = (editorState: EditorState, attribute: string) => {
+    const isEmpty = !editorState.getCurrentContent().hasText();
+    if (isEmpty) {
+      alert(`${attribute}을(를) 작성해주세요.`);
+      return true;
+    }
+    return false;
+  };
+
+  const handleSaveClick = async () => {
+    const updateData = {
+      mainOverview: draftToHtml(convertToRaw(mainOverviewState.getCurrentContent())),
+      commitment: draftToHtml(convertToRaw(commitmentState.getCurrentContent())),
+      introduction: draftToHtml(convertToRaw(introductionState.getCurrentContent())),
+    };
+
+    const isEmpty =
+      checkIsEmpty(mainOverviewState, 'Main Overview') ||
+      checkIsEmpty(commitmentState, 'Commitment') ||
+      checkIsEmpty(introductionState, 'Introduction');
+
+    if (!isEmpty && window.confirm('수정하시겠습니까?')) {
+      axios
+        .put(`${PROMOTION_BASIC_PATH}/api/company/introduction`, updateData)
+        .then((response) => {
+          console.log('Company Introduction updated:', response);
+          alert('수정되었습니다.');
+          setEditIntroduction(false);
+        })
+        .catch((error) => console.error('Error updating company:', error));
+    }
+  };
+
+  if (isLoading) return <>is Loading...</>;
+  if (error) return <>{error.message}</>;
+  return (
+    <Wrapper>
+      <ContentBlock>
+        {DATAEDIT_TITLES_COMPONENTS.Introduction}
+
+        <InputWrapper>
+          <InputTitle>Main Overview</InputTitle>
+          <TextColorEditor
+            editorState={mainOverviewState}
+            onEditorStateChange={updateMainOverview}
+            attribute='Main Overview'
+          />
+          <InputTitle>Commitment</InputTitle>
+          <TextColorEditor
+            editorState={commitmentState}
+            onEditorStateChange={updateCommitment}
+            attribute='Commitment'
+          />
+          <InputTitle>Introduction</InputTitle>
+          <TextColorEditor
+            editorState={introductionState}
+            onEditorStateChange={updateIntroduction}
+            attribute='Introduction'
+          />
+        </InputWrapper>
+        <Button description='저장하기' onClick={handleSaveClick} />
+      </ContentBlock>
+    </Wrapper>
+  );
+};
+
+export default Introduction;

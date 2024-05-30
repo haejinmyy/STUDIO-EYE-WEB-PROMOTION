@@ -12,19 +12,14 @@ import TextColorEditor from '../TextColorEditor';
 
 import { ReactComponent as DeleteIcon } from '@/assets/images/PA/minusIcon.svg';
 import { ReactComponent as AddedIcon } from '@/assets/images/PA/plusIcon.svg';
-import HoverInfo from './HoverInfo';
-import { COMPANY_COLUMNS } from './CompanyInfo';
 import {
   Wrapper,
   ContentBlock,
-  TitleWrapper,
   InputWrapper,
   InputImgWrapper,
   InputTitle,
   ImgBox,
-  Button,
   LogoWrapper,
-  SaveButton,
   DetailItem,
   DetailTitleInputWrapper,
   Form,
@@ -32,11 +27,16 @@ import {
   LeftContentWrapper,
   RightContentWrapper,
 } from './CompanyFormStyleComponents';
+import Button from '../StyleComponents/Button';
+import FileButton from '../StyleComponents/FileButton';
+import styled from 'styled-components';
+import { DATAEDIT_NOTICE_COMPONENTS, DATAEDIT_TITLES_COMPONENTS } from './StyleComponents';
 
 interface IFormData {
   mainOverview?: string;
   commitment?: string;
   address?: string;
+  addressEnglish?: string;
   fax?: string;
   introduction?: string;
   phone?: string;
@@ -48,6 +48,7 @@ const InputForm = () => {
   const [putData, setPutData] = useState({
     request: {
       address: '',
+      addressEnglish: '',
       phone: '',
       fax: '',
       mainOverview: '',
@@ -130,6 +131,15 @@ const InputForm = () => {
     handleSaveClick(data);
   };
 
+  const checkIsEmpty = (editorState: EditorState, attribute: string) => {
+    const isEmpty = !editorState.getCurrentContent().hasText();
+    if (isEmpty) {
+      alert(`${attribute}을(를) 작성해주세요.`);
+      return true;
+    }
+    return false;
+  };
+
   const handleSaveClick = async (data: IFormData) => {
     const formData = new FormData();
 
@@ -147,6 +157,7 @@ const InputForm = () => {
         [
           JSON.stringify({
             address: data.address,
+            addressEnglish: data.addressEnglish,
             phone: data.phone,
             fax: data.fax,
             mainOverview: draftToHtml(convertToRaw(mainOverviewState.getCurrentContent())),
@@ -159,13 +170,18 @@ const InputForm = () => {
       ),
     );
 
-    // 이미지를 변경했는지 확인하고 추가
+    const isEmpty =
+      checkIsEmpty(mainOverviewState, 'Main Overview') ||
+      checkIsEmpty(commitmentState, 'Commitment') ||
+      checkIsEmpty(introductionState, 'Introduction');
+
+    // 이미지 추가
     const logoFile = await urlToFile(putData.logoImageUrl, 'Logo.png');
     formData.append('logoImageUrl', logoFile);
     const sloganFile = await urlToFile(putData.sloganImageUrl, 'Slogan.png');
     formData.append('sloganImageUrl', sloganFile);
 
-    if (window.confirm('등록하시겠습니까?')) {
+    if (!isEmpty && window.confirm('등록하시겠습니까?')) {
       axios
         .post(`${PROMOTION_BASIC_PATH}/api/company/information`, formData)
         .then((response) => {
@@ -224,13 +240,23 @@ const InputForm = () => {
           <LeftContentWrapper>
             {/* Basic */}
             <ContentBlock>
-              <HoverInfo title={COMPANY_COLUMNS.Basic.title} description={COMPANY_COLUMNS.Basic.description} />
+              {DATAEDIT_TITLES_COMPONENTS.Basic}
               <InputWrapper>
                 <InputTitle>
                   <p>Address</p>
                 </InputTitle>
                 <input
                   {...register('address', {
+                    required: '주소를 입력해주세요',
+                  })}
+                  placeholder='주소를 입력해주세요'
+                />
+
+                <InputTitle>
+                  <p>English Address</p>
+                </InputTitle>
+                <input
+                  {...register('addressEnglish', {
                     required: '주소를 입력해주세요',
                   })}
                   placeholder='주소를 입력해주세요'
@@ -264,26 +290,24 @@ const InputForm = () => {
             <ContentBlock>
               <InputImgWrapper>
                 <Box>
-                  <HoverInfo title={COMPANY_COLUMNS.Logo.title} description={COMPANY_COLUMNS.Logo.description} />
+                  {DATAEDIT_TITLES_COMPONENTS.Logo}
+                  {DATAEDIT_NOTICE_COMPONENTS.IMAGE.LOGO}
+                  {DATAEDIT_NOTICE_COMPONENTS.COLOR.LOGO}
 
                   <LogoWrapper>
-                    <label htmlFor='logoFile'>
-                      <Button>Logo Upload</Button>
-                      <input id='logoFile' type='file' accept='image/*' onChange={handleLogoImageChange} />
-                    </label>
+                    <FileButton id='logoFile' description='Logo Upload' onChange={handleLogoImageChange} />
                     <ImgBox>
                       <img src={putData.logoImageUrl} />
                     </ImgBox>
                   </LogoWrapper>
                 </Box>
                 <Box>
-                  <HoverInfo title={COMPANY_COLUMNS.Slogan.title} description={COMPANY_COLUMNS.Slogan.description} />
+                  {DATAEDIT_TITLES_COMPONENTS.Slogan}
+                  {DATAEDIT_NOTICE_COMPONENTS.IMAGE.SLOGAN}
+                  {DATAEDIT_NOTICE_COMPONENTS.COLOR.SLOGAN}
 
                   <LogoWrapper>
-                    <label htmlFor='sloganFile'>
-                      <Button>Slogan Upload</Button>
-                      <input id='sloganFile' type='file' accept='image/*' onChange={handleSloganImageChange} />
-                    </label>
+                    <FileButton id='sloganFile' description='Slogan Upload' onChange={handleSloganImageChange} />
                     <ImgBox>
                       <img src={putData.sloganImageUrl} />
                     </ImgBox>
@@ -296,31 +320,40 @@ const InputForm = () => {
           <RightContentWrapper>
             {/* Introduntion */}
             <ContentBlock>
-              <HoverInfo
-                title={COMPANY_COLUMNS.Introduction.title}
-                description={COMPANY_COLUMNS.Introduction.description}
-              />
-
+              {DATAEDIT_TITLES_COMPONENTS.Introduction}
               <InputWrapper>
                 <InputTitle>Main Overview</InputTitle>
-                <TextColorEditor editorState={mainOverviewState} onEditorStateChange={updateMainOverview} />
+                <TextColorEditor
+                  editorState={mainOverviewState}
+                  onEditorStateChange={updateMainOverview}
+                  attribute='Main Overview'
+                />
                 <InputTitle>Commitment</InputTitle>
-                <TextColorEditor editorState={commitmentState} onEditorStateChange={updateCommitment} />
+                <TextColorEditor
+                  editorState={commitmentState}
+                  onEditorStateChange={updateCommitment}
+                  attribute='Commitment'
+                />
                 <InputTitle>Introduction</InputTitle>
-                <TextColorEditor editorState={introductionState} onEditorStateChange={updateIntroduction} />
+                <TextColorEditor
+                  editorState={introductionState}
+                  onEditorStateChange={updateIntroduction}
+                  attribute='Introduction'
+                />
               </InputWrapper>
             </ContentBlock>
 
             {/* Detail */}
             <ContentBlock>
-              <TitleWrapper>
-                <HoverInfo title={COMPANY_COLUMNS.Detail.title} description={COMPANY_COLUMNS.Detail.description} />
-
-                <Button onClick={() => append({ key: '', value: '' })}>
-                  <AddedIcon width={14} height={14} />
-                  Add New Detail
-                </Button>
+              <TitleWrapper space_between={true}>
+                {DATAEDIT_TITLES_COMPONENTS.Detail}
+                <Button
+                  description='Add New Detail'
+                  svgComponent={<AddedIcon width={14} height={14} />}
+                  onClick={() => append({ key: '', value: '' })}
+                />
               </TitleWrapper>
+
               <InputWrapper>
                 <div>
                   {fields.map((field, index) => (
@@ -374,8 +407,8 @@ const InputForm = () => {
                 </div>
               </InputWrapper>
             </ContentBlock>
+            <Button description='등록하기' fontSize={14} width={100} />
           </RightContentWrapper>
-          <SaveButton>등록하기</SaveButton>
         </Form>
       </Wrapper>
     </>
@@ -383,3 +416,12 @@ const InputForm = () => {
 };
 
 export default InputForm;
+
+const TitleWrapper = styled.div<{ space_between?: boolean }>`
+  display: flex;
+  justify-content: ${(props) => (props.space_between ? 'space-between' : 'none')};
+
+  div {
+    display: flex;
+  }
+`;
