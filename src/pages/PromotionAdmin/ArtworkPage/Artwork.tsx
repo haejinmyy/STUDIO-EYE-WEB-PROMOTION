@@ -6,10 +6,10 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useQuery } from 'react-query';
 import { ArtworkData } from '@/types/PromotionAdmin/artwork';
-import { getMainArtworks } from '@/apis/PromotionAdmin/artwork';
+import { getAllArtworks } from '@/apis/PromotionAdmin/artwork';
 
 const Artwork = () => {
-  const {data,isLoading,error,refetch} = useQuery<ArtworkData[], Error>('mainArtworks', getMainArtworks);
+  const {data,isLoading,error,refetch} = useQuery<ArtworkData[], Error>('mainArtworks', getAllArtworks);
   const [isEditingSequence, setIsEditingSequence] = useState<number>(0);
 
   const handleEditingSequence = (isEditing: number) => {
