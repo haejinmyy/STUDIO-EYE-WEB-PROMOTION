@@ -11,7 +11,6 @@ type TooltipType = {
 
 const Tooltip = (props: TooltipType) => {
   const [isHovered, setIsHovered] = useState(false);
-  const descriptionLines = props.description.split('\n');
 
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
@@ -25,9 +24,7 @@ const Tooltip = (props: TooltipType) => {
         })}
       {isHovered && (
         <Description description={props.description} fontSize={props.fontSize}>
-          {descriptionLines.map((line, index) => (
-            <div key={index}>{line}</div>
-          ))}
+          {props.description}
         </Description>
       )}
     </TooltipStyle>
@@ -50,7 +47,9 @@ const Description = styled.div<TooltipType>`
   width: max-content;
   background-color: #f4f4f4;
   padding: 10px 20px;
+  white-space: pre-wrap;
   top: 30px;
+  line-height: 20px;
   font-size: ${(props) => (props.fontSize ? props.fontSize + 'px;' : '14px;')};
   font-family: ${(props) => props.theme.font.light};
 `;

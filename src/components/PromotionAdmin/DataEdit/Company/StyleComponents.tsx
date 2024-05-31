@@ -60,7 +60,7 @@ const DATAEDIT_COLUMNS = {
   Introduction: {
     title: 'Introduction',
     description:
-      'Main Overview: Main 화면에 반영됩니다. \n Commitment: Main 화면에 반영됩니다. \n Introduction: About 화면 반영됩니다. ',
+      'Main Overview: Main 화면에 반영됩니다. \nCommitment: Main 화면에 반영됩니다. \nIntroduction: About 화면 반영됩니다. ',
   },
 
   Partner: {

@@ -20,14 +20,14 @@ export interface IEditorData {
 }
 
 // src/types.ts
-export interface IContentItem {
+interface IContentItem {
   id: number;
   question: string;
   answer: string;
   visibility: boolean;
 }
 
-export interface IPageable {
+interface IPageable {
   pageNumber: number;
   pageSize: number;
   sort: any[];
@@ -36,7 +36,7 @@ export interface IPageable {
   unpaged: boolean;
 }
 
-export interface IPaginationData {
+export interface IFAQPaginationData {
   content: IContentItem[];
   pageable: IPageable;
   totalPages: number;
