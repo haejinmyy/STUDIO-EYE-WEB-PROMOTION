@@ -9,7 +9,7 @@ import { PA_ROUTES } from '@/constants/routerConstants';
 import { theme } from '@/styles/theme';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import Pagination from '@/components/Pagination/Pagination';
-import { IPaginationData } from '@/types/PromotionAdmin/faq';
+import { IFAQPaginationData } from '@/types/PromotionAdmin/faq';
 import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
 import { ReactComponent as AddedIcon } from '@/assets/images/PA/plusIcon.svg';
 import { ReactComponent as DeleteIcon } from '@/assets/images/PA/delete.svg';
@@ -18,7 +18,7 @@ function FAQManagePage() {
   const navigator = useNavigate();
   const [currentPage, setCurrentPage] = useState<number>(0);
   const size = 10;
-  const { data, isLoading, refetch, error } = useQuery<IPaginationData, Error>(['faq', currentPage, size], () =>
+  const { data, isLoading, refetch, error } = useQuery<IFAQPaginationData, Error>(['faq', currentPage, size], () =>
     getFAQPaginateData(currentPage, size),
   );
   const [editMode, setEditMode] = useState(false);

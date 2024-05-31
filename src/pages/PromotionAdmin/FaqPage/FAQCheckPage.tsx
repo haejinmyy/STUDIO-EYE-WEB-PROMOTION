@@ -87,7 +87,7 @@ const Answer = styled.div`
   img {
     max-width: 100%;
   }
-  height: 500px;
+  height: 33rem;
   overflow: scroll;
 `;
 
