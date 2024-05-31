@@ -7,7 +7,7 @@ const ArtworkHeader = ({ initialCheck, control }: { initialCheck: number; contro
   useEffect(() => {
     //초기값 변경될 때 상태 업데이트
     setIsChecked(initialCheck);
-  }, [initialCheck]);
+  }, []);
 
   return (
     <HeaderWrapper>

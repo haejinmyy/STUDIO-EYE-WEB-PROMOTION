@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { NavLink } from 'react-router-dom';
+import { dataUpdateState } from '@/recoil/atoms';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 type Props = {
   path: string;
@@ -8,9 +10,20 @@ type Props = {
   svgComponent: React.ReactNode;
 };
 
-const NavBtn = ({ path, pathName, svgComponent }: Props) => {
+const NavBtn = ({ path, pathName, svgComponent}: Props) => {
+  const isUpdate = useRecoilValue(dataUpdateState);
+  const setupdate = useSetRecoilState(dataUpdateState);
+
+  const updateHandler=(event:React.MouseEvent<HTMLAnchorElement, MouseEvent>)=>{
+    if (isUpdate&&!window.confirm("페이지를 떠나시겠습니까?")) {
+      event.preventDefault();
+    }
+    setupdate(false);
+  }
+
   return (
-    <LinkStyle to={path}>
+
+    <LinkStyle to={path} onClick={updateHandler}>
       <SvgContainer>{svgComponent}</SvgContainer>
       <Name>{pathName}</Name>
     </LinkStyle>
