@@ -3,43 +3,44 @@ import styled from 'styled-components';
 
 type ImageUploadProps = {
   type: 'main' | 'detail';
-  onChange: (newImage: string | string[]) => void;
+  onChange: (newImage: File | File[]) => void;
 };
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ type, onChange }) => {
-  const [images, setImages] = useState<string[]>([]);
+const ImageUpload = ({ type, onChange }: ImageUploadProps) => {
+  const [images, setImages] = useState<File[]>([]);
+  const [previewURLs, setPreviewURLs] = useState<string[]>([]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      let selectedFiles;
-      if (type === 'detail') {
-        selectedFiles = Array.from(event.target.files).slice(0, 3);
+      const selectedFiles = Array.from(event.target.files);
+      const maxFiles = type === 'main' ? 1 : 3;
+      const newFiles = selectedFiles.slice(0, maxFiles);
+
+      const newPreviewURLs = newFiles.map((file) => URL.createObjectURL(file));
+
+      if (type === 'main') {
+        setImages(newFiles);
+        setPreviewURLs(newPreviewURLs);
+        onChange(newFiles[0]);
       } else {
-        selectedFiles = [event.target.files[0]];
-      }
+        const updatedFiles = [...images, ...newFiles];
+        const updatedPreviewURLs = [...previewURLs, ...newPreviewURLs];
 
-      const newImages = selectedFiles.map((file) => {
-        const reader = new FileReader();
-        return new Promise<string>((resolve) => {
-          reader.onload = (e) => resolve(e.target?.result as string);
-          reader.readAsDataURL(file);
-        });
-      });
-
-      Promise.all(newImages).then((newImageData) => {
-        if (type === 'main') {
-          setImages(newImageData);
-          onChange(newImageData[0]);
-        } else {
-          setImages(newImageData);
-          onChange(newImageData);
+        while (updatedFiles.length > 3) {
+          updatedFiles.shift();
+          updatedPreviewURLs.shift();
         }
-      });
+
+        setImages(updatedFiles);
+        setPreviewURLs(updatedPreviewURLs);
+        onChange(updatedFiles);
+      }
     }
   };
 
   const handleDeleteImage = (index: number) => {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    setPreviewURLs((prevURLs) => prevURLs.filter((_, i) => i !== index));
   };
 
   return (
@@ -56,9 +57,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ type, onChange }) => {
         />
       </ImageUploadContainer>
       <ImagesPreviewContainer>
-        {images.map((image, index) => (
+        {previewURLs.map((url, index) => (
           <ImagePreviewWrapper key={index}>
-            <ImagePreview src={image} alt={`${type === 'main' ? 'Main' : 'Detail'} Image ${index + 1}`} />
+            <ImagePreview src={url} alt={`${type === 'main' ? 'Main' : 'Detail'} Image ${index + 1}`} />
             <DeleteButton onClick={() => handleDeleteImage(index)}>삭제하기</DeleteButton>
           </ImagePreviewWrapper>
         ))}
@@ -81,6 +82,7 @@ const UploadLabel = styled.label`
   color: white;
   border-radius: 5px;
   margin-bottom: 10px;
+  transition: all 0.3s ease-in-out;
 
   &:hover {
     background-color: #5a6268;
