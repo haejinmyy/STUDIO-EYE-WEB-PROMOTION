@@ -111,24 +111,24 @@ const RequestDetailPage = () => {
 
   const emailItems =
     clickedRequest && clickedRequest.answers
-      ? clickedRequest.answers.map((answer: { id: any; createdAt: any; text: any; state: any }) => {
-          const createdAtDate = new Date(answer.createdAt);
-          const formattedDate = `${createdAtDate.getFullYear()}-${String(createdAtDate.getMonth() + 1).padStart(
-            2,
-            '0',
-          )}-${String(createdAtDate.getDate()).padStart(2, '0')} ${String(createdAtDate.getHours()).padStart(
-            2,
-            '0',
-          )}:${String(createdAtDate.getMinutes()).padStart(2, '0')}`;
+      ? clickedRequest.answers.map((answer: { id: number; createdAt: string; text: string; state: string }) => {
+        const createdAtDate = new Date(answer.createdAt);
+        const formattedDate = `${createdAtDate.getFullYear()}-${String(createdAtDate.getMonth() + 1).padStart(
+          2,
+          '0',
+        )}-${String(createdAtDate.getDate()).padStart(2, '0')} ${String(createdAtDate.getHours()).padStart(
+          2,
+          '0',
+        )}:${String(createdAtDate.getMinutes()).padStart(2, '0')}`;
 
-          return {
-            id: answer.id,
-            subject: answer.text,
-            date: formattedDate,
-            content: answer.text,
-            state: answer.state,
-          };
-        })
+        return {
+          id: answer.id,
+          subject: answer.text,
+          date: formattedDate,
+          content: answer.text,
+          state: answer.state,
+        };
+      })
       : [];
 
   return (
@@ -196,7 +196,7 @@ const RequestDetailPage = () => {
             <Box>
               <Wrapper>
                 <Tooltip
-                  description='논의는 승인할지 거절할지 생각해볼게염 승인은 의뢰 승인 거절은 의뢰 거절'
+                  description='대기: 아직 답장을 하지 않은 상태 / 논의는 승인할지 거절할지 생각해볼게염 / 승인은 의뢰 승인 / 거절은 의뢰 거절'
                   svgComponent={<InfoIcon width={18} height={18} />}
                 />
                 <DropDown onChange={(e) => setReplyState(e.target.value)} value={replyState}>
