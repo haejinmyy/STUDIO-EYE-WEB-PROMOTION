@@ -1,4 +1,11 @@
 import { getClientData } from '@/apis/PromotionAdmin/dataEdit';
+import { ContentBlock } from '@/components/PromotionAdmin/DataEdit/Company/CompanyFormStyleComponents';
+import { DATAEDIT_NOTICE_COMPONENTS } from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import Button from '@/components/PromotionAdmin/DataEdit/StyleComponents/Button';
+import FileButton from '@/components/PromotionAdmin/DataEdit/StyleComponents/FileButton';
+import SubTitle from '@/components/PromotionAdmin/DataEdit/StyleComponents/SubTitle';
+import Title from '@/components/PromotionAdmin/DataEdit/StyleComponents/Title';
+import ToggleSwitch from '@/components/PromotionAdmin/DataEdit/StyleComponents/ToggleSwitch';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import { IClientData } from '@/types/PromotionAdmin/dataEdit';
@@ -6,11 +13,12 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
-import { useMatch, useNavigate, useParams } from 'react-router-dom';
+import { useMatch, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 interface IFormData {
   name: string;
+  visibility: boolean;
 }
 
 function ClientEditPage() {
@@ -18,12 +26,15 @@ function ClientEditPage() {
   const navigator = useNavigate();
   const clientEditMatch = useMatch(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}/:clientId`);
   const clickedClient =
-    clientEditMatch?.params.clientId && data?.find((c) => String(c.clientInfo.id) === clientEditMatch.params.clientId);
+    clientEditMatch?.params.clientId &&
+    data &&
+    data.find((c) => String(c.clientInfo.id) === clientEditMatch.params.clientId);
   const [imgChange, setImgChange] = useState(false);
 
   const { register, handleSubmit, reset } = useForm<IFormData>({
     defaultValues: {
       name: clickedClient ? clickedClient.clientInfo.name : '',
+      visibility: true,
     },
   });
 
@@ -31,9 +42,12 @@ function ClientEditPage() {
     clientInfo: {
       clientId: clickedClient && clickedClient.clientInfo.id,
       name: clickedClient && clickedClient.clientInfo.name,
+      visibility: clickedClient && clickedClient.clientInfo.visibility,
     },
     logoImg: clickedClient ? clickedClient.logoImg : '',
   });
+
+  const [isVisibility, setIsVisibility] = useState(putData.clientInfo.visibility);
 
   useEffect(() => {
     if (clickedClient) {
@@ -44,6 +58,7 @@ function ClientEditPage() {
         clientInfo: {
           clientId: clickedClient.clientInfo.id,
           name: clickedClient.clientInfo.name,
+          visibility: clickedClient.clientInfo.visibility,
         },
         logoImg: clickedClient.logoImg,
       });
@@ -64,6 +79,7 @@ function ClientEditPage() {
           JSON.stringify({
             clientId: putData.clientInfo.clientId,
             name: data.name,
+            visibility: isVisibility,
           }),
         ],
         { type: 'application/json' },
@@ -88,6 +104,7 @@ function ClientEditPage() {
           })
           .catch((error) => console.error('Error updating client:', error));
       } else {
+        console.log('put ', data.visibility);
         axios
           .put(`${PROMOTION_BASIC_PATH}/api/client/modify`, formData)
           .then((response) => {
@@ -144,40 +161,59 @@ function ClientEditPage() {
   return (
     <>
       {clickedClient && (
-        <Wrapper id={clickedClient.clientInfo.id + ''}>
-          {clickedClient && (
-            <form onSubmit={handleSubmit(onValid)}>
-              <Content>
-                <Title>Name</Title>
-                <input
-                  {...register('name', {
-                    required: '이름을 입력해주세요',
-                  })}
-                  placeholder='이름을 입력해주세요'
-                />
-              </Content>
+        <ContentBlock id={clickedClient.clientInfo.id + ''} height={380}>
+          <TitleWrapper>
+            <Title description='Client 수정' />
+          </TitleWrapper>
 
-              <Content>
-                <Title>Logo</Title>
-                <LogoWrapper>
-                  <img src={putData.logoImg} />
-                  <label htmlFor='file'>
-                    <div>Logo Upload</div>
-                    <input id='file' type='file' accept='image/*' onChange={handleImageChange} />
-                  </label>
-                </LogoWrapper>
-              </Content>
-              <button>Submit</button>
-              <button
-                onClick={() => {
-                  handleDelete(clickedClient.clientInfo.id);
-                }}
-              >
-                Delete
-              </button>
-            </form>
+          {clickedClient && (
+            <FormContainer onSubmit={handleSubmit(onValid)}>
+              <LeftContainer>
+                <LogoContainer>
+                  <SubTitle description='Logo' />
+                  {DATAEDIT_NOTICE_COMPONENTS.IMAGE.LOGO}
+                  {DATAEDIT_NOTICE_COMPONENTS.COLOR.LOGO}
+
+                  <ImgBox>{putData.logoImg && <img src={putData.logoImg} />}</ImgBox>
+                  <FileButton description='Logo Upload' id='file' width={230} onChange={handleImageChange} />
+                </LogoContainer>
+              </LeftContainer>
+
+              <RightContainer>
+                <InputWrapper>
+                  <SubTitle description='Name' />
+                  <input
+                    {...register('name', {
+                      required: '이름을 입력해주세요',
+                    })}
+                    placeholder='이름을 입력해주세요'
+                  />
+                </InputWrapper>
+                <VisibilityWrapper>
+                  공개여부
+                  <input type='checkbox' id='switch' defaultChecked {...register('visibility')} />
+                  <ToggleSwitch
+                    option1='공개'
+                    option2='비공개'
+                    selected={clickedClient.clientInfo.visibility}
+                    onToggle={setIsVisibility}
+                  />
+                </VisibilityWrapper>
+              </RightContainer>
+              <ButtonWrapper>
+                <Button description='저장하기' width={100} />
+                <Button
+                  onClick={() => {
+                    handleDelete(clickedClient.clientInfo.id);
+                  }}
+                  description='삭제하기'
+                  width={100}
+                  as={'div'}
+                />
+              </ButtonWrapper>
+            </FormContainer>
           )}
-        </Wrapper>
+        </ContentBlock>
       )}
     </>
   );
@@ -185,56 +221,91 @@ function ClientEditPage() {
 
 export default ClientEditPage;
 
-const Title = styled.div`
-  display: flex;
-  align-items: center;
-  height: 4rem;
-  font-size: 1.3rem;
+const RightContainer = styled.div`
+  margin-left: 20px;
 `;
-
-const Content = styled.div`
-  display: flex;
-`;
-
-const Wrapper = styled.div`
-  position: fixed;
-  left: 50vw;
-  margin-left: 100px;
-  border-radius: 1rem;
-  background-color: ${(props) => props.theme.color.white.bold};
-  width: 40vw;
-  height: 70vh;
-  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
-`;
-
-const LogoWrapper = styled.div`
+const LeftContainer = styled.div``;
+const LogoContainer = styled.div`
   display: flex;
   flex-direction: column;
-  div {
-    cursor: pointer;
-    border: none;
-    background-color: ${(props) => props.theme.color.white.bold};
-    box-shadow: 1px 1px 4px 0.1px #c6c6c6;
-    padding: 0.4rem 1.4rem;
-    border-radius: 0.2rem;
-    transition: 0.2s;
-    width: 130px;
-    display: flex;
-    justify-content: center;
-    font-weight: 700;
-    margin-right: 20px;
+  height: 200px;
+  justify-content: space-between;
+`;
 
-    &:hover {
-      background-color: ${(props) => props.theme.color.yellow.light};
-    }
+const VisibilityWrapper = styled.div`
+  #switch {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+
+  .switch_label {
+    display: flex;
+    border-radius: 5px;
+    cursor: pointer;
   }
 
   input {
-    display: none;
+    margin-top: 20px;
+  }
+`;
+
+const TitleWrapper = styled.div`
+  margin-top: 20px;
+  margin-bottom: 30px;
+`;
+
+const ImgBox = styled.div`
+  background-color: ${(props) => props.theme.color.background};
+  width: 230px;
+  border-radius: 4px;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  img {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+  }
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  bottom: -110px;
+  right: -10px;
+  width: 210px;
+`;
+
+const FormContainer = styled.form`
+  display: flex;
+  position: relative;
+  width: 100%;
+`;
+
+const InputWrapper = styled.div`
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  input {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    width: 100%;
+    outline: none;
+    font-family: ${(props) => props.theme.font.regular};
+    font-size: 14px;
+    height: 40px;
+    border: none;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  }
+  input:focus {
+    transition: 0.2s;
+    border-bottom: 3px solid ${(props) => props.theme.color.symbol};
   }
 
-  img {
-    width: 200px;
-    margin-bottom: 10px;
+  p {
+    color: ${(props) => props.theme.color.symbol};
   }
 `;

@@ -12,6 +12,7 @@ export const theme: DefaultTheme = {
     white: {
       bold: '#FBFBFB',
       light: '#fff',
+      pale: 'rgb(255,255,255,0.6)',
     },
     yellow: {
       bold: '#FFA900',
