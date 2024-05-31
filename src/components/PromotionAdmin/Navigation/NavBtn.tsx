@@ -15,10 +15,17 @@ const NavBtn = ({ path, pathName, svgComponent}: Props) => {
   const setupdate = useSetRecoilState(dataUpdateState);
 
   const updateHandler=(event:React.MouseEvent<HTMLAnchorElement, MouseEvent>)=>{
-    if (isUpdate&&!window.confirm("페이지를 떠나시겠습니까?")) {
+    if (isUpdate&&!window.confirm("현재 페이지를 나가면 변경 사항이 저장되지 않습니다.\n나가시겠습니까?")) {
+      //나가지 않을 경우 isUpdate=true, 페이지 유지
       event.preventDefault();
+    }else{
+      //나갈 경우 isUpdate=false, 페이지 변경
+      setupdate(false);
+      /**작은 메모
+       * else 안에 쓰지 않으면 무조건 false로 만들어서
+       * 두번째 이동부터 체크를 안 하고 넘어감
+       * */ 
     }
-    setupdate(false);
   }
 
   return (
