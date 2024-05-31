@@ -6,7 +6,6 @@ import { useState } from 'react';
 import Pagination from '../../../components/PromotionAdmin/FAQ/Pagination';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import WaitingRequestsList from '@/components/PromotionAdmin/Home/RequestSummary/WaitingRequestsList';
 import { ContentBox } from '@/components/PromotionAdmin/Request/Components';
 
@@ -14,16 +13,13 @@ function RequestList() {
   const { data, isLoading } = useQuery<IRequest[]>('requests', getRequestsData);
   console.log(data);
 
-  const navigator = useNavigate();
-
   // pagination 구현에 사용되는 변수
-  const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage, setPostsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [postsPerPage, setPostsPerPage] = useState<number>(10);
   const indexOfLast = currentPage * postsPerPage;
   const indexOfFirst = indexOfLast - postsPerPage;
-  const [modalVisible, setModalVisible] = useState(false);
-  const [showWaitingApproval, setShowWaitingApproval] = useState(false);
-  const [showCompletedRequest, setShowCompletedRequest] = useState(false);
+  const [showWaitingApproval, setShowWaitingApproval] = useState<boolean>(false);
+  const [showCompletedRequest, setShowCompletedRequest] = useState<boolean>(false);
 
   const handleWaitingToggle = () => {
     setShowWaitingApproval(!showWaitingApproval);
@@ -32,12 +28,11 @@ function RequestList() {
     }
   };
 
-  const handleCompletedToggle = () => {
-    setShowCompletedRequest(!showCompletedRequest);
-    if (!showCompletedRequest) {
-      setShowWaitingApproval(false);
-    }
+  const filterWaitingRequests = (requests: IRequest[]): IRequest[] => {
+    return requests.filter((request) => request.state === 'WAITING');
   };
+  
+  const filteredRequests = showWaitingApproval ? filterWaitingRequests(data || []) : data;
 
   return (
     <Wrapper>
@@ -51,12 +46,20 @@ function RequestList() {
                 Request 관리
                 <Info>총 {data.length}건</Info>
               </Title>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <ToggleLabel>
+                  {showWaitingApproval ? '대기 중인 의뢰' : '전체 의뢰'}
+                </ToggleLabel>
+                <ToggleButton onClick={handleWaitingToggle}>
+                  <ToggleSlider active={showWaitingApproval} />
+                </ToggleButton>
+              </div>
             </TitleWrapper>
             <TableWrapper>
               {isLoading ? (
                 <h1>Loading...</h1>
-              ) : data && data.length > 0 ? (
-                data.map((request) => {
+              ) : filteredRequests && filteredRequests.length > 0 ? (
+                filteredRequests.map((request) => {
                   return (
                     <RequestWrapper key={request.id}>
                       <StateText requestState={request.state}>
@@ -120,6 +123,42 @@ const Info = styled.div`
   margin-left: 1rem;
   padding-top: 0.5rem;
   color: #666;
+  font-size: 0.9rem;
+`;
+
+const ToggleButton = styled.div`
+  position: relative;
+  width: 60px;
+  height: 34px;
+`;
+
+const ToggleSlider = styled.div<{ active: boolean }>`
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: ${(props) => (props.active ? '#4caf50' : '#ccc')};
+  transition: 0.4s;
+  border-radius: 34px;
+
+  &:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+    transform: ${(props) => (props.active ? 'translateX(26px)' : 'translateX(0)')};
+  }
+`;
+
+const ToggleLabel = styled.span`
+  margin-right: 1rem;
   font-size: 0.9rem;
 `;
 
