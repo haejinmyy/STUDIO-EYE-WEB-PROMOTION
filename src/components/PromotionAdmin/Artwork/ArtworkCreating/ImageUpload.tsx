@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-type ImageUploadProps = {
+interface ImageUploadProps {
   type: 'main' | 'detail';
+  value?: File | File[];
   onChange: (newImage: File | File[]) => void;
-};
+}
 
-const ImageUpload = ({ type, onChange }: ImageUploadProps) => {
+const ImageUpload = ({ type, value, onChange }: ImageUploadProps) => {
   const [images, setImages] = useState<File[]>([]);
   const [previewURLs, setPreviewURLs] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (value) {
+      const files = Array.isArray(value) ? value : [value];
+      if (files.every((file) => file instanceof File)) {
+        setImages(files);
+        setPreviewURLs(files.map((file) => URL.createObjectURL(file)));
+      }
+    }
+    console.log(previewURLs);
+  }, [value]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -26,7 +38,7 @@ const ImageUpload = ({ type, onChange }: ImageUploadProps) => {
         const updatedFiles = [...images, ...newFiles];
         const updatedPreviewURLs = [...previewURLs, ...newPreviewURLs];
 
-        while (updatedFiles.length > 3) {
+        while (updatedFiles.length > maxFiles) {
           updatedFiles.shift();
           updatedPreviewURLs.shift();
         }
@@ -39,8 +51,11 @@ const ImageUpload = ({ type, onChange }: ImageUploadProps) => {
   };
 
   const handleDeleteImage = (index: number) => {
-    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
-    setPreviewURLs((prevURLs) => prevURLs.filter((_, i) => i !== index));
+    const updatedImages = images.filter((_, i) => i !== index);
+    const updatedPreviewURLs = previewURLs.filter((_, i) => i !== index);
+    setImages(updatedImages);
+    setPreviewURLs(updatedPreviewURLs);
+    onChange(updatedImages);
   };
 
   return (

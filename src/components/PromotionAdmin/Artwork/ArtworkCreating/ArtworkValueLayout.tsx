@@ -2,15 +2,15 @@ import React from 'react';
 import styled from 'styled-components';
 
 type Props = {
-  title: string;
+  valueTitle: string;
   description: string;
   content: React.ReactNode;
 };
 
-const ArtworkValueLayout = ({ title, description, content }: Props) => {
+const ArtworkValueLayout = ({ valueTitle, description, content }: Props) => {
   return (
     <Container>
-      <Title>{title}</Title>
+      <Title>{valueTitle}</Title>
       <Description>{description}</Description>
       <ContentWrapper>
         <Content>{content}</Content>
@@ -27,6 +27,7 @@ const Container = styled.div`
   justify-content: flex-start;
   margin-bottom: 15px;
   width: 430px;
+  white-space: pre-line;
 `;
 
 const ContentWrapper = styled.div`

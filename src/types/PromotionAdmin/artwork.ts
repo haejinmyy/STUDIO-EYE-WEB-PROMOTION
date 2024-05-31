@@ -52,6 +52,7 @@ export type UpdateArtwork = {
     date: string;
     link: string;
     overView: string;
+    deletedImageId: number[];
   };
   file: string;
   files: string[];
