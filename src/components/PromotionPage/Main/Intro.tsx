@@ -14,15 +14,17 @@ const Intro = () => {
   const desInView = useInView(desRef);
   const circleInView = useInView(circleRef);
 
-  const [companyMainOverview, setCompanyMainOverview] = useState<string[]>([]);
-  const [companyCommitment, setCompanyCommitment] = useState<string[]>([]);
+  const [companyMainOverview, setCompanyMainOverview] = useState<string>('');
+  const [companyCommitment, setCompanyCommitment] = useState<string>('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getCompanyData();
         setCompanyMainOverview(data.mainOverview);
-        setCompanyCommitment(data.commitment);
+
+        const commitmentText = data.commitment.replace(/<\/?[^>]+(>|$)/g, "");
+        setCompanyCommitment(commitmentText);
       } catch (error) {
         console.error('Error fetching company data: ', error);
       }
@@ -38,7 +40,7 @@ const Intro = () => {
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: introInView ? 1 : 0, y: introInView ? 0 : 100 }}
           transition={{ duration: 1, delay: 0.2 }}
-          dangerouslySetInnerHTML={{ __html: companyMainOverview }}
+          dangerouslySetInnerHTML={{ __html: companyMainOverview || '<p>데이터 없음</p>' }}
         ></motion.div>
       </IntroWrapper>
       <DesWrapper ref={desRef}>
@@ -47,7 +49,7 @@ const Intro = () => {
           animate={{ opacity: desInView ? 1 : 0, y: desInView ? 0 : 100 }}
           transition={{ duration: 2, delay: 0.6 }}
         >
-          {companyCommitment}
+          {companyCommitment || '데이터 없음'}
         </motion.div>
       </DesWrapper>
       <CircleWrapper ref={circleRef}>

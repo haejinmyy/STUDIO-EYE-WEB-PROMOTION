@@ -11,37 +11,66 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import draftToHtml from 'draftjs-to-html';
 import TextEditor from '@/components/PromotionAdmin/FAQ/TextEditor';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
+import { INPUT_MAX_LENGTH } from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
 
 function FAQWritePage() {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [blocks, setBlocks] = useState<IEditorData[]>([]);
   const navigator = useNavigate();
-  // const [visibility, setVisibility] = useState<boolean | null>(null);
 
   const updateTextDescription = async (state: any) => {
     await setEditorState(state);
     setBlocks(convertToRaw(editorState.getCurrentContent()).blocks);
   };
 
-  const { register, handleSubmit } = useForm<IFAQData>({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<IFAQData>({
     defaultValues: {
       visibility: true,
     },
   });
 
+  // 글자수 제한
+  const [questionLength, setQuestionLength] = useState(0);
+  const handleQuestionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputLength = e.target.value.length;
+    if (inputLength <= INPUT_MAX_LENGTH.FAQ_QUESTION) {
+      setQuestionLength(inputLength);
+      setValue('question', e.target.value, { shouldValidate: true });
+    } else {
+      const trimmedValue = e.target.value.slice(0, INPUT_MAX_LENGTH.FAQ_QUESTION);
+      setQuestionLength(INPUT_MAX_LENGTH.FAQ_QUESTION);
+      setValue('question', trimmedValue, { shouldValidate: true });
+    }
+  };
+  const checkIsEmpty = (editorState: EditorState, attribute: string) => {
+    const isEmpty = !editorState.getCurrentContent().hasText();
+    if (isEmpty) {
+      alert(`${attribute}을(를) 작성해주세요.`);
+      return true;
+    }
+    return false;
+  };
   const onValid = (data: IFAQData) => {
     const formData = {
       question: data.question,
       answer: draftToHtml(convertToRaw(editorState.getCurrentContent())),
       visibility: data.visibility,
     };
-    axios
-      .post(`${PROMOTION_BASIC_PATH}/api/faq`, formData)
-      .then((response) => {
-        alert('FAQ가 등록되었습니다.');
-        navigator(`${PA_ROUTES.FAQ}`);
-      })
-      .catch((error) => console.log(error));
+
+    if (!checkIsEmpty(editorState, 'Answer')) {
+      axios
+        .post(`${PROMOTION_BASIC_PATH}/api/faq`, formData)
+        .then((response) => {
+          alert('FAQ가 등록되었습니다.');
+          navigator(`${PA_ROUTES.FAQ}`);
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   return (
@@ -69,9 +98,13 @@ function FAQWritePage() {
           <QuestionInput
             {...register('question', {
               required: '질문을 입력해주세요',
+              maxLength: INPUT_MAX_LENGTH.FAQ_QUESTION,
+              onChange: handleQuestionChange,
             })}
             placeholder='질문을 입력해주세요'
           />
+          <p>{`글자수: ${questionLength} / ${INPUT_MAX_LENGTH.FAQ_QUESTION}`}</p>
+          {errors.question && <span>{errors.question.message}</span>}
         </Content>
 
         <Content>
