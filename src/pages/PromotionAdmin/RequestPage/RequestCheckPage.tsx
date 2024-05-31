@@ -9,8 +9,9 @@ import TextEditor from '@/components/PromotionAdmin/Request/TextEditor';
 import { IEditorData, IRequestData } from '../../../types/PromotionAdmin/request';
 import draftToHtml from 'draftjs-to-html';
 import { ContentState, EditorState, convertToRaw } from 'draft-js';
-import HoverInfo from '@/components/PromotionAdmin/DataEdit/Company/HoverInfo';
 import Pagination from '@/components/PromotionAdmin/FAQ/Pagination';
+import Tooltip from '@/components/PromotionAdmin/DataEdit/StyleComponents/Tooltip';
+import { ReactComponent as InfoIcon } from '@/assets/images/PA/infoIcon.svg';
 
 const RequestDetailPage = () => {
   // pagination 구현에 사용되는 변수
@@ -27,7 +28,7 @@ const RequestDetailPage = () => {
   const clickedRequest =
     requestDetailMatch?.params.requestId &&
     data &&
-    data.find((request: { id: number; }) => String(request.id) === requestDetailMatch.params.requestId);
+    data.find((request: { id: number }) => String(request.id) === requestDetailMatch.params.requestId);
 
   const [editorState, setEditorState] = useState(() => {
     return EditorState.createEmpty();
@@ -94,7 +95,7 @@ const RequestDetailPage = () => {
           setReplyState(replyState);
           const updatedEmailItems = emailItems.map((email: any) => ({
             ...email,
-            state: state.toUpperCase()
+            state: state.toUpperCase(),
           }));
           emailItems(updatedEmailItems);
           navigator(`${PA_ROUTES.REQUEST}/:requestId`);
@@ -108,23 +109,27 @@ const RequestDetailPage = () => {
     setEditorState(updatedEditorState);
   };
 
-  const emailItems = clickedRequest && clickedRequest.answers
-    ? clickedRequest.answers.map((answer: { id: any; createdAt: any; text: any; state: any; }) => {
+  const emailItems =
+    clickedRequest && clickedRequest.answers
+      ? clickedRequest.answers.map((answer: { id: any; createdAt: any; text: any; state: any }) => {
+          const createdAtDate = new Date(answer.createdAt);
+          const formattedDate = `${createdAtDate.getFullYear()}-${String(createdAtDate.getMonth() + 1).padStart(
+            2,
+            '0',
+          )}-${String(createdAtDate.getDate()).padStart(2, '0')} ${String(createdAtDate.getHours()).padStart(
+            2,
+            '0',
+          )}:${String(createdAtDate.getMinutes()).padStart(2, '0')}`;
 
-      const createdAtDate = new Date(answer.createdAt);
-      const formattedDate = `${createdAtDate.getFullYear()}-${String(createdAtDate.getMonth() + 1).padStart(2, '0')
-        }-${String(createdAtDate.getDate()).padStart(2, '0')} ${String(createdAtDate.getHours()).padStart(2, '0')
-        }:${String(createdAtDate.getMinutes()).padStart(2, '0')}`;
-
-      return {
-        id: answer.id,
-        subject: answer.text,
-        date: formattedDate,
-        content: answer.text,
-        state: answer.state,
-      };
-    })
-    : [];
+          return {
+            id: answer.id,
+            subject: answer.text,
+            date: formattedDate,
+            content: answer.text,
+            state: answer.state,
+          };
+        })
+      : [];
 
   return (
     <PageWrapper>
@@ -134,7 +139,9 @@ const RequestDetailPage = () => {
             <Box>
               <Wrapper>
                 <TitleWrapper>
-                  <Title>{clickedRequest.clientName} 님의 {clickedRequest.category} 의뢰</Title>
+                  <Title>
+                    {clickedRequest.clientName} 님의 {clickedRequest.category} 의뢰
+                  </Title>
                 </TitleWrapper>
                 <UserInfoWrapper>
                   <UserInfoTitle onClick={toggleUserInfoExpansion}>클라이언트 정보</UserInfoTitle>
@@ -169,7 +176,8 @@ const RequestDetailPage = () => {
                                 const fileName = url.split('amazonaws.com/')[1];
                                 return (
                                   <li key={index}>
-                                    - <Link href={url} target='_blank' rel='noopener noreferrer'>
+                                    -{' '}
+                                    <Link href={url} target='_blank' rel='noopener noreferrer'>
                                       {fileName}
                                     </Link>
                                   </li>
@@ -187,12 +195,17 @@ const RequestDetailPage = () => {
             </Box>
             <Box>
               <Wrapper>
-                <HoverInfo title='' description='논의는 승인할지 거절할지 생각해볼게염 승인은 의뢰 승인 거절은 의뢰 거절' />
+                <Tooltip
+                  description='논의는 승인할지 거절할지 생각해볼게염 승인은 의뢰 승인 거절은 의뢰 거절'
+                  svgComponent={<InfoIcon width={18} height={18} />}
+                />
                 <DropDown onChange={(e) => setReplyState(e.target.value)} value={replyState}>
-                  <option value="WAITING" selected disabled hidden>대기</option>
-                  <option value="DISCUSSING">논의</option>
-                  <option value="APPROVED">승인</option>
-                  <option value="REJECTED">거절</option>
+                  <option value='WAITING' selected disabled hidden>
+                    대기
+                  </option>
+                  <option value='DISCUSSING'>논의</option>
+                  <option value='APPROVED'>승인</option>
+                  <option value='REJECTED'>거절</option>
                 </DropDown>
                 <TextEditor editorState={editorState} onEditorStateChange={updateTextDescription} />
               </Wrapper>
@@ -210,30 +223,23 @@ const RequestDetailPage = () => {
           <RightContainer>
             <Box>
               <EmailList>
-                {emailItems.map((email: { id: number; subject: string; date: string; content: string, state: string }) => (
-                  <EmailItem key={email.id} >
-                    <StateButton state={email.state}>
-                      {email.state === 'DISCUSSING' ? '논의중' :
-                        (email.state === 'APPROVED' ? '승인' : '거절')}
-                    </StateButton>
-                    <EmailSubject onClick={() => toggleEmailExpansion(email.id)}>
-                      {email.subject.length > 30 ? `${email.subject.slice(0, 30)}...` : email.subject}
-                    </EmailSubject>
-                    <EmailDate>{email.date}</EmailDate>
-                    {expandedItems.has(email.id) && (
-                      <EmailContent>
-                        {email.content}
-                      </EmailContent>
-                    )}
-                  </EmailItem>
-                ))}
+                {emailItems.map(
+                  (email: { id: number; subject: string; date: string; content: string; state: string }) => (
+                    <EmailItem key={email.id}>
+                      <StateButton state={email.state}>
+                        {email.state === 'DISCUSSING' ? '논의중' : email.state === 'APPROVED' ? '승인' : '거절'}
+                      </StateButton>
+                      <EmailSubject onClick={() => toggleEmailExpansion(email.id)}>
+                        {email.subject.length > 30 ? `${email.subject.slice(0, 30)}...` : email.subject}
+                      </EmailSubject>
+                      <EmailDate>{email.date}</EmailDate>
+                      {expandedItems.has(email.id) && <EmailContent>{email.content}</EmailContent>}
+                    </EmailItem>
+                  ),
+                )}
               </EmailList>
               <ButtonWrapper>
-                <Pagination
-                  postsPerPage={postsPerPage}
-                  totalPosts={data.length}
-                  paginate={setCurrentPage}
-                />
+                <Pagination postsPerPage={postsPerPage} totalPosts={data.length} paginate={setCurrentPage} />
               </ButtonWrapper>
             </Box>
           </RightContainer>
@@ -261,7 +267,6 @@ const UserInfoLabel = styled.td`
 const UserInfoData = styled.td`
   padding: 0.5rem 1rem;
 `;
-
 
 const PageWrapper = styled.div`
   display: flex;
@@ -408,8 +413,7 @@ const StateButton = styled.div<{ state: string }>`
   position: absolute;
   right: 10px;
   top: 25px;
-  transform: tra
-  nslateY(-50%);
+  transform: tra nslateY(-50%);
 `;
 const getColorByState = (state: string) => {
   switch (state) {
