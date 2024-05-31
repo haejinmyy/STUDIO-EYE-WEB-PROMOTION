@@ -7,8 +7,13 @@ import { Wrapper, ContentBlock, InputWrapper, InputTitle } from '../CompanyFormS
 
 import styled from 'styled-components';
 import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
+import Button from '../../StyleComponents/Button';
 
-const Basic = () => {
+interface IBasicProps {
+  setEditBasic: (editMode: boolean) => void;
+}
+
+const Basic = ({ setEditBasic }: IBasicProps) => {
   const { data, isLoading, error } = useQuery<ICompanyData, Error>(['company', 'id'], getCompanyData);
 
   if (isLoading) return <>is Loading..</>;
@@ -18,7 +23,10 @@ const Basic = () => {
       {data && (
         <>
           <ContentBlock>
-            {DATAEDIT_TITLES_COMPONENTS.Basic}
+            <TitleWrapper>
+              {DATAEDIT_TITLES_COMPONENTS.Basic}
+              <Button description='수정하기' onClick={() => setEditBasic(true)} width={100} />
+            </TitleWrapper>
 
             <InputWrapper>
               <InputTitle>
@@ -68,7 +76,7 @@ const Content = styled.div`
     line-height: 20px;
   }
 `;
-
 const TitleWrapper = styled.div`
   display: flex;
+  justify-content: space-between;
 `;

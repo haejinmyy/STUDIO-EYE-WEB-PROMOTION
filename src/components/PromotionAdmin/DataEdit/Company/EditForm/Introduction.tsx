@@ -14,6 +14,7 @@ import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import draftToHtml from 'draftjs-to-html';
 import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
 import Button from '../../StyleComponents/Button';
+import styled from 'styled-components';
 
 interface IIntrodutionProps {
   setEditIntroduction: (editMode: boolean) => void;
@@ -125,8 +126,10 @@ const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
   return (
     <Wrapper>
       <ContentBlock>
-        {DATAEDIT_TITLES_COMPONENTS.Introduction}
-
+        <TitleWrapper>
+          {DATAEDIT_TITLES_COMPONENTS.Introduction}
+          <Button description='저장하기' onClick={handleSaveClick} width={100} />
+        </TitleWrapper>
         <InputWrapper>
           <InputTitle>Main Overview</InputTitle>
           <TextColorEditor
@@ -147,10 +150,14 @@ const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
             attribute='Introduction'
           />
         </InputWrapper>
-        <Button description='저장하기' onClick={handleSaveClick} />
       </ContentBlock>
     </Wrapper>
   );
 };
 
 export default Introduction;
+
+const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;

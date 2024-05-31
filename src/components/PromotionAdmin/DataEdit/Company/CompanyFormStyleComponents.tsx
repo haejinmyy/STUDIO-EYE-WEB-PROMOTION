@@ -31,7 +31,7 @@ export const ContentBlock = styled.div`
   width: 700px;
   border-radius: 4px;
   height: fit-content;
-  min-height: 380px;
+  /* min-height: 380px; */
 `;
 
 export const TitleWrapper = styled.div`

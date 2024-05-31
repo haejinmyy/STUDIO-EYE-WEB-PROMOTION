@@ -9,6 +9,7 @@ import { useQuery } from 'react-query';
 import { Wrapper, ContentBlock, InputWrapper, InputTitle, Form } from '../CompanyFormStyleComponents';
 import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
 import Button from '../../StyleComponents/Button';
+import styled from 'styled-components';
 
 interface IBasicFormData {
   address: string;
@@ -62,7 +63,12 @@ const Basic = ({ setEditBasic }: IBasicProps) => {
         <>
           <Form onSubmit={handleSubmit(onValid)}>
             <ContentBlock>
-              {DATAEDIT_TITLES_COMPONENTS.Basic}
+              <TitleWrapper>
+                {' '}
+                {DATAEDIT_TITLES_COMPONENTS.Basic}
+                <Button description='저장하기' width={100} />
+              </TitleWrapper>
+
               <InputWrapper>
                 <InputTitle>
                   <p>Address</p>
@@ -106,7 +112,6 @@ const Basic = ({ setEditBasic }: IBasicProps) => {
                   placeholder='팩스번호를 입력해주세요'
                 />
               </InputWrapper>
-              <Button description='저장하기' />
             </ContentBlock>
           </Form>
         </>
@@ -116,3 +121,8 @@ const Basic = ({ setEditBasic }: IBasicProps) => {
 };
 
 export default Basic;
+
+const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;

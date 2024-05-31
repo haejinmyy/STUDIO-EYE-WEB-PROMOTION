@@ -99,11 +99,14 @@ const Detail = ({ setEditDetail }: IDetailProps) => {
         <ContentBlock>
           <TitleWrapper>
             {DATAEDIT_TITLES_COMPONENTS.Detail}
-            <Button
-              description='Add New Detail'
-              svgComponent={<AddedIcon width={14} height={14} />}
-              onClick={() => append({ key: '', value: '' })}
-            />
+            <div style={{ display: 'flex', width: '290px', justifyContent: 'space-between' }}>
+              <Button
+                description='Add New Detail'
+                svgComponent={<AddedIcon width={14} height={14} />}
+                onClick={() => append({ key: '', value: '' })}
+              />
+              <Button description='저장하기' fontSize={14} width={100} />
+            </div>
           </TitleWrapper>
 
           <InputWrapper>
@@ -156,7 +159,6 @@ const Detail = ({ setEditDetail }: IDetailProps) => {
               ))}
             </div>
           </InputWrapper>
-          <Button description='저장하기' fontSize={14} width={100} />
         </ContentBlock>
       </Form>
     </Wrapper>

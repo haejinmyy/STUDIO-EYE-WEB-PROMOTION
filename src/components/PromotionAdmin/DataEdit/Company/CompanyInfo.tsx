@@ -28,19 +28,20 @@ const CompanyInfo = () => {
           <>
             <div>
               {/* Basic */}
-              {!editBasic && <Button description='수정하기' onClick={() => setEditBasic(true)} />}
-              {editBasic ? <BasicEdit setEditBasic={setEditBasic} /> : <BasicInfo />}
+              {editBasic ? <BasicEdit setEditBasic={setEditBasic} /> : <BasicInfo setEditBasic={setEditBasic} />}
               <Image />
             </div>
 
             <div>
               {/* Introduntion */}
-              {!editIntroduction && <Button description='수정하기' onClick={() => setEditIntroduction(true)} />}
-              {editIntroduction ? <IntroductionEdit setEditIntroduction={setEditIntroduction} /> : <IntroductionInfo />}
+              {editIntroduction ? (
+                <IntroductionEdit setEditIntroduction={setEditIntroduction} />
+              ) : (
+                <IntroductionInfo setEditIntroduction={setEditIntroduction} />
+              )}
 
               {/* Detail */}
-              {!editDetail && <Button description='수정하기' onClick={() => setEditDetail(true)} />}
-              {editDetail ? <DetailEdit setEditDetail={setEditDetail} /> : <DetailInfo />}
+              {editDetail ? <DetailEdit setEditDetail={setEditDetail} /> : <DetailInfo setEditDetail={setEditDetail} />}
             </div>
           </>
         )}

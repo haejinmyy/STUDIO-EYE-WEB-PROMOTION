@@ -7,8 +7,13 @@ import { Wrapper, ContentBlock, InputWrapper, InputTitle } from '../CompanyFormS
 import styled from 'styled-components';
 import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
 import InnerHTML from '../../StyleComponents/InnerHTML';
+import Button from '../../StyleComponents/Button';
 
-const Introduction = () => {
+interface IIntrodutionProps {
+  setEditIntroduction: (editMode: boolean) => void;
+}
+
+const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
   const { data, isLoading, error } = useQuery<ICompanyData, Error>(['company', 'id'], getCompanyData);
 
   if (isLoading) return <>is Loading...</>;
@@ -17,8 +22,10 @@ const Introduction = () => {
     <Wrapper>
       {data && (
         <ContentBlock>
-          {DATAEDIT_TITLES_COMPONENTS.Introduction}
-
+          <TitleWrapper>
+            {DATAEDIT_TITLES_COMPONENTS.Introduction}
+            <Button description='수정하기' onClick={() => setEditIntroduction(true)} width={100} />
+          </TitleWrapper>
           <InputWrapper>
             <InputTitle>Main Overview</InputTitle>
             <Content>
@@ -54,4 +61,9 @@ const Content = styled.div`
   span {
     font-size: 14px;
   }
+`;
+
+const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
 `;

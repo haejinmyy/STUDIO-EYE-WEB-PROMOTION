@@ -5,10 +5,11 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 
-import { Wrapper, ContentBlock, InputImgWrapper, ImgBox, LogoWrapper, Box } from '../CompanyFormStyleComponents';
+import { Wrapper, ContentBlock, ImgBox, LogoWrapper, Box } from '../CompanyFormStyleComponents';
 import { DATAEDIT_NOTICE_COMPONENTS, DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
 import FileButton from '../../StyleComponents/FileButton';
 import Button from '../../StyleComponents/Button';
+import styled from 'styled-components';
 
 const Image = () => {
   const { data, isLoading, error } = useQuery<ICompanyData, Error>(['company', 'id'], getCompanyData);
@@ -158,12 +159,14 @@ const Image = () => {
                     </ImgBox>
                   </LogoWrapper>
                 </Box>
+                <ButtonWrapper>
+                  {editMode ? (
+                    <Button fontSize={14} width={100} description='저장하기' onClick={handleSaveClick} />
+                  ) : (
+                    <Button fontSize={14} width={100} description='수정하기' onClick={() => setEditMode(true)} />
+                  )}
+                </ButtonWrapper>
               </InputImgWrapper>
-              {editMode ? (
-                <Button fontSize={14} width={100} description='저장하기' onClick={handleSaveClick} />
-              ) : (
-                <Button fontSize={14} width={100} description='수정하기' onClick={() => setEditMode(true)} />
-              )}
             </ContentBlock>
           </>
         )}
@@ -173,3 +176,16 @@ const Image = () => {
 };
 
 export default Image;
+
+const ButtonWrapper = styled.div`
+  background-color: pink;
+  position: absolute;
+  right: 0px;
+`;
+
+const InputImgWrapper = styled.div`
+  display: flex;
+  position: relative;
+  width: 100%;
+  justify-content: space-between;
+`;

@@ -4,8 +4,13 @@ import React from 'react';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
 import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
+import Button from '../../StyleComponents/Button';
 
-const Detail = () => {
+interface IDetailProps {
+  setEditDetail: (editMode: boolean) => void;
+}
+
+const Detail = ({ setEditDetail }: IDetailProps) => {
   const { data, isLoading, error } = useQuery<ICompanyData, Error>(['company', 'id'], getCompanyDetailData);
   const detailInformationKeys = data?.detailInformation ? Object.keys(data?.detailInformation) : ['what we do'];
   const detailInformationValues = data?.detailInformation ? Object.values(data?.detailInformation) : ['hello'];
@@ -19,7 +24,10 @@ const Detail = () => {
     <Wrapper>
       {data && (
         <ContentBlock>
-          {DATAEDIT_TITLES_COMPONENTS.Detail}
+          <TitleWrapper>
+            {DATAEDIT_TITLES_COMPONENTS.Detail}
+            <Button description='수정하기' onClick={() => setEditDetail(true)} fontSize={14} width={100} />
+          </TitleWrapper>
           <InputWrapper>
             <div>
               {combinedArray.map((data) => (
@@ -62,6 +70,11 @@ const ContentBlock = styled.div`
   width: 700px;
   border-radius: 4px;
   height: fit-content;
+`;
+
+const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
 `;
 
 const InputWrapper = styled.div`
@@ -115,22 +128,5 @@ const DetailItem = styled.div`
     margin-right: 5px;
     font-family: ${(props) => props.theme.font.light};
     box-shadow: 1px 1px 4px 0.1px #c6c6c6;
-  }
-`;
-
-const Content = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  font-size: 14px;
-  font-family: ${(props) => props.theme.font.regular};
-  min-height: 15px;
-  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
-
-  & p,
-  span {
-    font-size: 14px;
-    font-family: ${(props) => props.theme.font.regular};
-    line-height: 20px;
   }
 `;
