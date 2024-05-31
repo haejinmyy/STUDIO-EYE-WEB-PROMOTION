@@ -7,6 +7,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import LoginComponent from '@/components/PromotionPage/Login/Login';
 import { PA_ROUTES } from '@/constants/routerConstants';
+import BackgroundYellowCircle from '@/components/BackgroundYellowCircle/BackgroundYellowCircle';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -36,19 +37,14 @@ const Login = () => {
   };
   return (
     <Container>
-      <YellowCircle top='70%' left='10%' />
-      <LoginComponent email={email} setEmail={setEmail} pwd={pwd} setPwd={setPwd} handleLogin={handleLogin} />
-      <YellowCircle top='30%' left='80%' />
+      <BackgroundYellowCircle>
+        <LoginComponent email={email} setEmail={setEmail} pwd={pwd} setPwd={setPwd} handleLogin={handleLogin} />
+      </BackgroundYellowCircle>
     </Container>
   );
 };
 
 export default Login;
-
-interface YellowCircleProps {
-  top: string;
-  left: string;
-}
 
 const Container = styled.div`
   width: 100%;
@@ -57,15 +53,4 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-`;
-
-const YellowCircle = styled.div<YellowCircleProps>`
-  position: absolute;
-  top: ${(props) => props.top};
-  left: ${(props) => props.left};
-  border-radius: 50%;
-  width: 200px;
-  height: 200px;
-  background-color: rgba(255, 169, 0, 0.1943);
-  box-shadow: 0 0 250px 240px rgba(255, 169, 0, 0.2);
 `;
