@@ -21,17 +21,17 @@ export const Form = styled.form`
 export const LeftContentWrapper = styled.div``;
 export const RightContentWrapper = styled.div``;
 
-export const ContentBlock = styled.div`
+export const ContentBlock = styled.div<{ width?: number; height?: number }>`
   padding: 25px;
   background-color: ${(props) => props.theme.color.white.pale};
-
+  position: relative;
   box-shadow: 2px 2px 5px 0.3px ${(props) => props.theme.color.black.pale};
   margin-bottom: 30px;
   margin-right: 30px;
-  width: 700px;
+
   border-radius: 4px;
-  height: fit-content;
-  /* min-height: 380px; */
+  width: ${(props) => (props.width ? props.width + 'px;' : '700px;')};
+  height: ${(props) => (props.height ? props.height + 'px;' : 'fit-content;')};
 `;
 
 export const TitleWrapper = styled.div`

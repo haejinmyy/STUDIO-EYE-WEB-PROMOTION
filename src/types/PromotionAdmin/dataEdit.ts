@@ -39,3 +39,55 @@ export interface IPartnersData {
     name: string;
   };
 }
+
+interface IClientContentItem {
+  id: number;
+  name: string;
+  logoImg: string;
+  visibility: boolean;
+}
+
+interface IPartnerContentItem {
+  id: number;
+  name: string;
+  logoImageUrl: string;
+  is_main: boolean;
+  link: string;
+}
+
+interface IPageable {
+  pageNumber: number;
+  pageSize: number;
+  sort: any[];
+  offset: number;
+  paged: boolean;
+  unpaged: boolean;
+}
+
+export interface IClientPaginationData {
+  content: IClientContentItem[];
+  pageable: IPageable;
+  totalPages: number;
+  totalElements: number;
+  last: boolean;
+  size: number;
+  number: number;
+  sort: any[];
+  numberOfElements: number;
+  first: boolean;
+  empty: boolean;
+}
+
+export interface IPartnerPaginationData {
+  content: IPartnerContentItem[];
+  pageable: IPageable;
+  totalPages: number;
+  totalElements: number;
+  last: boolean;
+  size: number;
+  number: number;
+  sort: any[];
+  numberOfElements: number;
+  first: boolean;
+  empty: boolean;
+}

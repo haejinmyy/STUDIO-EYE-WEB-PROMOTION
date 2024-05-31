@@ -109,7 +109,7 @@ function ClientWritePage() {
   }
 
   return (
-    <ContentBlock>
+    <ContentBlock height={380}>
       <TitleWrapper>
         <Title description='Client 등록' />
       </TitleWrapper>
@@ -143,10 +143,10 @@ function ClientWritePage() {
             <ToggleSwitch option1='공개' option2='비공개' selected={true} />
           </VisibilityWrapper>
         </RightContainer>
-        <ButtonWrapper>
-          <Button onClick={handleSubmit(onValid)} description='등록하기' width={100} />
-        </ButtonWrapper>
       </FormContainer>
+      <ButtonWrapper>
+        <Button onClick={handleSubmit(onValid)} description='등록하기' width={100} />
+      </ButtonWrapper>
     </ContentBlock>
   );
 }
@@ -204,8 +204,8 @@ const ImgBox = styled.div`
 
 const ButtonWrapper = styled.div`
   position: absolute;
-  bottom: 3px;
-  right: 3px;
+  bottom: 20px;
+  right: 15px;
 `;
 
 const FormContainer = styled.form`

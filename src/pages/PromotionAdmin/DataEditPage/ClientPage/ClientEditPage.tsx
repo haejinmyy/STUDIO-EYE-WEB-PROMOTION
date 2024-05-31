@@ -26,7 +26,9 @@ function ClientEditPage() {
   const navigator = useNavigate();
   const clientEditMatch = useMatch(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}/:clientId`);
   const clickedClient =
-    clientEditMatch?.params.clientId && data?.find((c) => String(c.clientInfo.id) === clientEditMatch.params.clientId);
+    clientEditMatch?.params.clientId &&
+    data &&
+    data.find((c) => String(c.clientInfo.id) === clientEditMatch.params.clientId);
   const [imgChange, setImgChange] = useState(false);
 
   const { register, handleSubmit, reset } = useForm<IFormData>({
@@ -159,7 +161,7 @@ function ClientEditPage() {
   return (
     <>
       {clickedClient && (
-        <ContentBlock id={clickedClient.clientInfo.id + ''}>
+        <ContentBlock id={clickedClient.clientInfo.id + ''} height={380}>
           <TitleWrapper>
             <Title description='Client 수정' />
           </TitleWrapper>

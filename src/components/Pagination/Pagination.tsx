@@ -89,6 +89,7 @@ export default Pagination;
 const Wrapper = styled.div`
   display: flex;
   justify-content: center;
+  margin-top: 10px;
 `;
 
 const PageLi = styled.div<{ selected: boolean }>`
@@ -98,11 +99,13 @@ const PageLi = styled.div<{ selected: boolean }>`
   font-size: 14px;
   width: 25px;
   height: 25px;
+  font-family: ${(props) => props.theme.font.regular};
 
   &:hover {
     cursor: pointer;
     color: ${(props) => props.theme.color.white.light};
     background-color: ${(props) => props.theme.color.yellow.bold};
+    transition: ease-in;
   }
   background-color: ${({ selected }) => (selected ? theme.color.yellow.light : 'none')};
 `;

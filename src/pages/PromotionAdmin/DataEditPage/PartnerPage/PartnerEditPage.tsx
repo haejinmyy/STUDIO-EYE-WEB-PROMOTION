@@ -29,7 +29,8 @@ function PartnerEditPage() {
   const partnerEditMatch = useMatch(`${PA_ROUTES.DATA_EDIT}/partner/:partnerId`);
   const clickedPartner =
     partnerEditMatch?.params.partnerId &&
-    data?.find((p) => String(p.partnerInfo.id) === partnerEditMatch.params.partnerId);
+    data &&
+    data.find((p) => String(p.partnerInfo.id) === partnerEditMatch.params.partnerId);
   const [imgChange, setImgChange] = useState(false);
 
   const {
@@ -170,7 +171,7 @@ function PartnerEditPage() {
   if (isLoading) return <>is Loading..</>;
   if (error) return <>{error.message}</>;
   return (
-    <ContentBlock>
+    <ContentBlock height={380}>
       <TitleWrapper>
         <Title description='Partner 수정' />
       </TitleWrapper>
