@@ -9,14 +9,15 @@ interface IArtworkCardProps {
   name: string;
   client: string;
   mainImg: string;
+  category: string;
 }
 
-function ArtworkCard({ id, name, client, mainImg }: IArtworkCardProps) {
+function ArtworkCard({ id, name, client, mainImg, category }: IArtworkCardProps) {
   const navigator = useNavigate();
 
   return (
     <ArtworkItem
-      onClick={() => navigator(`/${PP_ROUTES_CHILD.ARTWORK}/${id}`)}
+      onClick={() => navigator(`/${PP_ROUTES_CHILD.ARTWORK}/${id}`,{state:{category}})}
       variants={itemVariants}
       initial='initial'
       whileHover='hover'
@@ -66,26 +67,36 @@ const ArtworkItem = styled(motion.div)`
 `;
 
 const ArtworkImg = styled(motion.div)<{ ArtworkPhoto: string }>`
-  width: 400px;
-  height: 400px;
+  width: 250px;
+  min-width: 250px;
+  max-width: 250px;
+  height: 250px;
   background-size: cover;
   background-position: center;
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(${(props) => props.ArtworkPhoto});
 `;
 
 const Info = styled(motion.div)`
+  max-width:250px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow : hidden;
+
   padding-top: 10px;
   .info_client {
     display: block;
     padding-bottom: 5px;
-    font-size: 20px;
+    font-size: 18px;
     font-family: ${(props) => props.theme.font.medium};
     color: ${(props) => props.theme.color.black.light};
     padding: 10px 0 8px 0;
   }
 
   .info_name {
-    font-size: 27px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow : hidden;
+    font-size: 24px;
     color: ${(props) => props.theme.color.white.bold};
     font-family: ${(props) => props.theme.font.semiBold};
   }

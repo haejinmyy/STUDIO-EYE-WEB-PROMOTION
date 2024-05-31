@@ -9,4 +9,8 @@ export const NavWrapper = styled.div`
   height: 200px;
   border-bottom: 1px solid ${(props) => props.theme.color.black.bold};
   background-color: ${(props) => props.theme.color.white.bold};
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow : hidden;
 `;

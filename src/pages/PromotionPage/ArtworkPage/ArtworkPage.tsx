@@ -18,9 +18,9 @@ function ArtworkPage() {
   const postedData = data?.data?.filter((artwork) => artwork.isPosted === true) ?? [];
 
   // postedData가 유효한지 확인하여 filteredData 계산
-  const filteredData = category
+  const filteredData =category
     ? postedData.filter((artwork) => artwork.category.toLowerCase() === category.label.toLocaleLowerCase())
-    : [];
+    : postedData;
 
   function ScrollToTop() {
     useEffect(() => {
@@ -51,6 +51,7 @@ function ArtworkPage() {
                         name={artwork.name}
                         client={artwork.client}
                         mainImg={artwork.mainImg}
+                        category={category?category.label:"all"}
                       />
                     ))}
                   </>
@@ -69,6 +70,7 @@ function ArtworkPage() {
                         name={artwork.name}
                         client={artwork.client}
                         mainImg={artwork.mainImg}
+                        category={category?category.label:"all"}
                       />
                     ))}
                   </>
@@ -92,7 +94,8 @@ const Wrapper = styled.div`
 `;
 
 const ArtworkWrapper = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  // grid-template-columns: repeat(auto-fit,minmax(250px, 1fr));
   grid-gap: 33px;
 `;
