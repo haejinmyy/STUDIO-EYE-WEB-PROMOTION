@@ -116,16 +116,23 @@ const ArtworkCreating = () => {
   const defaultValue = getArtworkDefaultValue(
     selectedDate,
     handleDateChange,
+    selectedCategory,
     setSelectedCategory,
     isProjectOpened,
     handleTogglePosted,
     projectType,
     setProjectType,
+    link,
     handleLinkChange,
+    mainImage,
     handleMainImageChange,
+    detailImages,
     handleDetailImageChange,
+    title,
     handleTitleChange,
+    customer,
     handleCustomerChange,
+    overview,
     handleOverviewChange,
   );
 
@@ -137,7 +144,7 @@ const ArtworkCreating = () => {
         {defaultValue.map((item: DefaultValueItem, index: number) => (
           <div key={index}>
             {errorMessage && item.name === 'artworkType' && <ErrorMessage> ⚠ {errorMessage}</ErrorMessage>}
-            <ArtworkValueLayout title={item.title} description={item.description} content={item.content} />
+            <ArtworkValueLayout valueTitle={item.title} description={item.description} content={item.content} />
           </div>
         ))}
         <div />
