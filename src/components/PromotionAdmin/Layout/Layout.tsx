@@ -7,6 +7,7 @@ import backgroundImg from '@/assets/images/backgroundImg.png';
 import { authState } from '@/recoil/atoms';
 import { useRecoilValue } from 'recoil';
 import { PP_ADDRESS } from '@/constants/promotionpage';
+import ScrollToTop from '@/hooks/useScrollToTop';
 
 const Layout = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const Layout = () => {
   }
   return (
     <Container>
+      <ScrollToTop />
       <Navigation />
       <Header />
       <BodyWrapper>

@@ -4,7 +4,6 @@ import { useQuery } from 'react-query';
 import { getArtworkData } from '@/apis/PromotionPage/artwork';
 import styled from 'styled-components';
 import { useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { artwork_categories } from '@/components/PromotionPage/Artwork/Navigation';
 import ArtworkCard from '@/components/PromotionPage/Artwork/ArtworkCard';
 import NullException from '@/components/PromotionPage/Artwork/NullException';
@@ -15,10 +14,13 @@ function ArtworkPage() {
   const { data, isLoading, error } = useQuery<IArtworksData, Error>(['artwork', 'id'], getArtworkData);
   const category = artwork_categories.find((category) => category.key + '' === categoryId);
 
-  const postedData = data && data?.data.filter((artwork) => artwork.isPosted === true);
-  const filteredData =
-    postedData &&
-    postedData?.filter((artworks) => artworks.category.toLowerCase() === category?.label.toLocaleLowerCase());
+  // data가 유효한지 확인하여 postedData 계산
+  const postedData = data?.data?.filter((artwork) => artwork.isPosted === true) ?? [];
+
+  // postedData가 유효한지 확인하여 filteredData 계산
+  const filteredData =category
+    ? postedData.filter((artwork) => artwork.category.toLowerCase() === category.label.toLocaleLowerCase())
+    : postedData;
 
   function ScrollToTop() {
     useEffect(() => {
@@ -49,6 +51,7 @@ function ArtworkPage() {
                         name={artwork.name}
                         client={artwork.client}
                         mainImg={artwork.mainImg}
+                        category={category?category.label:"all"}
                       />
                     ))}
                   </>
@@ -67,6 +70,7 @@ function ArtworkPage() {
                         name={artwork.name}
                         client={artwork.client}
                         mainImg={artwork.mainImg}
+                        category={category?category.label:"all"}
                       />
                     ))}
                   </>
@@ -90,7 +94,8 @@ const Wrapper = styled.div`
 `;
 
 const ArtworkWrapper = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  // grid-template-columns: repeat(auto-fit,minmax(250px, 1fr));
   grid-gap: 33px;
 `;

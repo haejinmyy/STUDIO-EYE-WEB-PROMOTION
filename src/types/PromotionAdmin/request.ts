@@ -8,12 +8,13 @@ export interface IRequest {
   position: string;
   fileUrlList: Array<string>;
   clientName: string;
-  state: number;
+  state: string;
   year: number;
   month: number;
 }
 
 export interface IRequestData {
+  [x: string]: any;
   data: IRequest[];
 }
 

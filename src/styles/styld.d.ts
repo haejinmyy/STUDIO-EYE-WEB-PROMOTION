@@ -13,6 +13,7 @@ declare module 'styled-components' {
       white: {
         bold: string;
         light: string;
+        pale: string;
       };
       yellow: {
         bold: string;

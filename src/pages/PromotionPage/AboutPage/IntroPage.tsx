@@ -16,13 +16,15 @@ function IntroPage() {
   const aboutInView = useInView(aboutRef);
   const missionInView = useInView(missionRef);
 
-  const [companyIntroData, setCompanyIntroData] = useState<string[]>([]);
+  const [companyIntroData, setCompanyIntroData] = useState('');
+  const [sloganImageUrl, setSloganImageUrl] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getCompanyData();
         setCompanyIntroData(data.introduction);
+        setSloganImageUrl(data.sloganImageUrl);
       } catch (error) {
         console.error('Error fetching company data: ', error);
       }
@@ -55,7 +57,7 @@ function IntroPage() {
             transition={{ duration: 1, delay: 0.3 }}
           >
             <BackgroundText>ABOUT</BackgroundText>
-            <AboutText>{companyIntroData}</AboutText>
+            <AboutText dangerouslySetInnerHTML={{ __html: companyIntroData }} />
           </motion.div>
         </AboutWrapper>
         <MissionWrapper ref={missionRef}>
@@ -66,7 +68,11 @@ function IntroPage() {
             transition={{ duration: 1, delay: 0.3 }}
           >
             <BackgroundText> MISSION</BackgroundText>
-            <img src={MissionLabel} alt='MissionLabel' style={{ width: '50%', height: 'auto' }} />
+            {sloganImageUrl !== '' ? (
+              <img src={sloganImageUrl} alt='SloganLabel' style={{ width: '50%', height: '130px' }} />
+            ) : (
+              <img src={MissionLabel} alt='MissionLabel' style={{ width: '50%', height: 'auto' }} />
+            )}
           </motion.div>
         </MissionWrapper>
       </IntroContainer>
@@ -145,6 +151,9 @@ const AboutText = styled.div<IFontStyleProps>`
   font-size: 36px;
   color: ${(props) => props.color || '#ffffff'};
   margin-bottom: 15px;
+  padding: 10px;
+  max-width: 80%;
+  word-wrap: break-word;
 `;
 const MissionWrapper = styled.div`
   text-align: right;

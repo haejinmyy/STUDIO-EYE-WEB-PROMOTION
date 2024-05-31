@@ -91,6 +91,16 @@ export const getPartnersDetailData = async (id: number) => {
   }
 };
 
+export const getPartnerPaginateData = async (page: number, perPage: number) => {
+  try {
+    const response = await axios.get(`${PROMOTION_BASIC_PATH}/api/partners/page?page=${page}&size=${perPage}`);
+    return response.data;
+  } catch (error) {
+    console.log('[❌ Error fetching all artworks]', error);
+    throw error;
+  }
+};
+
 export const getClientData = async () => {
   try {
     const response = await axios.get(`${PROMOTION_BASIC_PATH}/api/client`);
@@ -115,6 +125,16 @@ export const getClientLogoData = async () => {
   try {
     const response = await axios.get(`${PROMOTION_BASIC_PATH}/api/client/logoImgList`);
     return response.data.data;
+  } catch (error) {
+    console.log('[❌ Error fetching all artworks]', error);
+    throw error;
+  }
+};
+
+export const getClientPaginateData = async (page: number, perPage: number) => {
+  try {
+    const response = await axios.get(`${PROMOTION_BASIC_PATH}/api/client/page?page=${page}&size=${perPage}`);
+    return response.data;
   } catch (error) {
     console.log('[❌ Error fetching all artworks]', error);
     throw error;

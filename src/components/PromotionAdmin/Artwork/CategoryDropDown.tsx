@@ -4,11 +4,12 @@ import styled from 'styled-components';
 
 interface CategoryDropDownProps {
   setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
+  putCategory?: string;
 }
 
-const CategoryDropDown = ({ setSelectedCategory }: CategoryDropDownProps) => {
+const CategoryDropDown = ({ setSelectedCategory, putCategory }: CategoryDropDownProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedCategory, setSelectedCategoryLocal] = useState('All');
+  const [selectedCategory, setSelectedCategoryLocal] = useState(putCategory ? putCategory : 'All');
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategoryLocal(category);
