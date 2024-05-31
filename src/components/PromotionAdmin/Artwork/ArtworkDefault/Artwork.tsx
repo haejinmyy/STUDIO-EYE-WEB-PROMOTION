@@ -24,7 +24,9 @@ const Artwork = () => {
   const filteredArtworks = data
     ? data.filter((artwork) => {
         const isMatchingSearch = artwork.name.toLowerCase().includes(searchQuery.toLowerCase());
-        const isMatchingCategory = selectedCategory === '' || typeof artwork.category === selectedCategory;
+
+        const isMatchingCategory = selectedCategory === '' || artwork.category.includes(selectedCategory);
+        console.log(artwork.category);
         return isMatchingSearch && isMatchingCategory;
       })
     : [];
