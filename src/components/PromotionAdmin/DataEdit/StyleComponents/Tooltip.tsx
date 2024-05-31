@@ -49,8 +49,8 @@ const Description = styled.div<TooltipType>`
   position: absolute;
   width: max-content;
   background-color: #f4f4f4;
-  margin-top: 60px;
-  padding: 5 20px;
+  padding: 10px 20px;
+  top: 30px;
   font-size: ${(props) => (props.fontSize ? props.fontSize + 'px;' : '14px;')};
-  font-family: ${(props) => props.theme.font.regular};
+  font-family: ${(props) => props.theme.font.light};
 `;

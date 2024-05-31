@@ -13,7 +13,7 @@ import { ReactComponent as PrivateIcon } from '@/assets/images/PA/private.svg';
 import Button from '../StyleComponents/Button';
 import { DATAEDIT_TITLES_COMPONENTS } from '../Company/StyleComponents';
 import { ContentBlock } from '../Company/CompanyFormStyleComponents';
-import LogoItemList from '../StyleComponents/LogoListItem';
+import LogoListItem from '../StyleComponents/LogoListItem';
 const Client = () => {
   const { data, isLoading, error } = useQuery<IClientData[], Error>(['client', 'id'], getClientData);
   const navigator = useNavigate();
@@ -40,7 +40,7 @@ const Client = () => {
             <>
               {Array.isArray(data) &&
                 data?.map((client) => (
-                  <LogoItemList
+                  <LogoListItem
                     logo={client.logoImg}
                     name={client.clientInfo.name}
                     is_posted={client.clientInfo.visibility}

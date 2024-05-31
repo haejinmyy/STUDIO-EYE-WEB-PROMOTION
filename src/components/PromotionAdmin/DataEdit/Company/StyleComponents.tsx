@@ -2,10 +2,24 @@ import styled from 'styled-components';
 import { ReactComponent as InfoIcon } from '@/assets/images/PA/infoIcon.svg';
 import Title from '../StyleComponents/Title';
 import Tooltip from '../StyleComponents/Tooltip';
+import NoticeComponent from '../StyleComponents/NoticeComponent';
 
 const TitleWrapper = styled.div`
   display: flex;
+  margin-bottom: 10px;
 `;
+const NoticeComponentWrapper = styled.div`
+  margin-top: 10px;
+`;
+
+export const INPUT_MAX_LENGTH = {
+  BASIC_ADDRESS: 10,
+  BASIC_PHONE: 10,
+  BASIC_FAX: 10,
+  DETAIL_TITLE: 15,
+  DETAIL_CONTENT: 100,
+  FAQ_QUESTION: 50,
+};
 
 const IMAGE_PIXEL = {
   LOGO: '200x200',
@@ -58,17 +72,26 @@ const DATAEDIT_COLUMNS = {
     title: 'Client',
     description: 'Main 화면에 반영됩니다.',
   },
+
+  FAQ: {
+    title: 'FAQ',
+    description: 'FAQ 화면에 반영됩니다.',
+  },
 };
 
 export const DATAEDIT_NOTICE_COMPONENTS = {
   IMAGE: {
-    LOGO: <div>{IMAGE_PIXEL.LOGO}</div>,
-    SLOGAN: <div>{IMAGE_PIXEL.SLOGAN}</div>,
+    LOGO: (
+      <NoticeComponentWrapper>
+        <NoticeComponent description={`권장 픽셀: ${IMAGE_PIXEL.LOGO}`} />
+      </NoticeComponentWrapper>
+    ),
+    SLOGAN: <NoticeComponent description={`권장 픽셀: ${IMAGE_PIXEL.SLOGAN}`} />,
   },
 
   COLOR: {
-    LOGO: <div>{IMAGE_COLOR.LOGO}</div>,
-    SLOGAN: <div>{IMAGE_COLOR.SLOGAN}</div>,
+    LOGO: <NoticeComponent description={`권장 색상: ${IMAGE_COLOR.LOGO}`} />,
+    SLOGAN: <NoticeComponent description={`권장 색상: ${IMAGE_COLOR.SLOGAN}`} />,
   },
 };
 
@@ -122,6 +145,13 @@ export const DATAEDIT_TITLES_COMPONENTS = {
     <TitleWrapper>
       <Tooltip description={DATAEDIT_COLUMNS.Client.description} svgComponent={<InfoIcon width={20} height={20} />} />
       <Title description={DATAEDIT_COLUMNS.Client.title} />
+    </TitleWrapper>
+  ),
+
+  FAQ: (
+    <TitleWrapper>
+      <Tooltip description={DATAEDIT_COLUMNS.FAQ.description} svgComponent={<InfoIcon width={20} height={20} />} />
+      <Title description={DATAEDIT_COLUMNS.FAQ.title} />
     </TitleWrapper>
   ),
 };

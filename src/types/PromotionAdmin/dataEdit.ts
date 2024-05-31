@@ -1,6 +1,7 @@
 export interface IClientData {
   clientInfo: {
     name: string;
+    visibility: boolean;
     id: number;
   };
   logoImg: string;
@@ -18,6 +19,7 @@ export interface ICompanyData {
   mainOverview: string;
   commitment: string;
   address: string;
+  addressEnglish: string;
   fax: string;
   id: number;
   introduction: string;
@@ -34,5 +36,6 @@ export interface IPartnersData {
     id: number;
     is_main: boolean;
     link: string;
+    name: string;
   };
 }

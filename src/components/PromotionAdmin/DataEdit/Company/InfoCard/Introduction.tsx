@@ -6,6 +6,7 @@ import { ICompanyData } from '@/types/PromotionAdmin/dataEdit';
 import { Wrapper, ContentBlock, InputWrapper, InputTitle } from '../CompanyFormStyleComponents';
 import styled from 'styled-components';
 import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
+import InnerHTML from '../../StyleComponents/InnerHTML';
 
 const Introduction = () => {
   const { data, isLoading, error } = useQuery<ICompanyData, Error>(['company', 'id'], getCompanyData);
@@ -20,11 +21,17 @@ const Introduction = () => {
 
           <InputWrapper>
             <InputTitle>Main Overview</InputTitle>
-            <Content dangerouslySetInnerHTML={{ __html: data.mainOverview }} />
+            <Content>
+              <InnerHTML description={data.mainOverview} />
+            </Content>
             <InputTitle>Commitment</InputTitle>
-            <Content dangerouslySetInnerHTML={{ __html: data.commitment }} />
+            <Content>
+              <InnerHTML description={data.commitment} />
+            </Content>
             <InputTitle>Introduction</InputTitle>
-            <Content dangerouslySetInnerHTML={{ __html: data.introduction }} />
+            <Content>
+              <InnerHTML description={data.introduction} />
+            </Content>
           </InputWrapper>
         </ContentBlock>
       )}
@@ -40,13 +47,11 @@ const Content = styled.div`
   padding: 12px;
   font-size: 14px;
   font-family: ${(props) => props.theme.font.regular};
-  min-height: 15px;
+  height: max-content;
   box-shadow: 1px 1px 4px 0.1px #c6c6c6;
 
   & p,
   span {
     font-size: 14px;
-    font-family: ${(props) => props.theme.font.regular};
-    line-height: 20px;
   }
 `;

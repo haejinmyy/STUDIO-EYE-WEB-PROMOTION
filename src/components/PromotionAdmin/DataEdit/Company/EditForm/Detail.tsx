@@ -16,7 +16,7 @@ import {
 import { ReactComponent as DeleteIcon } from '@/assets/images/PA/minusIcon.svg';
 import { ReactComponent as AddedIcon } from '@/assets/images/PA/plusIcon.svg';
 import Button from '../../StyleComponents/Button';
-import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
+import { DATAEDIT_TITLES_COMPONENTS, INPUT_MAX_LENGTH } from '../StyleComponents';
 
 interface IDetailFormData {
   detailInformation: { key: string; value: string }[];
@@ -52,19 +52,10 @@ const Detail = ({ setEditDetail }: IDetailProps) => {
       }));
       reset({ detailInformation: detailInformationArray });
     }
-    console.log('data', data);
-    console.log('lan', fields.length);
   }, [data, reset]);
 
   // 글자수 확인
   const watchFields = watch('detailInformation');
-  const INPUT_MAX_LENGTH = {
-    BASIC_ADDRESS: 10,
-    BASIC_PHONE: 10,
-    BASIC_FAX: 10,
-    DETAIL_TITLE: 15,
-    DETAIL_CONTENT: 100,
-  };
 
   // detail 요소 삭제
   const safeRemove = (index: number) => {

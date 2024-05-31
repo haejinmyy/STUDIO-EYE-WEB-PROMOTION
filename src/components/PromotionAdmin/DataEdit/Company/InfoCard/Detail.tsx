@@ -64,13 +64,8 @@ const ContentBlock = styled.div`
   height: fit-content;
 `;
 
-const TitleWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding-bottom: 20px;
-`;
-
 const InputWrapper = styled.div`
+  margin-top: 30px;
   display: flex;
 
   flex-direction: column;
@@ -90,67 +85,25 @@ const InputWrapper = styled.div`
   }
 `;
 
-const InputImgWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
-const InputTitle = styled.div`
-  display: flex;
-  padding-top: 20px;
-  align-items: center;
-  height: 40px;
-  svg {
-    cursor: pointer;
-    margin-right: 10px;
-  }
-`;
-
-const Box = styled.div``;
-
-const ImgBox = styled.div`
-  display: flex;
-  height: 200px;
-  justify-content: center;
-  align-items: center;
-  background-color: ${(props) => props.theme.color.background};
-  border-radius: 5px;
-  margin-top: 15px;
-`;
-
-const LogoWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  input {
-    display: none;
-  }
-
-  img {
-    max-width: 300px;
-    max-height: 150px;
-    margin-bottom: 10px;
-  }
-`;
-
 const DetailItem = styled.div`
   display: flex;
   width: 100%;
   align-items: flex-start;
   justify-content: space-around;
   padding: 5px 0px;
-  font-size: 13px;
+  font-size: 15px;
 
   .detail_content {
     display: flex;
     align-items: center;
     padding: 5px;
-    font-family: ${(props) => props.theme.font.regular};
+    font-family: ${(props) => props.theme.font.light};
     min-height: 30px;
     width: 400px;
     border: none;
     box-shadow: 1px 1px 4px 0.1px #c6c6c6;
     line-height: 18px;
+    white-space: pre-wrap;
   }
 
   .detail_title {
@@ -160,7 +113,7 @@ const DetailItem = styled.div`
     width: 240px;
     height: 30px;
     margin-right: 5px;
-    font-family: ${(props) => props.theme.font.regular};
+    font-family: ${(props) => props.theme.font.light};
     box-shadow: 1px 1px 4px 0.1px #c6c6c6;
   }
 `;
