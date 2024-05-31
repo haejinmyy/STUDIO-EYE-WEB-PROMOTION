@@ -21,18 +21,21 @@ export const Form = styled.form`
 export const LeftContentWrapper = styled.div``;
 export const RightContentWrapper = styled.div``;
 
-export const ContentBlock = styled.div`
+export const ContentBlock = styled.div<{ width?: number; height?: number }>`
   padding: 25px;
-  background-color: ${(props) => props.theme.color.white.light};
+  background-color: ${(props) => props.theme.color.white.pale};
+  position: relative;
   box-shadow: 2px 2px 5px 0.3px ${(props) => props.theme.color.black.pale};
   margin-bottom: 30px;
   margin-right: 30px;
-  width: 700px;
+
   border-radius: 4px;
-  height: fit-content;
+  width: ${(props) => (props.width ? props.width + 'px;' : '700px;')};
+  height: ${(props) => (props.height ? props.height + 'px;' : 'fit-content;')};
 `;
 
 export const TitleWrapper = styled.div`
+  background-color: ${(props) => props.theme.color.white.light};
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -41,7 +44,7 @@ export const TitleWrapper = styled.div`
 
 export const InputWrapper = styled.div`
   display: flex;
-
+  background-color: ${(props) => props.theme.color.white.light};
   flex-direction: column;
   font-family: ${(props) => props.theme.font.regular};
   p {
@@ -50,6 +53,7 @@ export const InputWrapper = styled.div`
     padding-bottom: 3px;
   }
   input {
+    outline: none;
     font-family: ${(props) => props.theme.font.regular};
     font-size: 14px;
     padding-left: 10px;
@@ -57,10 +61,17 @@ export const InputWrapper = styled.div`
     border: none;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   }
+
+  input:focus,
+  textarea:focus {
+    transition: 0.2s;
+    border-bottom: 3px solid ${(props) => props.theme.color.symbol};
+  }
 `;
 
 export const InputImgWrapper = styled.div`
   display: flex;
+  width: 100%;
   justify-content: space-between;
 `;
 
@@ -75,11 +86,14 @@ export const InputTitle = styled.div`
   }
 `;
 
-export const Box = styled.div``;
+export const Box = styled.div`
+  width: 100%;
+`;
 
 export const ImgBox = styled.div`
   display: flex;
   height: 200px;
+  width: 95%;
   justify-content: center;
   align-items: center;
   background-color: ${(props) => props.theme.color.background};

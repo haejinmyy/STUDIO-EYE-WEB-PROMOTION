@@ -36,7 +36,6 @@ import PartnerWritePage from './pages/PromotionAdmin/DataEditPage/PartnerPage/Pa
 
 import Login from './pages/PromotionAdmin/Login/Login';
 import ClientWritePage from './pages/PromotionAdmin/DataEditPage/ClientPage/ClientWritePage';
-import CompanyEditPage from './components/PromotionAdmin/DataEdit/Company/EditForm';
 import CEOEditPage from './pages/PromotionAdmin/DataEditPage/CEOPage/CEOEditPage';
 const router = createBrowserRouter([
   {
@@ -141,10 +140,6 @@ const router = createBrowserRouter([
                 element: <CompanyPage />,
               },
               {
-                path: `${PA_ROUTES.DATA_EDIT}/company/edit`,
-                element: <CompanyEditPage />,
-              },
-              {
                 path: `${PA_ROUTES.DATA_EDIT}/partner`,
                 element: <PartnerPage />,
                 children: [
@@ -152,11 +147,11 @@ const router = createBrowserRouter([
                     path: `${PA_ROUTES.DATA_EDIT}/partner/:partnerId`,
                     element: <PartnerEditPage />,
                   },
+                  {
+                    path: `${PA_ROUTES.DATA_EDIT}/partner/write`,
+                    element: <PartnerWritePage />,
+                  },
                 ],
-              },
-              {
-                path: `${PA_ROUTES.DATA_EDIT}/partner/write`,
-                element: <PartnerWritePage />,
               },
               {
                 path: `${PA_ROUTES.DATA_EDIT}/client`,
@@ -166,11 +161,11 @@ const router = createBrowserRouter([
                     path: `${PA_ROUTES.DATA_EDIT}/client/:clientrId`,
                     element: <ClientEditPage />,
                   },
+                  {
+                    path: `${PA_ROUTES.DATA_EDIT}/client/write`,
+                    element: <ClientWritePage />,
+                  },
                 ],
-              },
-              {
-                path: `${PA_ROUTES.DATA_EDIT}/client/write`,
-                element: <ClientWritePage />,
               },
             ],
           },
