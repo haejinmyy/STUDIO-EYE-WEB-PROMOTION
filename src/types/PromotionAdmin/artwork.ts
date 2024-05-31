@@ -22,6 +22,24 @@ export type ArtworkData = {
   mainSequence: number;
 };
 
+export type PostArtworkData = {
+  request: PostArtworkDataRequestType;
+  file: string;
+  files: string[];
+};
+
+export type PostArtworkDataRequestType = {
+  department: string;
+  category: string;
+  name: string;
+  client: string;
+  date: string;
+  link: string;
+  overView: string;
+  projectType: projectType;
+  isPosted: boolean;
+};
+
 export type projectType = 'top' | 'main' | 'others';
 
 export type UpdateArtwork = {

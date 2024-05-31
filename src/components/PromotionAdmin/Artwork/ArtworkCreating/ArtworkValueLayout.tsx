@@ -26,8 +26,9 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   margin-bottom: 15px;
-  width: 280px;
+  width: 430px;
 `;
+
 const ContentWrapper = styled.div`
   width: 100%;
   height: fit-content;
@@ -44,10 +45,11 @@ const Description = styled.div`
   font-size: 14px;
   color: #595959;
   margin-bottom: 10px;
+  line-height: 120%;
 `;
 const Content = styled.div`
   input {
-    width: fit-content;
+    width: 90%;
     height: 30px;
     padding: 8px;
     font-family: 'pretendard-medium';
@@ -55,7 +57,7 @@ const Content = styled.div`
     border-radius: 5px;
     font-size: 15px;
     border: none;
-    background-color: #e9e9e9;
+    background-color: #d1d1d1a0;
     color: black;
     margin-bottom: 20px;
     &:hover {

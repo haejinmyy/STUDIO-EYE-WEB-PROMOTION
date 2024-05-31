@@ -3,39 +3,64 @@ import styled from 'styled-components';
 import CategoryDropDown from '../CategoryDropDown';
 import ImageUpload from './ImageUpload';
 
-const getArtworkDefaultValue = (
+export type DefaultValueItem = {
+  name: string;
+  title: string;
+  description: string;
+  content: React.ReactNode;
+  error?: string;
+};
+
+export const getArtworkDefaultValue = (
   selectedDate: Date | null,
   handleDateChange: (date: Date | null) => void,
   setSelectedCategory: React.Dispatch<React.SetStateAction<string>>,
-  isPosted: boolean,
+  isprojectopened: boolean,
   handleTogglePosted: () => void,
-  isTyped: projectType,
-  setIsTyped: (type: projectType) => void,
+  projectType: projectType,
+  setProjectType: (type: projectType) => void,
   handleLinkChange: (newLink: string) => void,
-  handleMainImageChange: (newImage: string | string[]) => void,
-  handleDetailImageChange: (newImages: string | string[]) => void,
+  handleMainImageChange: (newImage: File | File[]) => void,
+  handleDetailImageChange: (newImages: File | File[]) => void,
   handleTitleChange: (newTitle: string) => void,
   handleCustomerChange: (newCustomer: string) => void,
+  handleOverviewChange: (newOverview: string) => void,
 ) => {
-  const defaultValue = [
+  const defaultValue: DefaultValueItem[] = [
     {
+      name: 'mainImage',
       title: '메인 이미지 설정',
       description: '메인 이미지는 최대 한 개만 설정 가능합니다.',
-      content: <ImageUpload type='main' onChange={(newImage: string | string[]) => handleMainImageChange(newImage)} />,
+      content: <ImageUpload type='main' onChange={(newImage: File | File[]) => handleMainImageChange(newImage)} />,
     },
     {
+      name: 'title',
       title: '아트워크 제목',
-      description: '아트워크 제목은 최대 15자만 입력 가능합니다.',
+      description: '아트워크 제목은 최대 20자만 입력 가능합니다.',
       content: (
-        <input
+        <StyledInput
           required
           type='text'
-          maxLength={15}
+          maxLength={20}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTitleChange(e.target.value)}
         />
       ),
     },
     {
+      name: 'overview',
+      title: '아트워크 설명',
+      description: '아트워크에 대한 설명을 작성해주세요.',
+      content: (
+        <OverviewInput
+          required
+          type='text'
+          maxLength={40}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleOverviewChange(e.target.value)}
+        />
+      ),
+    },
+    {
+      name: 'customer',
       title: '고객사',
       description: '고객사는 최대 10자만 입력 가능합니다.',
       content: (
@@ -48,6 +73,7 @@ const getArtworkDefaultValue = (
       ),
     },
     {
+      name: 'date',
       title: '날짜',
       description: '',
       content: (
@@ -62,6 +88,7 @@ const getArtworkDefaultValue = (
     },
 
     {
+      name: 'category',
       title: '카테고리',
       description: '',
       content: (
@@ -71,11 +98,12 @@ const getArtworkDefaultValue = (
       ),
     },
     {
+      name: 'link',
       title: '외부 연결 미디어 링크',
       description: '',
       content: (
         <>
-          <StyledLinkInput
+          <StyledInput
             required
             type='text'
             placeholder='링크를 입력하세요'
@@ -85,32 +113,35 @@ const getArtworkDefaultValue = (
       ),
     },
     {
-      title: '공개 여부',
-      description: '비공개로 설정할 시, 메인화면 및 아트워크 화면에서 숨겨집니다.',
+      name: 'isOpened',
+      title: '프로모션 페이지 공개 여부',
+      description: '비공개로 설정할 시, 프로모션 페이지의 메인화면 및 아트워크 화면에서 숨겨집니다.',
       content: (
-        <IsPostedContainer isPosted={isPosted}>
-          <div onClick={() => !isPosted && handleTogglePosted()}>공개</div>
-          <div onClick={() => isPosted && handleTogglePosted()}>비공개</div>
+        <IsPostedContainer isopened={isprojectopened ? 'true' : 'false'}>
+          <div onClick={() => !isprojectopened && handleTogglePosted()}>공개</div>
+          <div onClick={() => isprojectopened && handleTogglePosted()}>비공개</div>
         </IsPostedContainer>
       ),
     },
     {
+      name: 'artworkType',
       title: '아트워크 타입',
       description:
         'top은 메인 페이지의 첫번째 아트워크이며 최대 한 개만 지정이 가능합니다. main은 메인 페이지의 대표 아트워크이며 최대 5개까지 지정이 가능합니다. others는 그 외의 기본값 타입입니다.',
       content: (
-        <TypeContainer isTyped={isTyped}>
-          <div onClick={() => isTyped !== 'top' && setIsTyped('top')}>Top</div>
-          <div onClick={() => isTyped !== 'main' && setIsTyped('main')}>Main</div>
-          <div onClick={() => isTyped !== 'others' && setIsTyped('others')}>Others</div>
+        <TypeContainer projectType={projectType}>
+          <div onClick={() => projectType !== 'top' && setProjectType('top')}>Top</div>
+          <div onClick={() => projectType !== 'main' && setProjectType('main')}>Main</div>
+          <div onClick={() => projectType !== 'others' && setProjectType('others')}>Others</div>
         </TypeContainer>
       ),
     },
     {
+      name: 'detaiImages',
       title: '아트워크 상세 이미지',
       description: '아트워크 상세 이미지는 최소 1개에서 최대 3개까지 지정 가능합니다.',
       content: (
-        <ImageUpload type='detail' onChange={(newImages: string | string[]) => handleDetailImageChange(newImages)} />
+        <ImageUpload type='detail' onChange={(newImages: File | File[]) => handleDetailImageChange(newImages)} />
       ),
     },
   ];
@@ -119,7 +150,7 @@ const getArtworkDefaultValue = (
 
 export default getArtworkDefaultValue;
 
-const IsPostedContainer = styled.div<{ isPosted: boolean }>`
+const IsPostedContainer = styled.div<{ isopened: string }>`
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -138,7 +169,7 @@ const IsPostedContainer = styled.div<{ isPosted: boolean }>`
     background-color: #f0f0f0;
     border-radius: 20px;
     transition: transform 0.3s ease-in-out;
-    transform: ${(props) => (props.isPosted ? 'translateX(0)' : 'translateX(75px)')}; // 애니메이션 효과를 적용합니다.
+    transform: ${(props) => (props.isopened === 'true' ? 'translateX(0)' : 'translateX(75px)')};
   }
 
   div {
@@ -150,17 +181,17 @@ const IsPostedContainer = styled.div<{ isPosted: boolean }>`
     color: grey;
 
     &:first-child {
-      color: ${(props) => (props.isPosted ? 'black' : 'grey')};
-      font-weight: ${(props) => (props.isPosted ? 'bold' : 'normal')};
+      color: ${(props) => (props.isopened === 'true' ? 'black' : 'grey')};
+      font-weight: ${(props) => (props.isopened === 'true' ? 'bold' : 'normal')};
     }
 
     &:last-child {
-      color: ${(props) => (props.isPosted ? 'grey' : 'black')};
-      font-weight: ${(props) => (props.isPosted ? 'normal' : 'bold')};
+      color: ${(props) => (props.isopened === 'true' ? 'grey' : 'black')};
+      font-weight: ${(props) => (props.isopened === 'true' ? 'normal' : 'bold')};
     }
   }
 `;
-const TypeContainer = styled.div<{ isTyped: projectType }>`
+const TypeContainer = styled.div<{ projectType: projectType }>`
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -180,7 +211,7 @@ const TypeContainer = styled.div<{ isTyped: projectType }>`
     border-radius: 20px;
     transition: transform 0.3s ease-in-out;
     transform: ${(props) => {
-      switch (props.isTyped) {
+      switch (props.projectType) {
         case 'top':
           return 'translateX(0)';
         case 'main':
@@ -202,31 +233,25 @@ const TypeContainer = styled.div<{ isTyped: projectType }>`
     color: grey;
 
     &:nth-child(1) {
-      color: ${(props) => (props.isTyped === 'top' ? 'black' : 'grey')};
-      font-weight: ${(props) => (props.isTyped === 'top' ? 'bold' : 'normal')};
+      color: ${(props) => (props.projectType === 'top' ? 'black' : 'grey')};
+      font-weight: ${(props) => (props.projectType === 'top' ? 'bold' : 'normal')};
     }
 
     &:nth-child(2) {
-      color: ${(props) => (props.isTyped === 'main' ? 'black' : 'grey')};
-      font-weight: ${(props) => (props.isTyped === 'main' ? 'bold' : 'normal')};
+      color: ${(props) => (props.projectType === 'main' ? 'black' : 'grey')};
+      font-weight: ${(props) => (props.projectType === 'main' ? 'bold' : 'normal')};
     }
 
     &:nth-child(3) {
-      color: ${(props) => (props.isTyped === 'others' ? 'black' : 'grey')};
-      font-weight: ${(props) => (props.isTyped === 'others' ? 'bold' : 'normal')};
+      color: ${(props) => (props.projectType === 'others' ? 'black' : 'grey')};
+      font-weight: ${(props) => (props.projectType === 'others' ? 'bold' : 'normal')};
     }
   }
 `;
-const StyledLinkInput = styled.input`
-  width: 100%;
-  padding: 8px;
-  border: none;
-  border-bottom: 1px solid #ccc;
 
-  font-size: 16px;
-`;
+const StyledInput = styled.input``;
 
-const StyledInput = styled.input`
+const OverviewInput = styled.input`
   width: 100%;
   padding: 8px;
   border: none;

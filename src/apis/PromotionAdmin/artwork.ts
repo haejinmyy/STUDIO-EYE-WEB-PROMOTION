@@ -1,5 +1,5 @@
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
-import { ArtworkData } from '@/types/PromotionAdmin/artwork';
+import { ArtworkData, PostArtworkData } from '@/types/PromotionAdmin/artwork';
 import axios from 'axios';
 
 export const getAllArtworks = async () => {
@@ -32,7 +32,7 @@ export const getArtworkDetail = async (artworkId: number) => {
   }
 };
 
-export const postArtwork = async (artworkData: ArtworkData) => {
+export const postArtwork = async (artworkData: FormData) => {
   try {
     const config = {
       headers: {
@@ -40,7 +40,7 @@ export const postArtwork = async (artworkData: ArtworkData) => {
       },
     };
     const response = await axios.post(`${PROMOTION_BASIC_PATH}/api/projects`, artworkData, config);
-    return response.data as ArtworkData;
+    return response.data;
   } catch (error) {
     console.error('[❌ Error creating artwork]', error);
     throw error;
