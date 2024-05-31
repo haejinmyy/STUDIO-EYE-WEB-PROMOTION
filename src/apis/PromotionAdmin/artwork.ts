@@ -1,5 +1,5 @@
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
-import { ArtworkData, PostArtworkData } from '@/types/PromotionAdmin/artwork';
+import { ArtworkData, PostArtworkData, projectType } from '@/types/PromotionAdmin/artwork';
 import axios from 'axios';
 
 export const getAllArtworks = async () => {
@@ -47,6 +47,21 @@ export const postArtwork = async (artworkData: FormData) => {
   }
 };
 
+export const deleteArtwork = async (projectId: number) => {
+  try {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    const response = await axios.delete(`${PROMOTION_BASIC_PATH}/api/projects/${projectId}`, config);
+    return response.data;
+  } catch (error) {
+    console.error('[❌ Error creating artwork]', error);
+    throw error;
+  }
+};
+
 export const putArtwork = async (artworkData: FormData) => {
   try {
     const config = {
@@ -59,6 +74,27 @@ export const putArtwork = async (artworkData: FormData) => {
     return response.data;
   } catch (error) {
     console.error('[❌ Error updating artwork]', error);
+    throw error;
+  }
+};
+
+export const putArtworkType = async (artworkId: number, artworkType: projectType) => {
+  try {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    const requestBody = {
+      projectId: artworkId,
+      projectType: artworkType,
+    };
+
+    const response = await axios.put(`${PROMOTION_BASIC_PATH}/api/projects/project-type`, requestBody, config);
+    return response.data;
+  } catch (error) {
+    console.error('[❌ Error updating putArtworkType]', error);
     throw error;
   }
 };
