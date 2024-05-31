@@ -251,27 +251,37 @@ const InputForm = () => {
                   })}
                   placeholder='주소를 입력해주세요'
                 />
+                {errors.address && <ErrorMessage>{errors.address.message}</ErrorMessage>}
 
                 <InputTitle>
                   <p>English Address</p>
                 </InputTitle>
                 <input
                   {...register('addressEnglish', {
-                    required: '주소를 입력해주세요',
+                    required: '영문주소를 입력해주세요',
+                    pattern: {
+                      value: /^[A-Za-z0-9\s,.'-]{3,}$/,
+                      message: '유효한 영어 주소를 입력해주세요.',
+                    },
                   })}
-                  placeholder='주소를 입력해주세요'
+                  placeholder='영문주소를 입력해주세요'
                 />
+                {errors.addressEnglish && <ErrorMessage>{errors.addressEnglish.message}</ErrorMessage>}
 
                 <InputTitle>
                   <p>Phone Number</p>
                 </InputTitle>
-
                 <input
                   {...register('phone', {
                     required: '전화번호를 입력해주세요',
+                    pattern: {
+                      value: /^\+?\d{2,3}-\d{3,4}-\d{4}$/,
+                      message: '유효한 전화번호를 입력해주세요. (예: 010-1234-5678) ',
+                    },
                   })}
                   placeholder='전화번호를 입력해주세요'
                 />
+                {errors.phone && <ErrorMessage>{errors.phone.message}</ErrorMessage>}
 
                 <InputTitle>
                   <p>Fax Number</p>
@@ -280,9 +290,14 @@ const InputForm = () => {
                 <input
                   {...register('fax', {
                     required: '팩스번호를 입력해주세요',
+                    pattern: {
+                      value: /^\+?\d{2,3}-\d{3,4}-\d{4}$/,
+                      message: '유효한 팩스번호 형식을 입력해주세요. (예: 02-123-4567 또는 031-1234-5678)',
+                    },
                   })}
                   placeholder='팩스번호를 입력해주세요'
                 />
+                {errors.fax && <ErrorMessage>{errors.fax.message}</ErrorMessage>}
               </InputWrapper>
             </ContentBlock>
 
@@ -424,4 +439,11 @@ const TitleWrapper = styled.div<{ space_between?: boolean }>`
   div {
     display: flex;
   }
+`;
+
+const ErrorMessage = styled.div`
+  font-family: ${(props) => props.theme.font.light};
+  margin-top: 10px;
+  margin-left: 10px;
+  font-size: 13px;
 `;
