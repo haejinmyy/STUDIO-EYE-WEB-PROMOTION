@@ -2,15 +2,15 @@ import React from 'react';
 import styled from 'styled-components';
 
 type Props = {
-  title: string;
+  valueTitle: string;
   description: string;
   content: React.ReactNode;
 };
 
-const ArtworkValueLayout = ({ title, description, content }: Props) => {
+const ArtworkValueLayout = ({ valueTitle, description, content }: Props) => {
   return (
     <Container>
-      <Title>{title}</Title>
+      <Title>{valueTitle}</Title>
       <Description>{description}</Description>
       <ContentWrapper>
         <Content>{content}</Content>
@@ -26,8 +26,10 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   margin-bottom: 15px;
-  width: 280px;
+  width: 430px;
+  white-space: pre-line;
 `;
+
 const ContentWrapper = styled.div`
   width: 100%;
   height: fit-content;
@@ -44,10 +46,11 @@ const Description = styled.div`
   font-size: 14px;
   color: #595959;
   margin-bottom: 10px;
+  line-height: 120%;
 `;
 const Content = styled.div`
   input {
-    width: fit-content;
+    width: 90%;
     height: 30px;
     padding: 8px;
     font-family: 'pretendard-medium';
@@ -55,7 +58,7 @@ const Content = styled.div`
     border-radius: 5px;
     font-size: 15px;
     border: none;
-    background-color: #e9e9e9;
+    background-color: #d1d1d1a0;
     color: black;
     margin-bottom: 20px;
     &:hover {
