@@ -1,9 +1,9 @@
-import { getAllArtworks, putArtworkSequence } from '@/apis/PromotionAdmin/artwork';
+import { getAllArtworks } from '@/apis/PromotionAdmin/artwork';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { ArtworkData } from '@/types/PromotionAdmin/artwork';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import ArtworkBox from './ArtworkBox';
 import CategoryDropDown from '../CategoryDropDown';
@@ -11,12 +11,36 @@ import { useRecoilState } from 'recoil';
 import { backdropState } from '@/recoil/atoms';
 import BackDrop from '@/components/Backdrop/Backdrop';
 import ArtworkCreating from '../ArtworkCreating/ArtworkCreating';
+import Pagination from '@/components/Pagination/Pagination';
+import ScrollToTop from '@/hooks/useScrollToTop';
 
 const Artwork = () => {
-  const { data, isLoading, error } = useQuery<ArtworkData[], Error>('artworks', getAllArtworks);
+  const { data, isLoading, error, refetch } = useQuery<ArtworkData[], Error>('artworks', getAllArtworks);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [producingIsOpend, setProducingIsOpened] = useRecoilState(backdropState);
+  const [currentPage, setCurrentPage] = useState(0);
+  const postsPerPage = 6;
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const page = parseInt(queryParams.get('page') || '1', 10) - 1; // 페이지 인덱스를 0부터 시작하게 조정
+    setCurrentPage(page);
+  }, [location]);
+
+  useEffect(() => {
+    setCurrentPage(0); // 검색어 또는 카테고리가 변경될 때 페이지를 초기화
+  }, [searchQuery, selectedCategory]);
+
+  useEffect(() => {
+    if (selectedCategory === '') {
+      refetch(); // 카테고리가 ALL로 설정되었을 때 전체 데이터를 다시 로드
+      setCurrentPage(0);
+      navigate('?page=1'); // 페이지를 1로 초기화
+    }
+  }, [selectedCategory, refetch, navigate]);
 
   if (isLoading) return <LoadingWrapper>Loading...</LoadingWrapper>;
   if (error) return <div>Error: {error.message}</div>;
@@ -24,12 +48,19 @@ const Artwork = () => {
   const filteredArtworks = data
     ? data.filter((artwork) => {
         const isMatchingSearch = artwork.name.toLowerCase().includes(searchQuery.toLowerCase());
-
         const isMatchingCategory = selectedCategory === '' || artwork.category.includes(selectedCategory);
-        console.log(artwork.category);
         return isMatchingSearch && isMatchingCategory;
       })
     : [];
+
+  const indexOfLastPost = (currentPage + 1) * postsPerPage;
+  const indexOfFirstPost = currentPage * postsPerPage;
+  const currentArtworks = filteredArtworks.slice(indexOfFirstPost, indexOfLastPost);
+
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber - 1); // 페이지 인덱스를 0부터 시작하게 조정
+    navigate(`?page=${pageNumber}`); // URL 쿼리 매개변수 업데이트
+  };
 
   return (
     <>
@@ -56,7 +87,7 @@ const Artwork = () => {
             <NoDataWrapper>😊 아트워크 데이터가 존재하지 않습니다.</NoDataWrapper>
           ) : (
             <>
-              {filteredArtworks.map((artwork) => (
+              {currentArtworks.map((artwork) => (
                 <LinkStyle to={`${PA_ROUTES.ARTWORK}/${artwork.id}`} key={artwork.id}>
                   <ArtworkBox
                     mainImg={artwork.mainImg}
@@ -78,6 +109,7 @@ const Artwork = () => {
               ))}
             </>
           )}
+          <Pagination postsPerPage={postsPerPage} totalPosts={filteredArtworks.length} paginate={paginate} />
         </ArtworkBoxWrapper>
         <Outlet />
       </Container>
@@ -97,7 +129,9 @@ const LinkStyle = styled(Link)`
 `;
 const ArtworkBoxWrapper = styled.div`
   width: 700px;
+  min-width: 700px;
   height: fit-content;
+  min-height: 100px;
   margin-right: 50px;
   display: flex;
   flex-direction: column;
