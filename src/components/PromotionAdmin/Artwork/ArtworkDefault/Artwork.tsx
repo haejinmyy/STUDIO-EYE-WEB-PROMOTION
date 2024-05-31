@@ -12,8 +12,8 @@ import { backdropState } from '@/recoil/atoms';
 import BackDrop from '@/components/Backdrop/Backdrop';
 import ArtworkCreating from '../ArtworkCreating/ArtworkCreating';
 
-const Artwork = ({data,isLoading,error,refetch}:
-  {data:ArtworkData[]|undefined,isLoading:boolean,error:Error|null,refetch:()=>void}) => {
+const Artwork = () => {
+  const { data, isLoading, error } = useQuery<ArtworkData[], Error>('artworks', getAllArtworks);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [producingIsOpend, setProducingIsOpened] = useRecoilState(backdropState);

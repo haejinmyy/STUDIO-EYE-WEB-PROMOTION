@@ -1,16 +1,16 @@
-import { putArtworkMainSequence, putArtworkSequence } from "@/apis/PromotionAdmin/artwork";
+import { getAllArtworks, putArtworkMainSequence, putArtworkSequence } from "@/apis/PromotionAdmin/artwork";
 import { ArtworkData } from "@/types/PromotionAdmin/artwork";
 import styled from "styled-components";
 import ArtworkSequenceBox from "./ArtworkSequenceBox";
 import { useEffect, useState } from "react";
 import {DragDropContext,Draggable,Droppable} from 'react-beautiful-dnd'
 import { DResult,DragProvied,DropProvied } from "@/types/PromotionAdmin/react-beautiful-dnd-types";
-import { theme } from "@/styles/theme";
+import { useQuery } from "react-query";
 
-const ArtworkSequence=({type,data,isLoading,error,refetch}:
-  {type:string,data:ArtworkData[]|undefined,isLoading:boolean,error:Error|null,refetch:()=>void})=>{
+const ArtworkSequence=({type}:{type:string})=>{
+  const { data, isLoading, error, refetch } = useQuery<ArtworkData[], Error>('artworks', getAllArtworks);
   const [realData,setRealData]=useState<ArtworkData[]>([])
-  const [isUpdated,setIsUpdated]=useState<boolean>(false)
+  const [isUpdated,setIsUpdated]=useState<boolean>(false) //sequence 업데이트 여부 확인
 
   useEffect(() => {
     setIsUpdated(false)
@@ -19,15 +19,16 @@ const ArtworkSequence=({type,data,isLoading,error,refetch}:
     }else{
       setRealData(data?data.sort((a,b)=>a.sequence-b.sequence):[])
     }
-  }, [type]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type]);  
 
   useEffect(()=>{//업데이트가 없으면 기존 데이터를 이용할 수 있도록 분리
     refetch()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUpdated])
-  
-    
-    if (isLoading) return <LoadingWrapper>Loading...</LoadingWrapper>;
-    if (error) return <div>Error: {error.message}</div>;
+
+  if (isLoading) return <LoadingWrapper>Loading...</LoadingWrapper>;
+  if (error) return <div>Error: {error.message}</div>;
 
     const handleSequence=()=>{
       if(type==="main"){
@@ -63,9 +64,9 @@ const ArtworkSequence=({type,data,isLoading,error,refetch}:
 
     return(
         <div>
-          <button onClick={()=>{
+          {/* <button onClick={()=>{
             console.log(realData)
-          }}>데이터 확인</button>
+          }}>데이터 확인</button> */}
           <SendButton onClick={
             handleSequence
             }>완료</SendButton>
@@ -115,17 +116,17 @@ const NoDataWrapper = styled.div`
 `;
 
 const SendButton=styled.button`
-  width:100%;
-  margin-bottom:10px;
-  font-family: 'pretendard-medium';
-  font-size:15px;
-  padding: 2px 5px;
-  background-color: ${theme.color.yellow.light};
-  color: ${theme.color.black.bold};
-  border-radius:5px;
-  border:0;
-  box-shadow: 0px 0px 2px ${theme.color.black.bold};
-  &:hover{
-    cursor:pointer;
+  border-radius: 5px;
+  width: fit-content;
+  font-family: 'pretendard-semibold';
+  padding: 10px 20px;
+  background-color: #6c757d;
+  color: white;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  border:none;
+  
+  &:hover {
+    background-color: #5a6268;
   }
 `;
