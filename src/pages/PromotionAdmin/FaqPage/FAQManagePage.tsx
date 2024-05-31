@@ -1,40 +1,48 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useQuery } from 'react-query';
-import { IGetFAQData, getFAQData, IFAQ } from '../../../apis/PromotionAdmin/faq';
+import { getFAQPaginateData } from '../../../apis/PromotionAdmin/faq';
 import { useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { theme } from '@/styles/theme';
-import Pagination from '@/components/PromotionAdmin/FAQ/Pagination';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
+import Pagination from '@/components/Pagination/Pagination';
+import { IPaginationData } from '@/types/PromotionAdmin/faq';
+import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
+import { ReactComponent as AddedIcon } from '@/assets/images/PA/plusIcon.svg';
+import { ReactComponent as DeleteIcon } from '@/assets/images/PA/delete.svg';
 
 function FAQManagePage() {
   const navigator = useNavigate();
-  const { data, isLoading, refetch } = useQuery<IFAQ[]>(['faq', 'id'], getFAQData);
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const size = 10;
+  const { data, isLoading, refetch, error } = useQuery<IPaginationData, Error>(['faq', currentPage, size], () =>
+    getFAQPaginateData(currentPage, size),
+  );
   const [editMode, setEditMode] = useState(false);
   const [id, setId] = useState<null | number>(null);
 
-  const handleDelete = (id: number) => {
+  const [deleteItems, setDeleteItems] = useState<number[]>([]);
+
+  const handleDelete = () => {
     if (window.confirm('삭제하시겠습니까?')) {
       axios
-        .delete(`${PROMOTION_BASIC_PATH}/api/faq/${id}`)
-        .then((response) => {})
-        .catch((error) => console.log(error));
-      alert('FAQ가 삭제되었습니다.');
-      refetch();
-    } else {
-      alert('취소합니다.');
+        .delete(`${PROMOTION_BASIC_PATH}/api/faq`, { data: deleteItems })
+        .then((response) => {
+          alert('FAQ가 삭제되었습니다.');
+          refetch();
+        })
+        .catch((error) => {
+          console.log(error);
+          alert('FAQ 삭제 중 오류가 발생했습니다.');
+        });
     }
   };
 
-  // pagination 구현에 사용되는 변수
-  const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage, setPostsPerPage] = useState(10);
-  const indexOfLast = currentPage * postsPerPage;
-  const indexOfFirst = indexOfLast - postsPerPage;
+  if (isLoading) return <>is Loading..</>;
+  if (error) return <>{error.message}</>;
   return (
     <Wrapper>
       <ContentBox>
@@ -59,9 +67,19 @@ function FAQManagePage() {
               </svg>
             </Icon>
             FAQ 게시글 관리
-            <Info>등록된 게시글 {data && data.length > 0 ? data.length : 0}건 </Info>
+            <Info>등록된 게시글 {data?.totalElements}건 </Info>
           </Title>
           <ButtonsWrapper>
+            {editMode && (
+              <ButtonWrapper>
+                <Button onClick={handleDelete}>
+                  <div>
+                    <DeleteIcon />
+                  </div>
+                  Delete
+                </Button>
+              </ButtonWrapper>
+            )}
             <ButtonWrapper>
               <Button
                 onClick={() => {
@@ -69,118 +87,66 @@ function FAQManagePage() {
                 }}
               >
                 <div>
-                  <svg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                    <g clipPath='url(#clip0_2_61)'>
-                      <path d='M7.11328 4.10742V10.1074' stroke='black' strokeLinecap='round' strokeLinejoin='round' />
-                      <path d='M4.11328 7.10742H10.1133' stroke='black' strokeLinecap='round' strokeLinejoin='round' />
-                      <path
-                        d='M10.6133 0.607422H3.61328C1.95643 0.607422 0.613281 1.95057 0.613281 3.60742V10.6074C0.613281 12.2643 1.95643 13.6074 3.61328 13.6074H10.6133C12.2702 13.6074 13.6133 12.2643 13.6133 10.6074V3.60742C13.6133 1.95057 12.2702 0.607422 10.6133 0.607422Z'
-                        stroke='black'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                      />
-                    </g>
-                    <defs>
-                      <clipPath id='clip0_2_61'>
-                        <rect width='14' height='14' fill='white' transform='translate(0.113281 0.107422)' />
-                      </clipPath>
-                    </defs>
-                  </svg>
+                  <AddedIcon />
                 </div>
-                FAQ 등록
+                Add New FAQ
               </Button>
             </ButtonWrapper>
 
             <ButtonWrapper>
               <Button>
-                <div>
-                  <svg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                    <path
-                      d='M1.5 2C1.23478 2 0.98043 2.10536 0.792893 2.29289C0.605357 2.48043 0.5 2.73478 0.5 3V12.5C0.5 12.7652 0.605357 13.0196 0.792893 13.2071C0.98043 13.3946 1.23478 13.5 1.5 13.5H12.5C12.7652 13.5 13.0196 13.3946 13.2071 13.2071C13.3946 13.0196 13.5 12.7652 13.5 12.5V3C13.5 2.73478 13.3946 2.48043 13.2071 2.29289C13.0196 2.10536 12.7652 2 12.5 2H10.5'
-                      stroke='black'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
-                    <path d='M3.5 0.5V3.5' stroke='black' strokeLinecap='round' strokeLinejoin='round' />
-                    <path d='M10.5 0.5V3.5' stroke='black' strokeLinecap='round' strokeLinejoin='round' />
-                    <path d='M3.5 2H8.5' stroke='black' strokeLinecap='round' strokeLinejoin='round' />
-                    <path
-                      d='M10 6.86404L5.86842 10.9956L4 11.25L4.26316 9.38158L8.38596 5.25L10 6.86404Z'
-                      stroke='black'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
-                  </svg>
-                </div>
                 Edit
-                <input
-                  type='checkbox'
-                  id='switch'
-                  onClick={() => {
-                    setEditMode((prev) => !prev);
-                  }}
-                />
-                <label htmlFor='switch' className='switch_label'>
-                  <span className='onf_btn'></span>
-                </label>
+                <div>
+                  <input
+                    type='checkbox'
+                    id='switch'
+                    onClick={() => {
+                      setEditMode((prev) => !prev);
+                    }}
+                  />
+                  <label htmlFor='switch' className='switch_label'>
+                    <span className='onf_btn'></span>
+                  </label>
+                </div>
               </Button>
             </ButtonWrapper>
           </ButtonsWrapper>
         </TitleWrapper>
-        {isLoading ? (
-          <>is Loading...</>
-        ) : (
-          <ListWrapper>
-            {data &&
-              data.length > 0 &&
-              data.slice(indexOfFirst, indexOfLast).map((faq) => (
-                <ListItemWrapper
-                  key={faq.id}
-                  onClick={() => {
-                    !editMode && navigator(`${PA_ROUTES.FAQ}/${faq.id}`);
-                    setId(faq.id);
-                  }}
-                  selected={faq.id === id ? true : false}
-                >
-                  {editMode && (
-                    <DeleteButton
-                      onClick={() => {
-                        handleDelete(faq.id);
-                      }}
-                    >
-                      <svg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                        <path d='M1 3.5H13' stroke='black' strokeLinecap='round' strokeLinejoin='round' />
-                        <path
-                          d='M2.5 3.5H11.5V12.5C11.5 12.7652 11.3946 13.0196 11.2071 13.2071C11.0196 13.3946 10.7652 13.5 10.5 13.5H3.5C3.23478 13.5 2.98043 13.3946 2.79289 13.2071C2.60536 13.0196 2.5 12.7652 2.5 12.5V3.5Z'
-                          stroke='black'
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                        />
-                        <path
-                          d='M4.5 3.5V3C4.5 2.33696 4.76339 1.70107 5.23223 1.23223C5.70107 0.763392 6.33696 0.5 7 0.5C7.66304 0.5 8.29893 0.763392 8.76777 1.23223C9.23661 1.70107 9.5 2.33696 9.5 3V3.5'
-                          stroke='black'
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                        />
-                        <path d='M5.5 6.50098V10.5025' stroke='black' strokeLinecap='round' strokeLinejoin='round' />
-                        <path d='M8.5 6.50098V10.5025' stroke='black' strokeLinecap='round' strokeLinejoin='round' />
-                      </svg>
-                    </DeleteButton>
-                  )}
-                  <QuestionTitleWrapper layoutId={faq.id + ''} key={faq.id}>
-                    <QuestionTitle>
-                      <QAIcon>Q</QAIcon>
-                      {faq.question}
-                    </QuestionTitle>
-                    <VisibilityWrapper>{faq.visibility ? '공개' : '비공개'}</VisibilityWrapper>
-                  </QuestionTitleWrapper>
-                </ListItemWrapper>
-              ))}
-          </ListWrapper>
-        )}
+
+        <ListWrapper>
+          {data &&
+            data.content.length > 0 &&
+            data.content.map((faq) => (
+              <ListItemWrapper
+                key={faq.id}
+                onClick={() => {
+                  navigator(`${PA_ROUTES.FAQ}/${faq.id}?page=${currentPage + 1}`);
+                  setId(faq.id);
+                }}
+                selected={faq.id === id ? true : false}
+              >
+                {editMode && (
+                  <input
+                    type='checkbox'
+                    onClick={() => {
+                      setDeleteItems((prev) => [...prev, faq.id]);
+                    }}
+                  />
+                )}
+                <QuestionTitleWrapper layoutId={faq.id + ''} key={faq.id}>
+                  <QuestionTitle>
+                    <QAIcon>Q</QAIcon>
+                    {faq.question}
+                  </QuestionTitle>
+                  <VisibilityWrapper>{faq.visibility ? '공개' : '비공개'}</VisibilityWrapper>
+                </QuestionTitleWrapper>
+              </ListItemWrapper>
+            ))}
+        </ListWrapper>
+
         {data && (
           <PaginationWrapper>
-            <Pagination postsPerPage={postsPerPage} totalPosts={data.length} paginate={setCurrentPage} />
+            <Pagination postsPerPage={data.size} totalPosts={data.totalElements} paginate={setCurrentPage} />
           </PaginationWrapper>
         )}
       </ContentBox>
@@ -265,7 +231,6 @@ const QuestionTitle = styled.div`
 
 const ButtonsWrapper = styled.div`
   display: flex;
-  width: 200px;
   justify-content: space-between;
 `;
 
@@ -280,13 +245,14 @@ const ButtonWrapper = styled.div`
   height: 30px;
   min-width: 90px;
   border: 0.5px solid ${(props) => props.theme.color.black.light};
-  padding: 1px;
+  padding: 5px;
 `;
 const Button = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
   justify-content: space-around;
+
   #switch {
     position: absolute;
     /* hidden */

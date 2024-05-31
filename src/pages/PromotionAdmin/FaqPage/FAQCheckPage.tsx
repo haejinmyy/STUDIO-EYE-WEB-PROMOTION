@@ -1,59 +1,56 @@
-import { IGetFAQData, getFAQData, IFAQ } from '@/apis/PromotionAdmin/faq';
+import { getFAQData, IFAQ } from '@/apis/PromotionAdmin/faq';
+import InnerHTML from '@/components/PromotionAdmin/DataEdit/StyleComponents/InnerHTML';
 import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { useQuery } from 'react-query';
-import { useMatch, useNavigate } from 'react-router-dom';
+import { useLocation, useMatch, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 export default function FAQCheckPage() {
   const navigator = useNavigate();
   const faqDetailMatch = useMatch(`${PA_ROUTES.FAQ}/:faqId`);
-
-  const { data, isLoading } = useQuery<IFAQ[]>(['faq', 'id'], getFAQData);
-
+  const { data, isLoading, error } = useQuery<IFAQ[], Error>(['faq', 'id'], getFAQData);
   const clickedFAQ =
     faqDetailMatch?.params.faqId && data && data.find((faq) => String(faq.id) === faqDetailMatch.params.faqId);
 
+  const currentPage = new URLSearchParams(useLocation().search).get('page');
+
+  if (isLoading) return <>is Loading..</>;
+  if (error) return <>{error.message}</>;
   return (
     <>
-      {isLoading ? (
-        <div> is Loading... </div>
-      ) : (
+      {faqDetailMatch ? (
         <>
-          {faqDetailMatch ? (
-            <>
-              {clickedFAQ && (
-                <ContentBox>
-                  <Wrapper>
-                    <TitleWrapper>
-                      <QAIcon>Q</QAIcon>
-                      <Title>{clickedFAQ.question} </Title>
-                    </TitleWrapper>
-                    <QAIcon>A</QAIcon>
-                    <Answer className='article' dangerouslySetInnerHTML={{ __html: clickedFAQ.answer }} />
-                    <ButtonWrapper>
-                      <Button
-                        onClick={() => {
-                          navigator(`${PA_ROUTES.FAQ}/write/${clickedFAQ.id}`);
-                        }}
-                      >
-                        수정하기
-                      </Button>
-                    </ButtonWrapper>
-                  </Wrapper>
-                </ContentBox>
-              )}
-            </>
-          ) : null}
+          {clickedFAQ && (
+            <ContentBox>
+              <Wrapper>
+                <TitleWrapper>
+                  <QAIcon>Q</QAIcon>
+                  <Title>{clickedFAQ.question} </Title>
+                </TitleWrapper>
+                <QAIcon>A</QAIcon>
+                <Answer>
+                  <InnerHTML description={clickedFAQ.answer} fontSize={20} />
+                </Answer>
+                <ButtonWrapper>
+                  <Button
+                    onClick={() => {
+                      navigator(`${PA_ROUTES.FAQ}/write/${clickedFAQ.id}?page=${currentPage}`);
+                    }}
+                  >
+                    수정하기
+                  </Button>
+                </ButtonWrapper>
+              </Wrapper>
+            </ContentBox>
+          )}
         </>
-      )}
+      ) : null}
     </>
   );
 }
 
-const Wrapper = styled.div`
-  position: relative;
-`;
+const Wrapper = styled.div``;
 const TitleWrapper = styled.div`
   display: flex;
   border-bottom: 1px solid #f1f1f1;
@@ -62,9 +59,13 @@ const TitleWrapper = styled.div`
 
 const Title = styled.div`
   display: flex;
+  margin-left: 10px;
   align-items: center;
-  height: 4rem;
-  font-size: 1.3rem;
+  height: 80px;
+  width: 90%;
+  line-height: 23px;
+  font-size: 20px;
+  font-family: ${(props) => props.theme.font.regular};
 `;
 
 const QAIcon = styled.div`
@@ -81,15 +82,18 @@ const QAIcon = styled.div`
 `;
 
 const Answer = styled.div`
-  padding: 30px;
+  padding: 0 30px;
+  margin-top: 20px;
   img {
     max-width: 100%;
   }
+  height: 500px;
+  overflow: scroll;
 `;
 
 const ButtonWrapper = styled.div`
   position: absolute;
-  top: 15px;
+  bottom: 15px;
   right: 15px;
 `;
 
