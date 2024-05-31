@@ -1,3 +1,4 @@
+import ScrollToTop from '@/hooks/useScrollToTop';
 import { theme } from '@/styles/theme';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -96,16 +97,19 @@ const PageLi = styled.div<{ selected: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 14px;
-  width: 25px;
-  height: 25px;
+  font-size: 16px;
+  padding: 10px 15px;
+  margin-right: 3px;
+  box-sizing: border-box;
   font-family: ${(props) => props.theme.font.regular};
-
+  transition: all 300ms ease-in-out;
+  font-family: 'pretendard-semibold';
+  border-radius: 5px;
   &:hover {
+    transition: all 300ms ease-in-out;
     cursor: pointer;
     color: ${(props) => props.theme.color.white.light};
     background-color: ${(props) => props.theme.color.yellow.bold};
-    transition: ease-in;
   }
   background-color: ${({ selected }) => (selected ? theme.color.yellow.light : 'none')};
 `;
