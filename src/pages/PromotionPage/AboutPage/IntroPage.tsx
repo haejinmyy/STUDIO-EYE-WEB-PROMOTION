@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import Circle from './ArrowCircle';
+import Circle from '../../../components/PromotionPage/Circle/ArrowCircle';
 import MissionLabel from '../../../assets/images/Mission.png';
 import { getCompanyData } from '../../../apis/PromotionAdmin/dataEdit';
 
@@ -69,9 +69,13 @@ function IntroPage() {
           >
             <BackgroundText> MISSION</BackgroundText>
             {sloganImageUrl !== '' ? (
-              <img src={sloganImageUrl} alt='SloganLabel' style={{ width: '50%', height: '130px' }} />
+              <img
+                src={sloganImageUrl}
+                alt='SloganLabel'
+                style={{ width: '50%', height: '130px', objectFit: 'contain' }}
+              />
             ) : (
-              <img src={MissionLabel} alt='MissionLabel' style={{ width: '50%', height: 'auto' }} />
+              <img src={MissionLabel} alt='MissionLabel' style={{ width: '50%', objectFit: 'contain' }} />
             )}
           </motion.div>
         </MissionWrapper>

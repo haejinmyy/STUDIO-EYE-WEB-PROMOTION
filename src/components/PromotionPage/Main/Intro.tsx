@@ -46,9 +46,8 @@ const Intro = () => {
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: desInView ? 1 : 0, y: desInView ? 0 : 100 }}
           transition={{ duration: 2, delay: 0.6 }}
-        >
-          {companyCommitment}
-        </motion.div>
+          dangerouslySetInnerHTML={{ __html: companyCommitment }}
+        ></motion.div>
       </DesWrapper>
       <CircleWrapper ref={circleRef}>
         <motion.div
