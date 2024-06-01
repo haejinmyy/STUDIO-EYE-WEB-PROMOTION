@@ -15,7 +15,5 @@ function PartnerPage() {
 export default PartnerPage;
 
 const Wrapper = styled.div`
-  width: 87vw;
   display: flex;
-  margin-left: 30px;
 `;

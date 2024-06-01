@@ -1,64 +1,73 @@
-import { getPartnersData } from '@/apis/PromotionAdmin/dataEdit';
-import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
-import { IPartnersData } from '@/types/PromotionAdmin/dataEdit';
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { ReactComponent as AddedIcon } from '@/assets/images/PA/added.svg';
+import { getPartnerPaginateData } from '@/apis/PromotionAdmin/dataEdit';
+import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
+import { IPartnerPaginationData } from '@/types/PromotionAdmin/dataEdit';
+
+import { ReactComponent as AddedIcon } from '@/assets/images/PA/plusIcon.svg';
+import { ReactComponent as PublicIcon } from '@/assets/images/PA/public.svg';
+import { ReactComponent as PrivateIcon } from '@/assets/images/PA/private.svg';
+
+import { DATAEDIT_TITLES_COMPONENTS } from '../Company/StyleComponents';
+import { ContentBlock } from '../Company/CompanyFormStyleComponents';
+import Button from '../StyleComponents/Button';
+import LogoItemList from '../StyleComponents/LogoListItem';
+import Pagination from '@/components/Pagination/Pagination';
 
 const Partner = () => {
-  const { data, isLoading, error } = useQuery<IPartnersData[], Error>(['partners', 'id'], getPartnersData);
   const navigator = useNavigate();
-
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const size = 6;
+  const { data, isLoading, error } = useQuery<IPartnerPaginationData, Error>(['partner', currentPage, size], () =>
+    getPartnerPaginateData(currentPage, size),
+  );
+  console.log(data);
   if (isLoading) return <>is Loading..</>;
   if (error) return <div>Error: {error.message}</div>;
   return (
-    <>
-      <Wrapper>
-        <ButtonWrapper>
+    <Wrapper>
+      <ContentBlock>
+        <TitleWrapper>
+          {DATAEDIT_TITLES_COMPONENTS.Partner}
           <Button
+            description='Add New Partner'
+            svgComponent={<AddedIcon width={14} height={14} />}
             onClick={() => {
-              navigator(`write`);
+              navigator(`write?page=${currentPage + 1}`);
             }}
-          >
-            <AddedIcon width={13} height={13} />
-            Partner 등록
-          </Button>
-        </ButtonWrapper>
-        <StyledTable>
-          <thead>
-            <tr className='colunm_name'>
-              <th>링크</th>
-              <th>로고</th>
-              <th>공개여부</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data?.length === 0 || data === null ? (
-              <NoDataWrapper>😊 파트너 데이터가 존재하지 않습니다.</NoDataWrapper>
-            ) : (
-              <>
-                {data?.map((partner) => (
-                  <tr
-                    onClick={() =>
-                      navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}/${partner.partnerInfo.id}`)
-                    }
-                  >
-                    <td>{partner.partnerInfo.link}</td>
-                    <td>
-                      <LogoImg src={partner.logoImg} />
-                    </td>
-                    <td>{partner.partnerInfo.is_main ? '공개' : '비공개'}</td>
-                  </tr>
-                ))}
-              </>
-            )}
-          </tbody>
-        </StyledTable>
-      </Wrapper>
-    </>
+          />
+        </TitleWrapper>
+
+        {data?.content.length === 0 || data === null ? (
+          <NoDataWrapper>😊 파트너 데이터가 존재하지 않습니다.</NoDataWrapper>
+        ) : (
+          <ListWrapper>
+            {data &&
+              data.content.length > 0 &&
+              data.content.map((partner) => (
+                <LogoItemList
+                  logo={partner.logoImageUrl}
+                  name={partner.name}
+                  link={partner.link}
+                  is_posted={partner.is_main}
+                  onClick={() =>
+                    navigator(
+                      `${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}/${partner.id}?page=${currentPage + 1}`,
+                    )
+                  }
+                  svgComponent={partner.is_main ? <PublicIcon /> : <PrivateIcon />}
+                />
+              ))}
+          </ListWrapper>
+        )}
+        <PaginationWrapper>
+          {data && <Pagination postsPerPage={data.size} totalPosts={data.totalElements} paginate={setCurrentPage} />}
+        </PaginationWrapper>
+      </ContentBlock>
+    </Wrapper>
   );
 };
 
@@ -66,64 +75,21 @@ export default Partner;
 
 const Wrapper = styled.div``;
 
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  padding: 10px;
-`;
-
-const Button = styled.button`
-  cursor: pointer;
+const TitleWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  width: 110px;
-  height: 30px;
-  align-items: center;
-  border: none;
-  background-color: ${(props) => props.theme.color.white.bold};
-  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
-  border-radius: 0.2rem;
-  transition: 0.2s;
-
-  &:hover {
-    background-color: ${(props) => props.theme.color.yellow.light}; /* 버튼 호버 시 색상 조정 */
-  }
+  padding: 10px;
+  margin-bottom: 20px;
 `;
 
 const NoDataWrapper = styled.div`
   font-family: 'pretendard-medium';
   font-size: 17px;
 `;
-
-const LogoImg = styled.img`
-  height: 20px;
+const ListWrapper = styled.div`
+  height: 600px;
 `;
 
-const StyledTable = styled.table`
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 10px;
-  font-size: 13px;
-
-  .colunm_name {
-    font-weight: 800;
-  }
-
-  td {
-    padding: 15px;
-    text-align: center;
-    align-items: center;
-    width: 200px;
-    background-color: ${(props) => props.theme.color.black.light};
-  }
-
-  tbody tr {
-    cursor: pointer;
-    background-color: #ffffff;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);
-  }
-
-  tbody tr:hover {
-    background-color: #f5f5f5;
-  }
+const PaginationWrapper = styled.div`
+  bottom: 10px;
 `;

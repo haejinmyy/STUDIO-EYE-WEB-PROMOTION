@@ -1,7 +1,7 @@
 import { useLocation, useMatch, useNavigate } from 'react-router-dom';
 import { PP_ROUTES_CHILD } from '@/constants/routerConstants';
 import styled from 'styled-components';
-import { IArtworksData } from '@/types/PromotionPage/artwork';
+import { IArtwork, IArtworksData } from '@/types/PromotionPage/artwork';
 import { useQuery } from 'react-query';
 import { getArtworkData } from '@/apis/PromotionPage/artwork';
 import { motion, useTransform, useScroll } from 'framer-motion';
@@ -9,7 +9,7 @@ import ScrollAnimatedComponent from '@/components/PromotionPage/ArtworkDetail/Sc
 import RotatedCircle from '@/components/PromotionPage/ArtworkDetail/RotatedCircle';
 import ImageSlider from '@/components/PromotionPage/ArtworkDetail/ImageSlider';
 import { NavWrapper } from '@/components/PromotionPage/ArtworkDetail/Components';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { ReactComponent as PrevArrowIcon } from '@/assets/images/PP/leftArrow.svg';
 import { ReactComponent as NextArrowIcon } from '@/assets/images/PP/rightArrow.svg';
@@ -18,9 +18,22 @@ function ArtworkDetailPage() {
   const navigator = useNavigate();
   const artworkDetailMatch = useMatch(`${PP_ROUTES_CHILD.ARTWORK}/:id`);
   const { data, isLoading } = useQuery<IArtworksData>(['artwork', 'id'], getArtworkData);
+  const [filteredData,setFilteredData]=useState<IArtwork[]>([])
+  const{state:{category}}= useLocation();
 
   const clickedArtwork =
     artworkDetailMatch?.params.id && data?.data.find((artwork) => String(artwork.id) === artworkDetailMatch.params.id);
+  useEffect(()=>{
+    if(data){
+      if(category!=="all"){
+        setFilteredData(data.data.filter((d)=>{return d.category===category && d.isPosted===true}))
+      }
+      else{
+        setFilteredData(data.data.filter((d)=>{return d.isPosted===true}))
+        console.log(filteredData)
+      }
+    }
+  },[])
 
   // animation
   const { scrollYProgress } = useScroll();
@@ -28,11 +41,12 @@ function ArtworkDetailPage() {
   const translateX = useTransform(scrollYProgress, (v) => v * 200);
 
   // navigation
-  const dataLength = data?.data ? data.data.length : 0;
+  const dataLength = filteredData?filteredData.length : 0;
   const artworkIndex = Number(artworkDetailMatch?.params.id);
-  const currentIndex = data?.data ? data?.data.findIndex((artwork) => artwork.id === artworkIndex) : 0;
-  const prevIndex = data && currentIndex === 0 ? null : data?.data[currentIndex - 1].id;
-  const nextIndex = data && currentIndex === dataLength - 1 ? null : data?.data[currentIndex + 1].id;
+  const currentIndex = filteredData ? filteredData.findIndex((artwork) => artwork.id === artworkIndex) : 0;
+  console.log(currentIndex)
+  const prevIndex = filteredData && currentIndex === 0 ? null : filteredData[currentIndex - 1]?.id;
+  const nextIndex = filteredData && currentIndex === dataLength - 1 ? null : filteredData[currentIndex + 1]?.id;
 
   function ScrollToTop() {
     const { pathname } = useLocation();
@@ -55,7 +69,11 @@ function ArtworkDetailPage() {
               <ScrollToTop />
               <Wrapper>
                 <Thumbnail bgPhoto={clickedArtwork.mainImg}>
-                  <Title>{clickedArtwork.name}</Title>
+                  {clickedArtwork.name.length>40
+                  ?<LongTitle>{clickedArtwork.name}</LongTitle>
+                  :<Title>{clickedArtwork.name}</Title>
+                  }
+                  
                   <InfoWrapper>
                     <Info
                       initial={{ opacity: 0, y: 50 }}
@@ -107,7 +125,7 @@ function ArtworkDetailPage() {
                   </Img>
                   <Content>
                     <p>
-                      Do you want to see the <span>&nbsp;project</span>?
+                      Do you want to see the project?
                     </p>
                     <CircleWrapper>
                       <RotatedCircle label='WATCH' link={clickedArtwork.link} />
@@ -122,13 +140,14 @@ function ArtworkDetailPage() {
                     {currentIndex === 0 ? null : (
                       <NavWrapper
                         onClick={() => {
-                          navigator(`/${PP_ROUTES_CHILD.ARTWORK}/${prevIndex}`);
+                          navigator(`/${PP_ROUTES_CHILD.ARTWORK}/${prevIndex}`,{state:{category}});
                         }}
                       >
                         <PrevArrowIcon width={70} height={70} />
                         <Nav>
                           PREV PROJECT
-                          <div className='nav_title'>{data?.data[currentIndex - 1].name}</div>
+                          <div className='nav_title' style={{whiteSpace:"nowrap",textOverflow:"ellipsis",overflow : "hidden"}}>
+                            {filteredData[currentIndex - 1]?.name}</div>
                         </Nav>
                       </NavWrapper>
                     )}
@@ -136,12 +155,13 @@ function ArtworkDetailPage() {
                     {currentIndex === dataLength - 1 ? null : (
                       <NavWrapper
                         onClick={() => {
-                          navigator(`/${PP_ROUTES_CHILD.ARTWORK}/${nextIndex}`);
+                          navigator(`/${PP_ROUTES_CHILD.ARTWORK}/${nextIndex}`,{state:{category}});
                         }}
                       >
                         <Nav>
                           NEXT PROJECT
-                          <div className='nav_title'>{data?.data[currentIndex + 1].name}</div>
+                          <div className='nav_title' style={{whiteSpace:"nowrap",textOverflow:"ellipsis",overflow : "hidden"}}>
+                            {filteredData[currentIndex + 1]?.name}</div>
                         </Nav>
                         <NextArrowIcon width={70} height={70} />
                       </NavWrapper>
@@ -190,6 +210,17 @@ const Title = styled.div`
   font-weight: 800;
   font-family: ${(props) => props.theme.font.bold};
   color: ${(props) => props.theme.color.white.bold};
+`;
+const LongTitle = styled.div`
+  font-size: 30px;
+  font-weight: 800;
+  font-family: ${(props) => props.theme.font.bold};
+  color: ${(props) => props.theme.color.white.bold};
+  transition: 2s;
+
+  @media (min-width: 70rem) {
+    font-size: 60px;
+  }
 `;
 
 const InfoWrapper = styled.div`
@@ -259,8 +290,9 @@ const Content = styled.div`
     display: flex;
     justify-content: center;
     font-size: 40px;
-    padding-top: 100px;
-    padding-bottom: 100px;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    margin: 0 2rem;
   }
   span {
     color: ${(props) => props.theme.color.yellow.bold};
@@ -273,6 +305,10 @@ const CircleWrapper = styled.div`
 `;
 
 const Nav = styled.div`
+  width: 70%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow : hidden;
   font-size: 15px;
   color: ${(props) => props.theme.color.black.light};
   .nav_title {

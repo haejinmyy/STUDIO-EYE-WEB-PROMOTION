@@ -6,13 +6,14 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 interface ITextEditorProps {
   editorState: EditorState;
   onEditorStateChange: (state: any) => Promise<void>;
+  attribute: string;
 }
 
-function TextColorEditor({ editorState, onEditorStateChange }: ITextEditorProps) {
+function TextColorEditor({ editorState, onEditorStateChange, attribute }: ITextEditorProps) {
   return (
     <EditorWrapper>
       <Editor
-        placeholder='답변을 작성해주세요'
+        placeholder={`${attribute}을(를) 작성해주세요`}
         editorState={editorState}
         onEditorStateChange={onEditorStateChange}
         toolbar={{
@@ -62,6 +63,8 @@ function TextColorEditor({ editorState, onEditorStateChange }: ITextEditorProps)
               '#FFD700',
               '#FFFF00',
               '#FFFACD',
+
+              'rgba(0, 0, 0, 0)',
             ],
           },
         }}
@@ -74,7 +77,7 @@ function TextColorEditor({ editorState, onEditorStateChange }: ITextEditorProps)
 export default TextColorEditor;
 
 const EditorWrapper = styled.div`
-  width: 650px;
+  width: 100%;
   .rdw-editor-toolbar {
     background-color: #f5f5f5;
     height: 25px;

@@ -1,16 +1,37 @@
-import { getArtworkDetail, putArtwork } from '@/apis/PromotionAdmin/artwork';
-import { PA_ROUTES } from '@/constants/routerConstants';
-import { ArtworkData, UpdateArtwork } from '@/types/PromotionAdmin/artwork';
+import { deleteArtwork, getArtworkDetail, postArtwork, putArtwork } from '@/apis/PromotionAdmin/artwork';
+import { backdropState } from '@/recoil/atoms';
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import getArtworkDefaultValue, { DefaultValueItem } from '../ArtworkCreating/ArtworkDefaultValue';
+import { ArtworkData, projectType, UpdateArtwork } from '@/types/PromotionAdmin/artwork';
 import styled from 'styled-components';
-import ArtworkInput from './ArtworkInput';
+import ArtworkValueLayout from '../ArtworkCreating/ArtworkValueLayout';
+import { useParams, useNavigate } from 'react-router-dom';
+import ScrollToTop from '@/hooks/useScrollToTop';
+import { PA_ROUTES } from '@/constants/routerConstants';
 
 const ArtworkDetail = () => {
+  const [getModeMainImg, setGetModeMainImg] = useState('');
+  const [getModeDetailImgs, setGetModeDetailImgs] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [isProjectOpened, setIsProjectOpened] = useState<boolean>(false);
+  const [projectType, setProjectType] = useState<projectType>('others');
+  const [link, setLink] = useState('');
+  const [mainImage, setMainImage] = useState<File>(); // mainImage 상태를 null로 초기화합니다.
+  const [detailImages, setDetailImages] = useState<File[]>([]);
+  const [title, setTitle] = useState('');
+  const [customer, setCustomer] = useState('');
+  const [producingIsOpend, setProducingIsOpened] = useRecoilState(backdropState);
+  const [overview, setOverview] = useState('');
+  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [deletedImageId, setDeletedImageId] = useState<number[]>([]);
   const { artworkId } = useParams();
   const [artworkData, setArtworkData] = useState<ArtworkData>();
-  const [isEditMode, setIsEditMode] = useState<boolean>(false);
-  const navigator = useNavigate();
+  const [isGetMode, setIsGetMode] = useState<boolean>(true);
+  const navigate = useNavigate();
+
   const [putData, setPutData] = useState<UpdateArtwork>({
     request: {
       projectId: 0,
@@ -21,312 +42,252 @@ const ArtworkDetail = () => {
       date: '',
       link: '',
       overView: '',
+      deletedImageId: [],
     },
     file: '',
     files: [],
   });
 
   useEffect(() => {
+    setSubmitButtonDisabled(
+      !selectedDate ||
+        selectedCategory === '' ||
+        projectType === null ||
+        link === '' ||
+        mainImage === null ||
+        detailImages.length === 0 ||
+        title === '' ||
+        customer === '' ||
+        overview === '',
+    );
+  }, [
+    selectedDate,
+    selectedCategory,
+    isProjectOpened,
+    projectType,
+    link,
+    mainImage,
+    detailImages,
+    title,
+    customer,
+    overview,
+  ]);
+  useEffect(() => {
     fetchArtworkDetails();
+    setIsGetMode(true);
+    console.log('초기에 넣은 putData', putData);
   }, [artworkId]);
 
+  async function urlToFile(url: string, fileName: string): Promise<File> {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      console.log(blob);
+      return new File([blob], fileName);
+    } catch (error) {
+      console.error('Error URL to file:', error);
+      throw error;
+    }
+  }
+
+  // fetchArtworkDetails 함수 내에서 ArtworkData를 받아와서 state에 설정하는 부분
   const fetchArtworkDetails = async () => {
     try {
       const data = await getArtworkDetail(Number(artworkId));
       setArtworkData(data);
+      setTitle(data.name);
+      setSelectedDate(data.date);
+      setSelectedCategory(data.category);
+      setIsProjectOpened(data.isPosted);
+      setProjectType(data.projectType);
+      setLink(data.link);
       setPutData({
         request: {
           projectId: data.id,
-          department: data.department,
+          department: '',
           category: data.category,
           name: data.name,
           client: data.client,
           date: data.date,
           link: data.link,
           overView: data.overView,
+          deletedImageId: [],
         },
         file: data.mainImg,
-        files: data.projectImages.map((image: { imageUrlList: string }) => image.imageUrlList),
+        files: [],
       });
-      console.log(putData);
+      if (data.mainImg) {
+        setGetModeMainImg(data.mainImg);
+        try {
+          const mainImgFile = await urlToFile(data.mainImg + '?t=' + Date.now(), `${data.mainimg}.png`);
+          setMainImage(mainImgFile);
+          console.log(mainImgFile, 'main ImgFile Blob');
+        } catch (error) {
+          console.error('Error fetching artwork details:', error);
+        }
+      }
+      if (data.projectImages && data.projectImages.length > 0) {
+        try {
+          const detailImageFiles = await Promise.all(
+            data.projectImages.map(async (image: { imageUrlList: string }) => {
+              const detailImgFile = await urlToFile(image.imageUrlList, `${image.imageUrlList}.png`);
+              console.log(detailImgFile);
+              return detailImgFile;
+            }),
+          );
+          setDetailImages(detailImageFiles);
+          console.log(detailImageFiles, 'detailImageFiles  Blob');
+          setPutData((prevState) => ({
+            ...prevState,
+            files: detailImageFiles,
+          }));
+        } catch (error) {
+          console.error('Error fetching artwork details:', error);
+        }
+        setGetModeDetailImgs(data.projectImages.map((image: { imageUrlList: string }) => image.imageUrlList));
+      }
+      setCustomer(data.client);
+      setOverview(data.overView);
     } catch (error) {
-      console.error('Error fetching artwork details:', error);
+      console.error('Error fetching artwork details', error);
     }
   };
 
   const handleEditClick = () => {
-    setIsEditMode(true);
+    setIsGetMode(false);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setPutData((prevData) => ({
-      ...prevData,
-      request: {
-        ...prevData.request,
-        [name]: value,
-      },
-    }));
-  };
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newFiles = [...putData.files];
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        newFiles[index] = reader.result as string;
-        setPutData((prevData) => ({
-          ...prevData,
-          files: newFiles,
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPutData((prevData) => ({
-          ...prevData,
-          file: reader.result as string,
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleOverviewChange = (newOverview: string) => {
+    setOverview(newOverview);
   };
 
-  async function urlToFile(url: string, fileName: string): Promise<File | null> {
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('Failed to fetch');
-      }
-      const blob = await response.blob();
-      return new File([blob], fileName);
-    } catch (error) {
-      console.error('Error converting URL to file:', error);
-      return null;
-    }
-  }
-  const handleSaveClick = async () => {
+  const handleDateChange = (newDate: Date | null) => {
+    setSelectedDate(newDate);
+  };
+
+  const handleTogglePosted = () => {
+    setIsProjectOpened(!isProjectOpened);
+  };
+
+  const handleLinkChange = (newLink: string) => {
+    setLink(newLink);
+  };
+
+  const handleMainImageChange = (newImage: File | File[]) => {
+    setMainImage(Array.isArray(newImage) ? newImage[0] : newImage);
+  };
+
+  const handleDetailImageChange = (newImages: File | File[]) => {
+    setDetailImages(Array.isArray(newImages) ? newImages : [newImages]);
+  };
+
+  const handleTitleChange = (newTitle: string) => {
+    setTitle(newTitle);
+  };
+
+  const handleCustomerChange = (newCustomer: string) => {
+    setCustomer(newCustomer);
+  };
+
+  const handleSubmit = async () => {
     const formData = new FormData();
+    const requestData = {
+      projectId: artworkData?.id,
+      category: selectedCategory,
+      name: title,
+      client: customer,
+      department: '',
+      date: selectedDate,
+      link: link,
+      overView: overview,
+      deletedImageId: deletedImageId,
+    };
+    formData.append('request', new Blob([JSON.stringify(requestData)], { type: 'application/json' }));
 
-    // 기본 정보 추가
-    formData.append(
-      'request',
-      new Blob(
-        [
-          JSON.stringify({
-            projectId: putData.request.projectId, // putData.request에는 변경된 속성만 있어야 합니다.
-            department: putData.request.department,
-            category: putData.request.category,
-            name: putData.request.name,
-            client: putData.request.client,
-            date: putData.request.date,
-            link: putData.request.link,
-            overView: putData.request.overView,
-          }),
-        ],
-        { type: 'application/json' },
-      ),
-    );
-
-    console.log('넣는 request', putData.request);
-
-    // 이미지를 변경했는지 확인하고 추가
-    if (putData.file && putData.file !== artworkData?.mainImg) {
-      const file = await urlToFile(putData.file, 'mainImg.png');
-      if (file) {
-        formData.append('file', file);
-      } else {
-        console.error('메인 이미지 가져오기 실패');
-      }
-    } else {
-      // 이미지를 변경하지 않은 경우에는 기존의 이미지를 그대로 전송
-      if (artworkData?.mainImg) {
-        const mainImgBlob = await urlToFile(artworkData.mainImg, 'mainImg.png');
-        if (mainImgBlob) {
-          formData.append('file', mainImgBlob);
-        } else {
-          console.error('메인 이미지 가져오기 실패');
-        }
-      } else {
-        formData.append('file', ''); // 이미지가 없는 경우 빈 값 추가
-      }
+    if (mainImage) {
+      formData.append('file', mainImage);
+    }
+    if (detailImages) {
+      detailImages.forEach((file, index) => {
+        formData.append('files', file);
+      });
     }
 
-    // 기타 이미지들 추가
-    if (putData.files && putData.files.length > 0) {
-      for (const projectImage of putData.files) {
-        let isImageChanged = true;
-        // 이미지를 변경했는지 확인
-        if (artworkData && artworkData.projectImages) {
-          for (const image of artworkData.projectImages) {
-            if (projectImage === image.imageUrlList) {
-              isImageChanged = false;
-              break;
-            }
-          }
-        }
-        if (isImageChanged) {
-          const file = await urlToFile(projectImage, 'projectImage.png');
-          if (file) {
-            formData.append('files', file);
-          } else {
-            console.error('프로젝트 이미지 가져오기 실패');
-            // 사용자에게 메시지 표시 등, 에러를 graceful하게 처리할 수 있습니다.
-          }
-        } else {
-          // 이미지를 변경하지 않은 경우에는 기존의 이미지를 그대로 전송
-          if (projectImage) {
-            const imageBlob = await urlToFile(projectImage, 'projectImage.png');
-            if (imageBlob) {
-              formData.append('files', imageBlob);
-            } else {
-              console.error('프로젝트 이미지 가져오기 실패');
-              // 사용자에게 메시지 표시 등, 에러를 graceful하게 처리할 수 있습니다.
-            }
-          } else {
-            formData.append('files', ''); // 이미지가 없는 경우 빈 값 추가
-          }
-        }
+    try {
+      const response = await putArtwork(formData);
+      if (response.code === 400 && response.data === null && response.message) {
+        setErrorMessage(response.message);
+        return;
       }
+      alert('아트워크 수정 성공'); // * TODO alert component 변경
+      setIsGetMode(true);
+    } catch (error: any) {
+      console.log('Error creating artwork:', error);
     }
-    if (window.confirm('수정하시겠습니까?')) {
+  };
+
+  const handleArtworkDelete = async () => {
+    const confirmDelete = window.confirm('정말 삭제하시겠습니까?');
+    if (confirmDelete) {
       try {
-        const response = await putArtwork(formData);
-        console.log('Artwork updated:', response);
-        await fetchArtworkDetails();
-        setIsEditMode(false);
-        window.alert('수정되었습니다.');
+        // 삭제 API 호출
+        await deleteArtwork(Number(artworkId));
+        alert('아트워크가 성공적으로 삭제되었습니다.');
+        navigate(`${PA_ROUTES.ARTWORK}`);
       } catch (error) {
-        console.error('Error updating artwork:', error);
+        console.error('Error deleting artwork:', error);
+        // 삭제 실패 시 처리
       }
-      navigator(`${PA_ROUTES.ARTWORK}/${artworkData?.id}`);
     }
   };
-  const handleRemoveFile = (indexToRemove: number) => {
-    setPutData((prevData) => {
-      const updatedFiles = prevData.files.filter((_, index) => index !== indexToRemove);
-      return {
-        ...prevData,
-        files: updatedFiles,
-      };
-    });
-  };
+  const defaultValue = getArtworkDefaultValue(
+    selectedDate,
+    handleDateChange,
+    selectedCategory,
+    setSelectedCategory,
+    isProjectOpened,
+    handleTogglePosted,
+    projectType,
+    setProjectType,
+    link,
+    handleLinkChange,
+    mainImage,
+    handleMainImageChange,
+    detailImages,
+    handleDetailImageChange,
+    title,
+    handleTitleChange,
+    customer,
+    handleCustomerChange,
+    overview,
+    handleOverviewChange,
+    isGetMode,
+    getModeMainImg,
+    getModeDetailImgs,
+  );
   return (
     <Container>
-      <BtnWrapper>
-        {!isEditMode && <EditButton onClick={handleEditClick}>수정하기</EditButton>}
-        {isEditMode && <EditButton onClick={handleSaveClick}>저장하기</EditButton>}
-      </BtnWrapper>
-      <ContentWrapper>
-        <div>
-          <ArtworkInput
-            label={'Main Image'}
-            mainFile={artworkData?.mainImg}
-            onChange={handleImageChange}
-            isEditMode={isEditMode}
-            isFile={true}
-          />
-        </div>
-        <div>
-          <ArtworkInput
-            label={'제목'}
-            onTextAreaChange={handleChange}
-            isEditMode={isEditMode}
-            isFile={false}
-            name={'name'}
-            value={putData.request.name}
-          />
-        </div>
-        <div>
-          <ArtworkInput
-            label={'클라이언트'}
-            onTextAreaChange={handleChange}
-            isEditMode={isEditMode}
-            isFile={false}
-            name={'client'}
-            value={putData.request.client}
-          />
-        </div>
-        <div>
-          <ArtworkInput
-            label={'일시'}
-            onTextAreaChange={handleChange}
-            isEditMode={isEditMode}
-            isFile={false}
-            name={'date'}
-            value={putData.request.date}
-          />
-        </div>
-        <div>
-          <ArtworkInput
-            label={'카테고리'}
-            onTextAreaChange={handleChange}
-            isEditMode={isEditMode}
-            isFile={false}
-            name={'category'}
-            value={putData.request.category}
-          />
-        </div>
-        <div>
-          <ArtworkInput
-            label={'링크'}
-            onTextAreaChange={handleChange}
-            isEditMode={isEditMode}
-            isFile={false}
-            name={'link'}
-            value={putData.request.link}
-          />
-        </div>
-        <div>
-          <ArtworkInput
-            label={'설명'}
-            onTextAreaChange={handleChange}
-            isEditMode={isEditMode}
-            isFile={false}
-            name={'overView'}
-            value={putData.request.overView}
-          />
-        </div>
-        <LabelWrapper>공개 여부</LabelWrapper>
-        <LabelWrapper>프로젝트 타입</LabelWrapper>
-        <FileDes>Sub Images는 최대 3개까지 지정 가능합니다.</FileDes>
-        <FilesWrapper>
-          {isEditMode ? (
-            <>
-              {[...Array(3)].map((_, index) => (
-                <div key={index}>
-                  {putData.files[index] ? (
-                    <>
-                      <input type='file' accept='image/*' onChange={(e) => handleFileChange(e, index)} />
-                      <FilesImgWrapper>
-                        <img src={putData.files[index]} alt={`project image ${index + 1}`} />
-                        <button onClick={() => handleRemoveFile(index)}>지우기</button> {/* 파일 지우기 버튼 */}
-                      </FilesImgWrapper>
-                    </>
-                  ) : (
-                    <input type='file' accept='image/*' onChange={(e) => handleFileChange(e, index)} />
-                  )}
-                </div>
-              ))}
-            </>
-          ) : artworkData?.projectImages && artworkData.projectImages.length > 0 ? (
-            <>
-              {artworkData?.projectImages.map((i, index) => (
-                <FilesImgWrapper key={index}>
-                  <img src={i.imageUrlList} alt={`project image ${index + 1}`} />
-                </FilesImgWrapper>
-              ))}
-            </>
-          ) : (
-            <>사진이 없습니다.</>
-          )}
-        </FilesWrapper>
-      </ContentWrapper>
+      <ScrollToTop />
+      <ValueWrapper>
+        {defaultValue.map((item: DefaultValueItem, index: number) => (
+          <div key={index}>
+            {errorMessage && item.name === 'artworkType' && <ErrorMessage> ⚠ {errorMessage}</ErrorMessage>}
+            <ArtworkValueLayout valueTitle={item.title} description={item.description} content={item.content} />
+          </div>
+        ))}
+        <div />
+        {!isGetMode && (
+          <SubmitBtn
+            title={submitButtonDisabled ? '모든 항목을 다 입력해주세요!' : ''}
+            disabled={submitButtonDisabled}
+            onClick={() => handleSubmit()}
+          >
+            저장하기
+          </SubmitBtn>
+        )}
+        {isGetMode && <SubmitBtn onClick={handleEditClick}>수정하기</SubmitBtn>}
+      </ValueWrapper>{' '}
+      <DeleteWrapper onClick={handleArtworkDelete}>삭제하기</DeleteWrapper>
     </Container>
   );
 };
@@ -334,111 +295,77 @@ const ArtworkDetail = () => {
 export default ArtworkDetail;
 
 const Container = styled.div`
-  background-color: rgba(190, 190, 190, 0.07);
-  backdrop-filter: blur(5px);
-  height: fit-content;
-  width: 800px;
-  padding: 20px 20px;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  width: 110%;
+  position: relative;
 `;
 
-const BtnWrapper = styled.div`
-  margin-left: auto;
+const ValueWrapper = styled.div`
+  background-color: rgba(255, 255, 255, 0.74);
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
+  box-sizing: border-box;
+  width: 100%;
+  padding: 55px 55px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
 `;
-const EditButton = styled.button`
-  background-color: inherit;
-  outline: none;
+
+const SubmitBtn = styled.button`
   border: none;
-  padding: 5px 15px;
-  background-color: white;
-  font-family: 'pretendard-medium';
-  font-size: 15px;
+  outline-style: none;
+  font-family: 'pretendard-semibold';
+  font-size: 17px;
+  background-color: #6c757d;
+  width: 150px;
+  text-align: center;
+  color: white;
   border-radius: 5px;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  padding: 10px 20px;
+  margin-left: auto;
+  margin-top: 20px;
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+    &:hover {
+      background-color: #6c757d;
+    }
+  }
+  &:hover {
+    background-color: #5a6268;
+  }
+`;
+
+const ErrorMessage = styled.div`
+  font-family: 'pretendard-bold';
+  background-color: #ca0505c5;
+  color: #e7e7e7;
+  padding: 10px;
+  border-radius: 5px;
+  width: fit-content;
+  margin-bottom: 15px;
+`;
+
+const DeleteWrapper = styled.div`
+  font-family: 'pretendard-semibold';
+  font-size: 17px;
+  background-color: #c0c0c0;
+  text-align: center;
+  width: 150px;
+  text-align: center;
+  color: white;
+  border-radius: 5px;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  padding: 10px 20px;
+  margin-left: auto;
+  margin-top: 20px;
 
   &:hover {
-    cursor: pointer;
-    opacity: 0.8;
-    transition: all 300ms ease-in-out;
+    background-color: #ca0505c5;
   }
-`;
-const ContentWrapper = styled.div`
-  h1 {
-    font-family: 'pretendard-bold';
-    font-size: 18px;
-    color: #393939;
-  }
-`;
-
-const MainImgWrapper = styled.div`
-  img {
-    height: 250px;
-    width: 400px;
-    object-fit: cover;
-  }
-`;
-
-const InputWrapper = styled.div`
-  display: flex;
-  align-items: center;
-
-  input {
-    background: inherit;
-    border-style: none;
-    background-color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    width: 350px;
-    height: 30px;
-    &:hover {
-    }
-    &:focus {
-      outline: none;
-    }
-  }
-  margin-bottom: 15px;
-`;
-
-const InputHeader = styled.div`
-  font-family: 'pretendard-bold';
-  font-size: 18px;
-  color: #393939;
-  width: 100px;
-  text-align: center;
-  margin-right: 15px;
-`;
-
-const FilesImgWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  img {
-    height: 300px;
-    width: 600px;
-    object-fit: cover;
-    margin-bottom: 15px;
-  }
-`;
-
-const FilesWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 20px;
-  margin-bottom: 40px;
-`;
-const LabelWrapper = styled.div`
-  font-family: 'pretendard-bold';
-  font-size: 20px;
-  margin-bottom: 15px;
-`;
-const FileDes = styled.div`
-  font-family: 'pretendard-light';
-  font-size: 15px;
-  opacity: 0.8;
-  margin-bottom: 15px;
 `;

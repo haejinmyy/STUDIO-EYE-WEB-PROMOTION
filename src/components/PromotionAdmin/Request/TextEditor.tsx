@@ -9,9 +9,10 @@ interface ITextEditorProps {
 function TextEditor({ editorState, onEditorStateChange }: ITextEditorProps) {
   return (
     <Editor
-      placeholder='답변을 작성해주세요'
+      placeholder='답변을 작성해주세요.'
       editorState={editorState}
       onEditorStateChange={onEditorStateChange}
+      toolbarHidden={true}
       toolbar={{
         inline: { inDropdown: true },
         list: { inDropdown: true },

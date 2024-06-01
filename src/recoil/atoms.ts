@@ -35,3 +35,8 @@ export const backdropState = atom<boolean>({
   key: 'backdropState',
   default: false,
 });
+
+export const dataUpdateState=atom<boolean>({
+  key:'dataUpdateState',
+  default:false
+})

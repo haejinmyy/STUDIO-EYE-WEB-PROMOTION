@@ -1,122 +1,83 @@
-import React, { useEffect, useRef } from 'react';
-import { Box, BoxProps, Flex, FlexProps } from '@chakra-ui/react';
-import { motion, Variants, useTransform, MotionValue } from 'framer-motion';
+import React from 'react';
+import { Box, BoxProps } from '@chakra-ui/react';
+import { motion, Variants } from 'framer-motion';
 import styled from 'styled-components';
+import defaultMainImg from '@/assets/images/PP/defaultMainImg.jpg';
+import ArtworkNav from './ArtworkNav';
 
 interface SectionProps {
   elementHeight: number;
   index: number;
-  scroll: MotionValue<number>;
   data: {
     backgroundImg: string;
     title: string;
     client: string;
     overview: string;
+    link?: string;
   };
-  isFirst: boolean;
-  isLast: boolean;
+  count: number;
+  scrollToSection: (index: number) => void;
 }
 
-const ArtworkList = React.forwardRef<HTMLElement, SectionProps>(
-  ({ elementHeight, index, scroll, data, isFirst, isLast }, ref) => {
-    const MotionBox = motion<BoxProps>(Box);
-    const MotionFlex = motion<FlexProps>(Flex);
-    const cardInView: Variants = {
-      offscreen: {
-        opacity: 0,
-      },
-      onscreen: {
-        opacity: 1,
-      },
-    };
+const ArtworkList = React.forwardRef<HTMLElement, SectionProps>(({ index, data, count, scrollToSection }, ref) => {
+  const MotionBox = motion<BoxProps>(Box);
+  const cardInView: Variants = {
+    offscreen: {
+      opacity: 0,
+    },
+    onscreen: {
+      opacity: 1,
+    },
+  };
 
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    const handleWheel = (e: React.WheelEvent) => {
-      if (containerRef.current) {
-        const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-        const atTop = scrollTop === 0;
-        const atBottom = scrollTop + clientHeight >= scrollHeight;
-
-        if ((!isFirst && !isLast && ((atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0))) ||
-          (isFirst && atBottom && e.deltaY > 0) ||
-          (isLast && atTop && e.deltaY < 0)) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      }
-    };
-
-    useEffect(() => {
-      const container = containerRef.current;
-
-      const handleWheelEvent = (e: WheelEvent) => {
-        handleWheel(e as unknown as React.WheelEvent);
-      };
-
-      if (container) {
-        container.addEventListener('wheel', handleWheelEvent, { passive: false });
-      }
-
-      return () => {
-        if (container) {
-          container.removeEventListener('wheel', handleWheelEvent);
-        }
-      };
-    }, []);
-
-    const transformY = useTransform(
-      scroll,
-      [elementHeight * (index + 1) - elementHeight, elementHeight * (index + 1)],
-      ['0vh', '100vh']
-    );
-
-    return (
-      <MotionBox
-        w="100%"
-        h="100vh"
-        scrollSnapAlign="center"
-        initial="offscreen"
-        whileInView="onscreen"
-        position="relative"
-        viewport={{ once: false, amount: 0.7 }}
-        ref={ref}
-        zIndex={index + 1}
-        backgroundImage={`linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url(${data.backgroundImg})`}
-        backgroundSize="cover"
-        backgroundPosition="center"
-        onWheel={handleWheel}
-      >
-        <MotionFlex
-          w="100%"
-          h="100%"
-          paddingLeft={20}
-          paddingTop={20}
-          color="white"
-          style={{ y: transformY }}
-          alignItems="start"
-          justifyContent="start"
-          ref={containerRef}
-          overflowX="auto"
-          overflowY="hidden"
-        >
-          <motion.div variants={cardInView}>
-            <TextWrapper>
-              <ClientWrapper>{data.client}</ClientWrapper>
-              <TitleWrapper>{data.title}</TitleWrapper>
-              <OverviewWrapper>{data.overview}</OverviewWrapper>
-            </TextWrapper>
-          </motion.div>
-        </MotionFlex>
-      </MotionBox>
-    );
-  }
-);
+  return (
+    <MotionBox
+      w="100%"
+      h="100vh"
+      scrollSnapAlign="center"
+      initial="offscreen"
+      whileInView="onscreen"
+      position="relative"
+      viewport={{ once: false, amount: 0.7 }}
+      ref={ref}
+      backgroundImage={`linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url(${data.backgroundImg || defaultMainImg})`}
+      backgroundSize="cover"
+      backgroundPosition="center"
+    >
+      <motion.div variants={cardInView}>
+        <TextWrapper>
+          <ClientWrapper>{data.client.length > 30 ? `${data.client.slice(0, 30)}...` : data.client}</ClientWrapper>
+          <TitleWrapper>{data.title.length > 20 ? `${data.title.slice(0, 20)}...` : data.title}</TitleWrapper>
+          <OverviewWrapper>{data.overview}</OverviewWrapper>
+        </TextWrapper>
+        <ArtworkNav count={count} scrollToSection={scrollToSection} activeIndex={index} />
+      </motion.div>
+      {data.link && (
+        <a
+          href={data.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            textDecoration: 'none',
+            color: 'inherit',
+          }}
+        />
+      )}
+    </MotionBox>
+  );
+});
 
 export default ArtworkList;
 
 const TextWrapper = styled.div`
-  margin-top: 40px;
+  padding: 100px;
+  position: relative;
+  z-index: 1;
 `;
 
 const TitleWrapper = styled.div`
@@ -124,6 +85,7 @@ const TitleWrapper = styled.div`
   font-size: 80px;
   color: white;
   white-space: nowrap;
+  margin: -1rem 0 -0.5rem -0.2rem;
 `;
 
 const ClientWrapper = styled(motion.h2)`
