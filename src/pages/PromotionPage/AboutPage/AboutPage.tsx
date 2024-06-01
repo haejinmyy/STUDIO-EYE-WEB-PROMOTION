@@ -77,7 +77,7 @@ const AboutPage = () => {
             <CeoInfo dangerouslySetInnerHTML={{ __html: CEOData.introduction }}></CeoInfo>
           </CeoInfoContainer>
           <CeoImageContainer>
-            <img src={CEOData.imageUrl} alt='CEO Character' style={{ width: '350px', height: 'auto' }} />
+            <img src={CEOData.imageUrl} alt='CEO Character' style={{ width: '350px', objectFit: 'contain' }} />
           </CeoImageContainer>
         </RowCoontainer>
       </Section>
@@ -92,7 +92,12 @@ const AboutPage = () => {
                   key={info.partnerInfo.id}
                   src={info.logoImg}
                   alt='CORP Logo'
-                  style={{ width: '300px', height: '150px', cursor: 'pointer' }}
+                  style={{
+                    width: '300px',
+                    height: '150px',
+                    objectFit: 'contain',
+                    cursor: 'pointer',
+                  }}
                   onClick={() => window.open(info.partnerInfo.link, '_blank')}
                 />
               ))}

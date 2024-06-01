@@ -23,7 +23,7 @@ const Intro = () => {
         const data = await getCompanyData();
         setCompanyMainOverview(data.mainOverview);
 
-        const commitmentText = data.commitment.replace(/<\/?[^>]+(>|$)/g, "");
+        const commitmentText = data.commitment.replace(/<\/?[^>]+(>|$)/g, '');
         setCompanyCommitment(commitmentText);
       } catch (error) {
         console.error('Error fetching company data: ', error);

@@ -5,6 +5,7 @@ import logo from '../../../assets/logo/mainLogo.png';
 import { PP_ROUTES } from '@/constants/routerConstants';
 import { useNavigate } from 'react-router-dom';
 import { getCompanyBasicData } from '../../../apis/PromotionAdmin/dataEdit';
+import { emailCheck, phoneFaxCheck } from '@/components/ValidationRegEx/ValidationRegEx';
 
 interface ICircleProps {
   filled: boolean;
@@ -20,13 +21,13 @@ interface IButtonProps {
 }
 interface IFormData {
   category: string;
+  projectName: string;
   clientName: string;
   organization: string;
-  email: string;
   contact: string;
-  description: string;
+  email: string;
   position: string;
-  // projectName: string;
+  description: string;
 }
 type ICompanyBasic = {
   address: string;
@@ -40,13 +41,13 @@ const ContactUsPage = () => {
   const [requestStep, setRequestStep] = useState(0);
   const [formData, setFormData] = useState<IFormData>({
     category: '',
+    projectName: '',
     clientName: '',
     organization: '',
-    email: '',
     contact: '',
-    description: '',
+    email: '',
     position: '',
-    // projectName: '',
+    description: '',
   });
   const [companyBasicData, setCompanyBasicData] = useState<ICompanyBasic>({
     address: '',
@@ -136,7 +137,7 @@ const ContactUsPage = () => {
           return;
         }
       } else if (requestStep === 1) {
-        const isValidTel = telCheck(formData.contact);
+        const isValidTel = phoneFaxCheck(formData.contact);
         const isValidEmail = emailCheck(formData.email);
         if (formData.clientName === '' || formData.organization === '') {
           alert('직책을 제외한 모든 칸에 입력을 해주세요.');
@@ -151,8 +152,8 @@ const ContactUsPage = () => {
           return;
         }
       } else if (requestStep === 2) {
-        if (formData.description === '') {
-          alert('프로젝트에 대한 설명을 입력해주세요.');
+        if (formData.description === '' || formData.projectName === '') {
+          alert('프로젝트에 대한 필수 내용을 모두 입력해주세요.');
           return;
         }
         handleSubmit(e);
@@ -182,20 +183,7 @@ const ContactUsPage = () => {
       category: category,
     });
   };
-  const emailCheck = (email: any) => {
-    const emailRegEx = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/;
-    if (!emailRegEx.test(email)) {
-      return false;
-    }
-    return true;
-  };
-  const telCheck = (tel: any) => {
-    const telRegEx = /^[0-9]*-[0-9]*-[0-9]{0,13}$/;
-    if (!telRegEx.test(tel) || tel === '') {
-      return false;
-    }
-    return true;
-  };
+
   const handleDataChange = (e: any) => {
     const { name, value } = e.target;
     setFormData({
@@ -223,14 +211,6 @@ const ContactUsPage = () => {
       }
     }
   };
-  ////////////////////////////////// 프로젝트 제목 데이터 추가 이후 삭제할 코드
-  const [inputValue, setInputValue] = useState(''); // 입력 필드의 상태를 추적
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setInputValue(value);
-  };
-  ////////////////////////////////// 프로젝트 제목 데이터 추가 이후 삭제할 코드
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -244,15 +224,14 @@ const ContactUsPage = () => {
       .then((response) => {
         console.log('response.data : ', response.data);
         setFormData({
-          // 폼 데이터 초기화
           category: '',
+          projectName: '',
           clientName: '',
           organization: '',
-          email: '',
           contact: '',
-          description: '',
+          email: '',
           position: '',
-          // projectName: '',
+          description: '',
         });
         setFileList([]);
         console.log(formData, '제출');
@@ -383,6 +362,7 @@ const ContactUsPage = () => {
                     value={formData.clientName}
                     name='clientName'
                     onChange={handleDataChange}
+                    aria-autocomplete='none'
                   ></RequestInfoInput>
                   <RequestInfoInput
                     autoComplete='off'
@@ -391,6 +371,7 @@ const ContactUsPage = () => {
                     value={formData.organization}
                     name='organization'
                     onChange={handleDataChange}
+                    aria-autocomplete='none'
                   ></RequestInfoInput>
                   <RequestInfoInput
                     autoComplete='off'
@@ -399,6 +380,7 @@ const ContactUsPage = () => {
                     value={formData.contact}
                     name='contact'
                     onChange={handleDataChange}
+                    aria-autocomplete='none'
                   ></RequestInfoInput>
                   <RequestInfoInput
                     autoComplete='off'
@@ -407,6 +389,7 @@ const ContactUsPage = () => {
                     value={formData.email}
                     name='email'
                     onChange={handleDataChange}
+                    aria-autocomplete='none'
                   ></RequestInfoInput>
                   <RequestInfoInput
                     autoComplete='off'
@@ -415,23 +398,18 @@ const ContactUsPage = () => {
                     value={formData.position}
                     name='position'
                     onChange={handleDataChange}
+                    aria-autocomplete='none'
                   ></RequestInfoInput>
                 </RequestInputWrapper>
               ) : (
                 <RequestInputWrapper>
                   <RequestInfoInput
                     autoComplete='off'
-                    ///////////////////////////////////////// 삭제 예정
-                    type='text'
-                    value={inputValue}
-                    onChange={handleInputChange}
-                    placeholder='제목을 입력해주세요.'
-                    /////////////////////////////////////////
-                    // type='projectName'
-                    //   placeholder='제목을 입력해주세요.'
-                    //   value={formData.projectName}
-                    //   name='projectName'
-                    //   onChange={handleDataChange}
+                    type='projectName'
+                    placeholder='제목을 입력해주세요 *'
+                    value={formData.projectName}
+                    name='projectName'
+                    onChange={handleDataChange}
                   ></RequestInfoInput>
                   <RowWrapper>
                     <RequestFileText ref={FileTextRef} type='text' readOnly></RequestFileText>
