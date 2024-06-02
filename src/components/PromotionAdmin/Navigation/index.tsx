@@ -58,7 +58,9 @@ const index = () => {
       <LogoImg src={PALogo} alt='pa-logo' />
       <NavWrapper>
         {linksData.map((link, index) => (
-          <NavBtn key={index} path={link.path} pathName={link.pathName} svgComponent={link.svgComponent} />
+          <div>
+          <NavBtn key={index} path={link.path} pathName={link.pathName} svgComponent={link.svgComponent}/>
+          </div>
         ))}
       </NavWrapper>
       <LogoutWrapper>

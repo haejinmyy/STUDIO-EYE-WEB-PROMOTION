@@ -1,26 +1,44 @@
+import { dataUpdateState } from '@/recoil/atoms';
 import { theme } from '@/styles/theme';
 import { useEffect, useState } from 'react';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-const ArtworkHeader = ({ initialCheck, control }: { initialCheck: number; control: (isEditing: number) => void }) => {
+const ArtworkHeader = ({ initialCheck, control }
+  : { initialCheck: number; control: (isEditing: number) => void }) => {
   const [isChecked, setIsChecked] = useState(initialCheck);
+  const [moveChecked, setMoveChecked]=useState<boolean>(false);
+  const isUpdate=useRecoilValue(dataUpdateState);//sequence 변경 있는지 확인
+  const setupdate = useSetRecoilState(dataUpdateState);
   useEffect(() => {
     //초기값 변경될 때 상태 업데이트
     setIsChecked(initialCheck);
   }, [initialCheck]);
 
   return (
-    <HeaderWrapper>
+    <HeaderWrapper onClick={()=>{
+      if(isUpdate){
+        if(window.confirm("현재 페이지를 나가면 변경 사항이 저장되지 않습니다.\n나가시겠습니까?")){
+          setMoveChecked(false)
+          setupdate(false)
+        }else{
+          setMoveChecked(true)
+          setupdate(true)
+        }
+      }}}>
       <div className='tabs'>
-        <input type='radio' id='radio1' name='tabs' onClick={() => control(0)} defaultChecked={isChecked === 0} />
+        <input type='radio' id='radio1' name='tabs' onClick={() => {control(0)}} defaultChecked={isChecked === 0} 
+        disabled={moveChecked}/>
         <label className='tab' htmlFor='radio1'>
           아트워크 관리
         </label>
-        <input type='radio' id='radio2' name='tabs' onClick={() => control(1)} defaultChecked={isChecked === 1} />
+        <input type='radio' id='radio2' name='tabs' onClick={() => {control(1)}} defaultChecked={isChecked === 1} 
+        disabled={moveChecked}/>
         <label className='tab' htmlFor='radio2'>
           메인 순서 관리
         </label>
-        <input type='radio' id='radio3' name='tabs' onClick={() => control(2)} defaultChecked={isChecked === 2} />
+        <input type='radio' id='radio3' name='tabs' onClick={() => {control(2)}} defaultChecked={isChecked === 2} 
+        disabled={moveChecked}/>
         <label className='tab' htmlFor='radio3'>
           전체 순서 관리
         </label>

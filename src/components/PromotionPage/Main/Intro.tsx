@@ -23,7 +23,7 @@ const Intro = () => {
         const data = await getCompanyData();
         setCompanyMainOverview(data.mainOverview);
 
-        const commitmentText = data.commitment.replace(/<\/?[^>]+(>|$)/g, "");
+        const commitmentText = data.commitment.replace(/<\/?[^>]+(>|$)/g, '');
         setCompanyCommitment(commitmentText);
       } catch (error) {
         console.error('Error fetching company data: ', error);
@@ -83,10 +83,6 @@ const IntroWrapper = styled.div`
   font-family: 'pretendard-bold';
   font-size: 48px;
   text-align: center;
-`;
-
-const YellowText = styled.span`
-  color: #ffa900;
 `;
 const DesWrapper = styled.div`
   font-size: 20px;

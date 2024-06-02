@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import circle from '@/assets/images/PP/circle.png';
 import styled from 'styled-components';
 import { motion, TargetAndTransition } from 'framer-motion';
@@ -21,8 +21,15 @@ const RotatedCircle = ({ label, link }: Props) => {
     },
   };
 
+  const handleClick=(event:MouseEvent<HTMLAnchorElement>)=>{
+    if(!link.startsWith('https://')){
+      event.preventDefault();
+      alert('링크가 잘못되었습니다. 관리자에게 문의해주세요.');
+    }
+  }
+
   return (
-    <Container href={link} target='_blank'>
+    <Container href={link} target='_blank' onClick={handleClick}>
       <RotatingWrapper
         animate={rotateAnimation}
         whileHover={{ scale: 0.9 }} // 호버 시 90% 크기로 변경

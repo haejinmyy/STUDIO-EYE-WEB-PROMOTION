@@ -1,13 +1,25 @@
 import styled from 'styled-components';
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import Circle from './ArrowCircle';
+import Circle from '../../../components/PromotionPage/Circle/ArrowCircle';
 import MissionLabel from '../../../assets/images/Mission.png';
 import { getCompanyData } from '../../../apis/PromotionAdmin/dataEdit';
 
 interface IFontStyleProps {
   color?: string;
 }
+
+const bounceAnimation = {
+  hidden: { opacity: 0, y: 0 },
+  visible: (turn: number) => ({
+    opacity: 1,
+    y: [0, -30, 0, -7, 0], // 두 번 튕기는 형태
+    transition: {
+      delay: turn * 0.5, // 0.5초 간격으로 지연
+      duration: 0.8, // 총 1초 동안
+    },
+  }),
+};
 
 function IntroPage() {
   const aboutRef = useRef(null);
@@ -38,9 +50,15 @@ function IntroPage() {
       <InitContainer>
         <div>
           <InitTitleWrapper>
-            <InitTitle>WHAT</InitTitle>
-            <InitTitle color='#ffa900'>WE</InitTitle>
-            <InitTitle>DO</InitTitle>
+            <InitTitle custom={0} initial='hidden' animate='visible' variants={bounceAnimation}>
+              WHAT
+            </InitTitle>
+            <InitTitle custom={1} initial='hidden' animate='visible' variants={bounceAnimation} color='#ffa900'>
+              WE
+            </InitTitle>
+            <InitTitle custom={2} initial='hidden' animate='visible' variants={bounceAnimation}>
+              DO
+            </InitTitle>
           </InitTitleWrapper>
         </div>
         <Circle />
@@ -69,9 +87,13 @@ function IntroPage() {
           >
             <BackgroundText> MISSION</BackgroundText>
             {sloganImageUrl !== '' ? (
-              <img src={sloganImageUrl} alt='SloganLabel' style={{ width: '50%', height: '130px' }} />
+              <img
+                src={sloganImageUrl}
+                alt='SloganLabel'
+                style={{ width: '50%', height: '130px', objectFit: 'contain' }}
+              />
             ) : (
-              <img src={MissionLabel} alt='MissionLabel' style={{ width: '50%', height: 'auto' }} />
+              <img src={MissionLabel} alt='MissionLabel' style={{ width: '50%', objectFit: 'contain' }} />
             )}
           </motion.div>
         </MissionWrapper>
@@ -115,7 +137,7 @@ const InitTitleWrapper = styled.div`
   gap: 20px;
   margin-bottom: 70px;
 `;
-const InitTitle = styled.div<IFontStyleProps>`
+const InitTitle = styled(motion.div)<IFontStyleProps>`
   font-family: 'Pretendard-Bold';
   font-size: 120px;
   color: ${(props) => props.color || '#ffffff'};
@@ -131,10 +153,10 @@ const IntroContainer = styled.div`
 `;
 const BackgroundText = styled.div`
   font-family: 'pretendard-bold';
-  font-size: 11vw;
+  font-size: 10vw;
   letter-spacing: 10px;
   opacity: 0.2;
-  filter: blur(5px);
+  filter: blur(3px);
   color: '#FFFFFF';
   user-select: none;
 `;
@@ -142,13 +164,9 @@ const AboutWrapper = styled.div`
   text-align: left;
   margin-bottom: 100px;
 `;
-const RowTextContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-`;
 const AboutText = styled.div<IFontStyleProps>`
   font-family: 'pretendard-medium';
-  font-size: 36px;
+  font-size: 42px;
   color: ${(props) => props.color || '#ffffff'};
   margin-bottom: 15px;
   padding: 10px;
