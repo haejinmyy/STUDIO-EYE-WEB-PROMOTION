@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import logo from '../../../assets/logo/mainLogo.png';
+import logo from '../../../assets/logo/Logo.png';
 import { PP_ROUTES } from '@/constants/routerConstants';
 import { useNavigate } from 'react-router-dom';
 import { getCompanyBasicData } from '../../../apis/PromotionAdmin/dataEdit';
@@ -184,13 +184,99 @@ const ContactUsPage = () => {
     });
   };
 
+  //////////////////////////////////////////////////////////// 1번
+  const [errors, setErrors] = useState({
+    contact: '',
+    email: '',
+  });
+  //////////////////////////////////////////////////////////// 1번
+
   const handleDataChange = (e: any) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    // setFormData({
+    //   ...formData,
+    //   [name]: value,
+    // });
+
+    //////////////////////////////////////////////////////////// 2번
+    if (name === 'contact') {
+      let fixedValue = value.replace(/[^0-9]/g, '');
+      if (fixedValue.length <= 3) {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          contact: fixedValue,
+        }));
+      } else if (fixedValue.length <= 7) {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          contact: fixedValue.slice(0, 3) + '-' + fixedValue.slice(3),
+        }));
+      } else if (fixedValue.length <= 11) {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          contact: fixedValue.slice(0, 3) + '-' + fixedValue.slice(3, 7) + '-' + fixedValue.slice(7),
+        }));
+      } else {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          contact: fixedValue.slice(0, 3) + '-' + fixedValue.slice(3, 7) + '-' + fixedValue.slice(7, 11),
+        }));
+      }
+
+      if (
+        fixedValue &&
+        !phoneFaxCheck(fixedValue.slice(0, 3) + '-' + fixedValue.slice(3, 7) + '-' + fixedValue.slice(7, 11))
+      ) {
+        console.log(fixedValue);
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          contact: '010-1234-5678의 형식으로 작성해주세요.',
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          contact: '',
+        }));
+      }
+    } else {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        [name]: value,
+      }));
+    }
+    //////////////////////////////////////////////////////////// 2번
+
+    //////////////////////////////////////////////////////////// 1번
+    // if (name === 'contact') {
+    //   if (!phoneFaxCheck(value)) {
+    //     setErrors({
+    //       ...errors,
+    //       contact: '숫자로만 구성된 "010-1234-5678" 형식의 값을 넣어주세요',
+    //     });
+    //   } else {
+    //     setErrors({
+    //       ...errors,
+    //       contact: '',
+    //     });
+    //   }
+    // }
+    //////////////////////////////////////////////////////////// 1번
+
+    if (name === 'email') {
+      if (value && !emailCheck(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          email: '@와 .com이 포함되도록 해주세요. (예: user@example.com)',
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          email: '',
+        }));
+      }
+    }
   };
+
   const FileTextRef = useRef<HTMLInputElement>(null);
   const [fileList, setFileList] = useState<File[]>([]);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -242,11 +328,21 @@ const ContactUsPage = () => {
       });
   };
 
-  const notValidAddress = (address: string | undefined | null) => {
-    return !address || address.length > 80;
+  const notValidAddress = (address: string | undefined | null, addressEnglish: string | undefined | null) => {
+    return {
+      addressInvalid: !address || address.length > 300,
+      addressEnglishInvalid: !addressEnglish || addressEnglish.length > 300,
+    };
   };
 
-  const notValidString = (info: string | undefined | null) => {
+  const { addressInvalid, addressEnglishInvalid } = notValidAddress(
+    companyBasicData.address,
+    companyBasicData.addressEnglish,
+  );
+
+  const noValidAddresses = addressInvalid && addressEnglishInvalid;
+
+  const notValidInfo = (info: string | undefined | null) => {
     return !info || info.length > 18;
   };
 
@@ -262,39 +358,35 @@ const ContactUsPage = () => {
             <IntroSubtitle>대한민국 No.1 뉴미디어 전문 제작사 스튜디오 아이와 함께 해보세요!</IntroSubtitle>
           </IntroSubTitleWrapper>
           <IntroAboutWrapper>
-            <div>
-              <IntroAdress>Address</IntroAdress>
-              {notValidAddress(companyBasicData.address) ? (
-                <IntroAdress style={{ color: '#FFFFFF' }}>서울시 성동구 광나루로 162 BS성수타워 5층</IntroAdress>
-              ) : (
-                <IntroAdress style={{ color: '#FFFFFF' }}>{companyBasicData.address}</IntroAdress>
-              )}
-              {notValidAddress(companyBasicData.addressEnglish) ? (
-                <IntroAdress style={{ color: '#FFFFFF' }}>
-                  5F, 162, Gwangnaru-ro, Seongdong-gu, Seoul, Korea
-                </IntroAdress>
-              ) : (
-                <IntroAdress style={{ color: '#FFFFFF' }}>{companyBasicData.addressEnglish}</IntroAdress>
-              )}
-            </div>
+            {!noValidAddresses && (
+              <div>
+                <IntroAdress style={{ color: '#8a8a8a' }}>Address</IntroAdress>
+                {addressInvalid && !addressEnglishInvalid && (
+                  <IntroAdress>{companyBasicData.addressEnglish}</IntroAdress>
+                )}
+                {!addressInvalid && addressEnglishInvalid && <IntroAdress>{companyBasicData.address}</IntroAdress>}
+                {!addressInvalid && !addressEnglishInvalid && (
+                  <>
+                    <IntroAdress>{companyBasicData.address}</IntroAdress>
+                    <IntroAdress>{companyBasicData.addressEnglish}</IntroAdress>
+                  </>
+                )}
+              </div>
+            )}
           </IntroAboutWrapper>
           <IntroNumberWrapper>
-            <div>
-              <IntroNumber>tel</IntroNumber>
-              {notValidString(companyBasicData.phone) ? (
-                <IntroNumber style={{ color: '#FFFFFF' }}>02-2038-2663</IntroNumber>
-              ) : (
-                <IntroNumber style={{ color: '#FFFFFF' }}>{companyBasicData.phone}</IntroNumber>
-              )}
-            </div>
-            <div>
-              <IntroNumber>fax</IntroNumber>
-              {notValidString(companyBasicData.fax) ? (
-                <IntroNumber style={{ color: '#FFFFFF' }}>070-7549-2443</IntroNumber>
-              ) : (
-                <IntroNumber style={{ color: '#FFFFFF' }}>{companyBasicData.fax}</IntroNumber>
-              )}
-            </div>
+            {!notValidInfo(companyBasicData.phone) && (
+              <div>
+                <IntroNumber style={{ color: '#8a8a8a' }}>tel</IntroNumber>
+                <IntroNumber>{companyBasicData.phone}</IntroNumber>
+              </div>
+            )}
+            {!notValidInfo(companyBasicData.fax) && (
+              <div>
+                <IntroNumber style={{ color: '#8a8a8a' }}>fax</IntroNumber>
+                <IntroNumber>{companyBasicData.fax}</IntroNumber>
+              </div>
+            )}
           </IntroNumberWrapper>
         </div>
         <BlurryCircle style={{ top: '50%', left: '-5%' }} />
@@ -322,11 +414,20 @@ const ContactUsPage = () => {
                     Project Request
                   </RequestExplanation>
                   {requestStep === 0 ? (
-                    <RequestExplanation>문의할 프로젝트 항목을 선택해주세요. *</RequestExplanation>
+                    <>
+                      <RequestExplanation>문의할 프로젝트 항목을 선택해주세요.</RequestExplanation>
+                      <RequestSubExplanation>&nbsp;</RequestSubExplanation>
+                    </>
                   ) : requestStep === 1 ? (
-                    <RequestExplanation>인적사항을 입력해주세요.</RequestExplanation>
+                    <>
+                      <RequestExplanation>인적사항을 입력해주세요.</RequestExplanation>
+                      <RequestSubExplanation>* 이 들어간 항목은 필수로 작성해주세요.</RequestSubExplanation>
+                    </>
                   ) : (
-                    <RequestExplanation>프로젝트 정보를 입력해주세요.</RequestExplanation>
+                    <>
+                      <RequestExplanation>프로젝트 정보를 입력해주세요.</RequestExplanation>
+                      <RequestSubExplanation>* 이 들어간 항목은 필수로 작성해주세요.</RequestSubExplanation>
+                    </>
                   )}
                 </RequestExplanationWrapper>
                 <RequestLeftLogoWrapper>
@@ -376,12 +477,13 @@ const ContactUsPage = () => {
                   <RequestInfoInput
                     autoComplete='off'
                     type='text'
-                    placeholder='연락처를 입력해주세요 *'
+                    placeholder='연락처를 입력해주세요 (예: 010-1234-5678) *'
                     value={formData.contact}
                     name='contact'
                     onChange={handleDataChange}
                     aria-autocomplete='none'
-                  ></RequestInfoInput>
+                  ></RequestInfoInput>{' '}
+                  {errors.contact && <ErrorMessage>{errors.contact}</ErrorMessage>}
                   <RequestInfoInput
                     autoComplete='off'
                     type='email'
@@ -391,6 +493,7 @@ const ContactUsPage = () => {
                     onChange={handleDataChange}
                     aria-autocomplete='none'
                   ></RequestInfoInput>
+                  {errors.email && <ErrorMessage>{errors.email}</ErrorMessage>}
                   <RequestInfoInput
                     autoComplete='off'
                     type='position'
@@ -453,7 +556,7 @@ const ContactUsPage = () => {
                 담당자 배정 후 연락 드리겠습니다. 감사합니다.
               </RequestExplanation>
             </RequestCompleteContentWrapper>
-            <RequestLeftLogoWrapper style={{ width: '50%', alignItems: 'center' }}>
+            <RequestLeftLogoWrapper>
               <RequestLeftLogo src={logo} alt='로고' />
             </RequestLeftLogoWrapper>
             <BackToMainButton
@@ -540,7 +643,7 @@ const IntroAdress = styled.div`
   margin-bottom: 20px;
   font-family: 'Pretendard-Medium';
   font-size: 20px;
-  color: #8a8a8a;
+  color: #ffffff;
   text-align: left;
   max-width: 40vw;
   word-wrap: break-word;
@@ -556,7 +659,7 @@ const IntroNumberWrapper = styled.div`
 const IntroNumber = styled.div`
   font-family: 'Pretendard-Medium';
   font-size: 20px;
-  color: #8a8a8a;
+  color: #ffffff;
   text-align: left;
   padding: 10px;
   max-width: 20vw;
@@ -631,6 +734,12 @@ const RequestExplanation = styled.div<IFontStyleProps>`
   color: #ffffff;
   text-align: left;
 `;
+const RequestSubExplanation = styled.div<IFontStyleProps>`
+  font-family: ${(props) => props.fontFamily || 'Pretendard-light'};
+  font-size: ${(props) => props.fontSize || '20px'};
+  color: #eaeaea;
+  text-align: left;
+`;
 const RequestLeftLogoWrapper = styled.div`
   margin-top: 70px;
   display: flex;
@@ -640,9 +749,10 @@ const RequestLeftLogoWrapper = styled.div`
   width: 100%;
 `;
 const RequestLeftLogo = styled.img`
-  width: 90%;
-  height: auto;
-  opacity: 0.1;
+  width: 80%;
+  height: 130px;
+  object-fit: contain;
+  opacity: 0.3;
 `;
 
 const RequestInputWrapper = styled.div`
@@ -669,9 +779,10 @@ const RequestCategoryButtonWrapper = styled.div`
 `;
 const RequestCategoryButton = styled.button<IButtonProps>`
   border: 1px solid white;
+  transition: all 0.4s ease;
   &:hover {
     cursor: pointer;
-    background-color: ${(props) => (props.checked ? '#ffa900' : '#212121')};
+    background-color: ${(props) => (props.checked ? '#ffa900' : '#353535')};
   }
   height: 70px;
   width: 45%;
@@ -679,7 +790,7 @@ const RequestCategoryButton = styled.button<IButtonProps>`
   align-items: center;
   background-color: ${(props) => (props.checked ? '#ffa900' : 'black')};
   font-family: 'Pretendard-Medium';
-  font-size: 30px;
+  font-size: 1.5vw;
   color: white;
   margin-bottom: 30px;
   overflow: hidden;
@@ -700,6 +811,15 @@ const RequestInfoInput = styled.input`
   font-size: 20px;
   color: white;
   line-height: 30px;
+`;
+const ErrorMessage = styled.div`
+  width: 100%;
+  margin-bottom: 15px;
+  padding-left: 10px;
+  font-family: 'Pretendard-regular';
+  font-size: 15px;
+  color: red;
+  text-align: left;
 `;
 const RequestInfoTextarea = styled.textarea`
   box-sizing: border-box;

@@ -30,7 +30,7 @@ interface ICorpInfoData {
 
 const AboutPage = () => {
   const [CEOData, setCEOData] = useState<ICEOInfoData>({
-    id: 0,
+    id: -1,
     name: '',
     introduction: '',
     imageFileName: '',
@@ -42,21 +42,28 @@ const AboutPage = () => {
     const fetchData = async () => {
       try {
         const [CEODataResponse, corpDataResponse] = await Promise.all([getCEOData(), getPartnersData()]);
-        const ceoInfo = CEODataResponse;
-        const object1 = {
-          id: ceoInfo.id,
-          name: ceoInfo.name,
-          introduction: ceoInfo.introduction,
-          imageFileName: ceoInfo.imageFileName,
-          imageUrl: ceoInfo.imageUrl,
-        };
-        setCEOData(object1);
+        if (CEODataResponse) {
+          const ceoInfo = CEODataResponse;
+          const object1 = {
+            id: ceoInfo.id,
+            name: ceoInfo.name,
+            introduction: ceoInfo.introduction,
+            imageFileName: ceoInfo.imageFileName,
+            imageUrl: ceoInfo.imageUrl,
+          };
+          setCEOData(object1);
+        }
 
-        const objects2 = corpDataResponse.map((item: any) => ({
-          partnerInfo: item.partnerInfo,
-          logoImg: item.logoImg,
-        }));
-        setCorpInfoData(objects2);
+        if (corpDataResponse) {
+          const objects2 = corpDataResponse
+            .filter((item: any) => item.partnerInfo.is_main === true)
+            .map((item: any) => ({
+              partnerInfo: item.partnerInfo,
+              logoImg: item.logoImg,
+            }));
+          setCorpInfoData(objects2);
+          console.log('objects2 : ', objects2);
+        }
       } catch (error) {
         console.error('데이터 가져오기 오류:', error);
       }
@@ -69,25 +76,28 @@ const AboutPage = () => {
       <IntroPage />
       <WhatWeDoPage />
       <Section>
-        <RowCoontainer backgroundColor='#1a1a1a'>
-          <CeoInfoContainer>
-            <CeoInfo fontFamily='Pretendard-SemiBold' fontSize='70px'>
-              CEO&nbsp;{CEOData.name}
-            </CeoInfo>
-            <CeoInfo dangerouslySetInnerHTML={{ __html: CEOData.introduction }}></CeoInfo>
-          </CeoInfoContainer>
-          <CeoImageContainer>
-            <img src={CEOData.imageUrl} alt='CEO Character' style={{ width: '350px', objectFit: 'contain' }} />
-          </CeoImageContainer>
-        </RowCoontainer>
+        {CEOData.id !== -1 ? (
+          <RowCoontainer backgroundColor='#1a1a1a'>
+            <CeoInfoContainer>
+              <CeoInfo fontFamily='Pretendard-SemiBold' fontSize='70px'>
+                CEO&nbsp;{CEOData.name}
+              </CeoInfo>
+              <CeoInfo dangerouslySetInnerHTML={{ __html: CEOData.introduction }}></CeoInfo>
+            </CeoInfoContainer>
+            <CeoImageContainer>
+              <img src={CEOData.imageUrl} alt='CEO Character' style={{ width: '350px', objectFit: 'contain' }} />
+            </CeoImageContainer>
+          </RowCoontainer>
+        ) : (
+          <></>
+        )}
       </Section>
       <Section>
-        <CorpLogoContainer>
-          <CorpText>CORP</CorpText>
-          <CorpLogoRowContainer>
-            {corpInfoData
-              .filter((item: any) => item.partnerInfo.is_main === true)
-              .map((info) => (
+        {corpInfoData.length !== 0 ? (
+          <CorpLogoContainer>
+            <CorpText>CORP</CorpText>
+            <CorpLogoRowContainer>
+              {corpInfoData.map((info) => (
                 <img
                   key={info.partnerInfo.id}
                   src={info.logoImg}
@@ -96,13 +106,20 @@ const AboutPage = () => {
                     width: '300px',
                     height: '150px',
                     objectFit: 'contain',
-                    cursor: 'pointer',
+                    cursor: info.partnerInfo.link ? 'pointer' : 'default',
                   }}
-                  onClick={() => window.open(info.partnerInfo.link, '_blank')}
+                  onClick={() => {
+                    if (info.partnerInfo.link) {
+                      window.open(info.partnerInfo.link, '_blank');
+                    }
+                  }}
                 />
               ))}
-          </CorpLogoRowContainer>
-        </CorpLogoContainer>
+            </CorpLogoRowContainer>
+          </CorpLogoContainer>
+        ) : (
+          <></>
+        )}
       </Section>
     </ScrollContainer>
   );
@@ -169,6 +186,6 @@ const CorpText = styled.div`
   font-size: 120px;
   letter-spacing: 5px;
   opacity: 0.2;
-  filter: blur(3px);
+  filter: blur(2px);
   color: '#FFFFFF';
 `;
