@@ -84,10 +84,6 @@ const IntroWrapper = styled.div`
   font-size: 48px;
   text-align: center;
 `;
-
-const YellowText = styled.span`
-  color: #ffa900;
-`;
 const DesWrapper = styled.div`
   font-size: 20px;
   font-family: 'pretendard-bold';
