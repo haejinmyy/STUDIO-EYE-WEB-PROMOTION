@@ -45,6 +45,10 @@ const Pagination = ({ postsPerPage, totalPosts, paginate }: IPaginationProps) =>
     setCurrentPageRange(pageRange);
   }, [location]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage, currentPageRange]);
+
   return (
     <Wrapper>
       {currentPageRange > 0 && (

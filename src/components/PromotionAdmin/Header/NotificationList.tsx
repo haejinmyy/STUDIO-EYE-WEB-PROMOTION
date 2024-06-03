@@ -2,6 +2,8 @@ import { PA_ROUTES } from '@/constants/routerConstants';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import isReaded from '@/assets/images/PA-Header/notificationChecked.png';
+import isNotReaded from '@/assets/images/PA-Header/notificationUnChecked.png';
 
 type Props = {
   clientName: string;
@@ -14,7 +16,8 @@ type Props = {
 };
 
 const NotificationList = ({ requestId, onClick, onDelete, isRead, clientName, description, category }: Props) => {
-  const slicedDescription = description && description.length > 20 ? `${description.slice(0, 20)}...` : description;
+  const slicedDescription = description && description.length > 17 ? `${description.slice(0, 17)}...` : description;
+  const slicedClientName = clientName && clientName.length > 7 ? `${clientName.slice(0, 7)}...` : clientName;
 
   return (
     <>
@@ -22,9 +25,19 @@ const NotificationList = ({ requestId, onClick, onDelete, isRead, clientName, de
         <ContentWrapper>
           <TitleWrapper>
             <ClientWrapper>
-              <span>{clientName}</span>님께서 새로운 의뢰를 등록했어요.
+              <span>{slicedClientName}</span>님께서 새로운 의뢰를 등록했어요.
             </ClientWrapper>
-            <div>{isRead ? <IsReaded>읽음</IsReaded> : <IsNotReaded>안읽음</IsNotReaded>}</div>
+            <div>
+              {isRead ? (
+                <IsReaded>
+                  <img src={isReaded} alt='readed' />
+                </IsReaded>
+              ) : (
+                <IsNotReaded>
+                  <img src={isNotReaded} alt='notReaded' />
+                </IsNotReaded>
+              )}
+            </div>
           </TitleWrapper>
           <DetailWrapper>
             <div>
@@ -53,6 +66,7 @@ const Container = styled(Link)<{ isRead: boolean }>`
   z-index: 100;
   box-sizing: border-box;
   border-radius: 5px;
+  white-space: nowrap;
   background-color: ${(props) => (props.isRead ? '#f3f3f388' : '#fff2d682')};
   h2 {
     font-family: 'pretendard-semibold';
@@ -104,12 +118,19 @@ const DetailWrapper = styled.div`
 `;
 
 const IsReaded = styled.div`
-  font-size: 16px;
-  font-family: 'pretendard-regular';
+  img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+  }
 `;
 const IsNotReaded = styled.div`
-  font-size: 16px;
-  font-family: 'pretendard-regular';
+  img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    opacity: 0.7;
+  }
 `;
 
 const DeleteWrapper = styled.div`

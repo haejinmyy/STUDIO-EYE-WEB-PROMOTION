@@ -64,7 +64,9 @@ const Index = () => {
       }
       const unreadNotificationsExist: boolean = notifications.some((notification) => !notification.isRead);
       setIconStatus(unreadNotificationsExist);
-      setSortedNotifications(notifications);
+
+      const sorted = notifications.sort((a, b) => Number(b.isRead) - Number(a.isRead));
+      setSortedNotifications(sorted);
 
       const requestsPromise = notifications.map(async (notification) => {
         const response = await fetchRequests({ requestId: notification.notification.requestId });

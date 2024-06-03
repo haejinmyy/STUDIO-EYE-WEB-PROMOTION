@@ -23,7 +23,7 @@ const LineGraph = ({ data, division }: LineGraphProps) => {
           stacked: true,
           reverse: false,
         }}
-        yFormat=' >-.2f'
+        yFormat={(value) => Math.round(Number(value)).toString()}
         curve='linear'
         axisTop={null}
         axisRight={null}
@@ -35,6 +35,13 @@ const LineGraph = ({ data, division }: LineGraphProps) => {
           legendOffset: 36,
           legendPosition: 'middle',
           truncateTickAt: 0,
+          format: (value) => {
+            const parts = value.split(' ');
+            if (parts.length === 2) {
+              return parts[1];
+            }
+            return value;
+          },
         }}
         axisLeft={{
           tickSize: 5,
@@ -44,6 +51,8 @@ const LineGraph = ({ data, division }: LineGraphProps) => {
           legendOffset: -40,
           legendPosition: 'middle',
           truncateTickAt: 0,
+          tickValues: 5,
+          format: (value) => Math.round(value).toString(),
         }}
         enablePoints={true}
         pointSize={10}
