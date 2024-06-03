@@ -34,3 +34,13 @@ export const fetchWaitingRequests = async () => {
     throw error;
   }
 };
+
+export const putViewIncrease = async () => {
+  try {
+    const response = await axios.put(`${PROMOTION_BASIC_PATH}/api/views/increase`);
+    return response;
+  } catch (error) {
+    console.log('[❌Error putViewIncrease]', error);
+    throw error;
+  }
+};
