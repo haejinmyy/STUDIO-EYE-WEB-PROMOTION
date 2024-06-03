@@ -35,6 +35,13 @@ const LineGraph = ({ data, division }: LineGraphProps) => {
           legendOffset: 36,
           legendPosition: 'middle',
           truncateTickAt: 0,
+          format: (value) => {
+            const parts = value.split(' ');
+            if (parts.length === 2) {
+              return parts[1];
+            }
+            return value;
+          },
         }}
         axisLeft={{
           tickSize: 5,

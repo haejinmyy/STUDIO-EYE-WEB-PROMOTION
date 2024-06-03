@@ -10,7 +10,7 @@ const RequestsGraph = () => {
 
   return (
     <Graph
-      title='기간별 요청 수'
+      title='기간별 문의 수'
       processedData={processedData}
       data={data}
       handleStartDateChange={handleStartDateChange}
