@@ -154,6 +154,7 @@ const ArtworkDetail = () => {
   };
 
   const handleEditClick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsGetMode(false);
   };
 
