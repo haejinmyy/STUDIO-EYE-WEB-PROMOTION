@@ -9,6 +9,11 @@ import ArtworkValueLayout from '../ArtworkCreating/ArtworkValueLayout';
 import { useParams, useNavigate } from 'react-router-dom';
 import ScrollToTop from '@/hooks/useScrollToTop';
 import { PA_ROUTES } from '@/constants/routerConstants';
+import { useQueryClient, useQuery } from 'react-query';
+
+interface ProjectImage {
+  imageUrlList: string;
+}
 
 const ArtworkDetail = () => {
   const [getModeMainImg, setGetModeMainImg] = useState('');
@@ -18,7 +23,7 @@ const ArtworkDetail = () => {
   const [isProjectOpened, setIsProjectOpened] = useState<boolean>(false);
   const [projectType, setProjectType] = useState<projectType>('others');
   const [link, setLink] = useState('');
-  const [mainImage, setMainImage] = useState<File>(); // mainImage 상태를 null로 초기화합니다.
+  const [mainImage, setMainImage] = useState<File>();
   const [detailImages, setDetailImages] = useState<File[]>([]);
   const [title, setTitle] = useState('');
   const [customer, setCustomer] = useState('');
@@ -26,7 +31,6 @@ const ArtworkDetail = () => {
   const [overview, setOverview] = useState('');
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const [deletedImageId, setDeletedImageId] = useState<number[]>([]);
   const { artworkId } = useParams();
   const [artworkData, setArtworkData] = useState<ArtworkData>();
   const [isGetMode, setIsGetMode] = useState<boolean>(true);
@@ -54,7 +58,8 @@ const ArtworkDetail = () => {
         selectedCategory === '' ||
         projectType === null ||
         link === '' ||
-        mainImage === null ||
+        !mainImage ||
+        !detailImages ||
         detailImages.length === 0 ||
         title === '' ||
         customer === '' ||
@@ -75,6 +80,7 @@ const ArtworkDetail = () => {
   useEffect(() => {
     fetchArtworkDetails();
     setIsGetMode(true);
+    console.log('읭', mainImage);
     console.log('초기에 넣은 putData', putData);
   }, [artworkId]);
 
@@ -200,7 +206,8 @@ const ArtworkDetail = () => {
       date: selectedDate,
       link: link,
       overView: overview,
-      deletedImageId: deletedImageId,
+      isPosted: isProjectOpened,
+      projectType: projectType,
     };
     formData.append('request', new Blob([JSON.stringify(requestData)], { type: 'application/json' }));
 
@@ -220,6 +227,7 @@ const ArtworkDetail = () => {
         return;
       }
       alert('아트워크 수정 성공'); // * TODO alert component 변경
+      await fetchArtworkDetails();
       setIsGetMode(true);
     } catch (error: any) {
       console.log('Error creating artwork:', error);
@@ -271,7 +279,9 @@ const ArtworkDetail = () => {
       <ValueWrapper>
         {defaultValue.map((item: DefaultValueItem, index: number) => (
           <div key={index}>
-            {errorMessage && item.name === 'artworkType' && <ErrorMessage> ⚠ {errorMessage}</ErrorMessage>}
+            {errorMessage && !isGetMode && item.name === 'artworkType' && (
+              <ErrorMessage> ⚠ {errorMessage}</ErrorMessage>
+            )}
             <ArtworkValueLayout valueTitle={item.title} description={item.description} content={item.content} />
           </div>
         ))}
