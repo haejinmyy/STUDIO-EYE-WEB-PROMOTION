@@ -85,7 +85,11 @@ const AboutPage = () => {
               <CeoInfo dangerouslySetInnerHTML={{ __html: CEOData.introduction }}></CeoInfo>
             </CeoInfoContainer>
             <CeoImageContainer>
-              <img src={CEOData.imageUrl} alt='CEO Character' style={{ width: '350px', objectFit: 'contain' }} />
+              <img
+                src={CEOData.imageUrl}
+                alt='CEO Character'
+                style={{ width: '350px', height: '300px', objectFit: 'contain' }}
+              />
             </CeoImageContainer>
           </RowCoontainer>
         ) : (
@@ -159,6 +163,7 @@ const CeoImageContainer = styled.div`
 `;
 const CeoInfo = styled.div<IFontStyleProps>`
   white-space: pre-line;
+  line-height: 1.3;
   margin-bottom: 30px;
   font-family: ${(props) => props.fontFamily || 'Pretendard-regular'};
   font-size: ${(props) => props.fontSize || '24px'};
