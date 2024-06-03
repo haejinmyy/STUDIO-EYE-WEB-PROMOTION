@@ -45,6 +45,7 @@ const Basic = ({ setEditBasic }: IBasicProps) => {
 
   const onValid = (data: IBasicFormData) => {
     if (window.confirm('수정하시겠습니까?')) {
+      console.log('addressEnglish: ', data);
       axios
         .put(`${PROMOTION_BASIC_PATH}/api/company/basic`, data)
         .then((response) => {

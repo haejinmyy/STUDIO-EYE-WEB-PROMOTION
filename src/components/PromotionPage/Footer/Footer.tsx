@@ -18,21 +18,19 @@ const Footer = () => {
     staleTime: 1000 * 60 * 10,
   });
 
-  const addressData = companyBasicData ? companyBasicData.address : '서울시 성동구 광나루로 162 BS성수타워 5층';
-  const phoneData = companyBasicData ? companyBasicData.phone : '02-2038-2663';
-  const faxData = companyBasicData ? companyBasicData.fax : '070-7549-2443';
-  const notValidAddress = (address: string) => address.length > 80;
-  const notValidString = (info: string) => info.length > 18;
+  const addressData = companyBasicData ? companyBasicData.address : '';
+  const phoneData = companyBasicData ? companyBasicData.phone : '';
+  const faxData = companyBasicData ? companyBasicData.fax : '';
 
   return (
     <Container>
       <BasicInfoWrapper>
         <div>
-          {notValidAddress(addressData) ? <h1>서울시 성동구 광나루로 162 BS성수타워 5층</h1> : <h1>{addressData}</h1>}
+          <h1>{addressData}</h1>
         </div>
         <div>
-          {notValidString(phoneData) ? <h2>T. 02-2038-2663</h2> : <h2>T. {phoneData}</h2>}
-          {notValidString(faxData) ? <h2>F. 070-7549-2443</h2> : <h2>F. {faxData}</h2>}
+          <h2>T. {phoneData}</h2>
+          <h2>F. {faxData}</h2>
         </div>
       </BasicInfoWrapper>
       <ImgInfoWrapper>

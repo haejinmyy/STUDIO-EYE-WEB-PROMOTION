@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import styled, { createGlobalStyle, keyframes } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { FaSearch } from 'react-icons/fa';
 
 interface FaqData {
   id: number;

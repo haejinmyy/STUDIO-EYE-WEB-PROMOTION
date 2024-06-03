@@ -6,8 +6,15 @@ import { rotateAnimation } from '@/styles/motionAnimation';
 import { LiaLongArrowAltDownSolid } from 'react-icons/lia';
 
 const ArrowCircle = () => {
+  const handleClick = () => {
+    window.scrollTo({
+      top: window.innerHeight,
+      behavior: 'smooth',
+    });
+  };
+
   return (
-    <Container>
+    <Container onClick={handleClick}>
       <RotatingWrapper animate={rotateAnimation}>
         <RotatingImage src={circle} alt='circle' />
       </RotatingWrapper>
@@ -24,6 +31,7 @@ export default ArrowCircle;
 const Container = styled.div`
   position: relative;
   display: inline-block;
+  cursor: pointer;
 `;
 
 const LabelWrapper = styled(motion.div)`
@@ -32,6 +40,7 @@ const LabelWrapper = styled(motion.div)`
   left: 50%;
   transform: translate(-50%, -50%);
 `;
+
 const RotatingWrapper = styled(motion.div)`
   display: inline-block;
 `;
