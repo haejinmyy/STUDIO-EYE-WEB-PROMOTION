@@ -32,15 +32,7 @@ const Artwork = () => {
 
   useEffect(() => {
     setCurrentPage(0); // 검색어 또는 카테고리가 변경될 때 페이지를 초기화
-  }, [searchQuery, selectedCategory]);
-
-  useEffect(() => {
-    if (selectedCategory === '') {
-      refetch(); // 카테고리가 ALL로 설정되었을 때 전체 데이터를 다시 로드
-      setCurrentPage(0);
-      navigate('?page=1'); // 페이지를 1로 초기화
-    }
-  }, [selectedCategory, refetch, navigate]);
+  }, [searchQuery, selectedCategory, data]);
 
   if (isLoading) return <LoadingWrapper>Loading...</LoadingWrapper>;
   if (error) return <div>Error: {error.message}</div>;

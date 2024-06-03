@@ -48,33 +48,7 @@ const Description = styled.div`
   margin-bottom: 10px;
   line-height: 120%;
 `;
-const Content = styled.div`
-  input {
-    width: 90%;
-    height: 30px;
-    padding: 8px;
-    font-family: 'pretendard-medium';
-    outline-style: none;
-    border-radius: 5px;
-    font-size: 15px;
-    border: none;
-    background-color: #d1d1d1a0;
-    color: black;
-    margin-bottom: 20px;
-    &:hover {
-      cursor: pointer;
-      background-color: #ffffff73;
-      transition: all 300ms ease-in-out;
-    }
-    &:focus {
-      background-color: white;
-      transition: all 300ms ease-in-out;
-    }
-    ::placeholder {
-      color: #7a7a7a;
-    }
-  }
-`;
+const Content = styled.div``;
 
 const TextInputWrapper = styled.div`
   display: flex;

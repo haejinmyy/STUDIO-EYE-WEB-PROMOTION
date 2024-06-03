@@ -1,4 +1,8 @@
 import { projectType } from '@/types/PromotionAdmin/artwork';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import dayjs from 'dayjs';
 import styled from 'styled-components';
 import CategoryDropDown from '../CategoryDropDown';
 import ImageUpload from './ImageUpload';
@@ -93,7 +97,7 @@ export const getArtworkDefaultValue = (
       content: isGetMode ? (
         <GetInputWrapper>{customer}</GetInputWrapper>
       ) : (
-        <input
+        <StyledInput
           required
           type='text'
           value={customer}
@@ -107,15 +111,34 @@ export const getArtworkDefaultValue = (
       title: '날짜',
       description: '',
       content: isGetMode ? (
-        <GetInputWrapper>{selectedDate?.toString().slice(0, 10)}</GetInputWrapper>
+        <GetInputWrapper>{selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : ''}</GetInputWrapper>
       ) : (
-        <StyledInput
-          type='date'
-          value={selectedDate instanceof Date ? selectedDate.toString().slice(0, 10) : ''}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            handleDateChange(e.target.value ? new Date(e.target.value) : null)
-          }
-        />
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            format='YYYY-MM-DD'
+            value={selectedDate ? dayjs(selectedDate) : null}
+            onChange={(newValue) => handleDateChange(newValue ? newValue.toDate() : null)}
+            slotProps={{
+              textField: {
+                sx: {
+                  backgroundColor: '#d1d1d1a0',
+                  '.MuiOutlinedInput-root': {
+                    border: 'none',
+                    '&:hover': {
+                      backgroundColor: '#ffffff73',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      border: 'none',
+                    },
+                  },
+                  '.MuiOutlinedInput-notchedOutline': {
+                    border: 'none',
+                  },
+                },
+              },
+            }}
+          />
+        </LocalizationProvider>
       ),
     },
     {
@@ -298,9 +321,35 @@ const TypeContainer = styled.div<{ projectType: projectType }>`
   }
 `;
 
-const StyledInput = styled.input``;
+const StyledInput = styled.input`
+  width: 90%;
+  height: 'fit-content';
+  padding: 8px;
+  height: 30px;
+  font-family: 'pretendard-medium';
+  outline-style: none;
+  border-radius: 5px;
+  font-size: 15px;
+  border: none;
+  background-color: #d1d1d1a0;
+  color: black;
+  margin-bottom: 20px;
+  &:hover {
+    cursor: pointer;
+    background-color: #ffffff73;
+    transition: all 300ms ease-in-out;
+  }
+  &:focus {
+    background-color: white;
+    transition: all 300ms ease-in-out;
+  }
+  ::placeholder {
+    color: #7a7a7a;
+  }
+`;
 const GetInputWrapper = styled.div`
   width: 100%;
+
   padding: 8px;
   border: none;
   border-bottom: 1px solid #ccc;
@@ -322,9 +371,28 @@ const GetHrefWrapper = styled.a`
   font-family: 'pretendard-regular';
 `;
 const OverviewInput = styled.input`
-  width: 100%;
+  width: 90%;
+  height: 'fit-content';
   padding: 8px;
+  height: 30px;
+  font-family: 'pretendard-medium';
+  outline-style: none;
+  border-radius: 5px;
+  font-size: 15px;
   border: none;
-  border-bottom: 1px solid #ccc;
-  font-size: 16px;
+  background-color: #d1d1d1a0;
+  color: black;
+  margin-bottom: 20px;
+  &:hover {
+    cursor: pointer;
+    background-color: #ffffff73;
+    transition: all 300ms ease-in-out;
+  }
+  &:focus {
+    background-color: white;
+    transition: all 300ms ease-in-out;
+  }
+  ::placeholder {
+    color: #7a7a7a;
+  }
 `;
