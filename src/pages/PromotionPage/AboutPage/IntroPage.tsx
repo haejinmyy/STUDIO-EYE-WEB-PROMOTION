@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Circle from '../../../components/PromotionPage/Circle/ArrowCircle';
+import BackgroundYellowCircle from '@/components/BackgroundYellowCircle/BackgroundYellowCircle';
 import MissionLabel from '../../../assets/images/Mission.png';
 import { getCompanyData } from '../../../apis/PromotionAdmin/dataEdit';
 
@@ -62,8 +63,7 @@ function IntroPage() {
           </InitTitleWrapper>
         </div>
         <Circle />
-        <BlurryCircle style={{ top: '50%', left: '-5%' }} />
-        <BlurryCircle style={{ top: '10%', left: '85%' }} />
+        <BackgroundYellowCircle> </BackgroundYellowCircle>
       </InitContainer>
 
       <IntroContainer>
@@ -122,14 +122,6 @@ const InitContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-`;
-const BlurryCircle = styled.div`
-  position: absolute;
-  background-color: rgba(255, 169, 0, 0.3);
-  border-radius: 50%;
-  width: 450px;
-  height: 450px;
-  filter: blur(40px);
 `;
 const InitTitleWrapper = styled.div`
   display: flex;

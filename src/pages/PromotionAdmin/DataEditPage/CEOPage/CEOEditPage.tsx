@@ -14,6 +14,12 @@ import TextEditor from '@/components/PromotionAdmin/FAQ/TextEditor';
 import { IEditorData } from '@/types/PromotionAdmin/faq';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import { useNavigate } from 'react-router-dom';
+import TextColorEditor from '@/components/PromotionAdmin/DataEdit/TextColorEditor';
+import FileButton from '@/components/PromotionAdmin/DataEdit/StyleComponents/FileButton';
+import {
+  DATAEDIT_NOTICE_COMPONENTS,
+  DATAEDIT_TITLES_COMPONENTS,
+} from '../../../../components/PromotionAdmin/DataEdit/Company/StyleComponents';
 
 interface IFormData {
   name: string;
@@ -57,6 +63,7 @@ const CEOEditPage = () => {
   const onValid = (data: IFormData) => {
     handleSaveClick(data);
   };
+  const [isInvalid, setInvalid] = useState(true);
 
   const handleSaveClick = async (data: IFormData) => {
     const formData = new FormData();
@@ -74,33 +81,47 @@ const CEOEditPage = () => {
       ),
     );
 
-    if (window.confirm('수정하시겠습니까?')) {
-      if (imgChange) {
-        // 이미지를 변경한 경우
-        const file = await urlToFile(putData.file, 'CEOLogo.png');
-        if (file) {
-          formData.append('file', file);
+    if (putData.request.name === undefined) {
+      alert('이름을 입력해주세요');
+      setInvalid(true);
+    } else if (blocks === undefined || null || blocks.length === 0) {
+      alert('소개를 입력해주세요');
+      setInvalid(true);
+    } else if (putData.file === undefined) {
+      alert('파일을 업로드해주세요');
+      setInvalid(true);
+    } else {
+      setInvalid(false);
+    }
+    if (!isInvalid) {
+      if (window.confirm('수정하시겠습니까?')) {
+        if (imgChange) {
+          // 이미지를 변경한 경우
+          const file = await urlToFile(putData.file, 'CEOLogo.png');
+          if (file) {
+            formData.append('file', file);
+          } else {
+            console.error('로고 이미지 가져오기 실패');
+          }
+          axios
+            .put(`${PROMOTION_BASIC_PATH}/api/ceo`, formData)
+            .then((response) => {
+              console.log('CEO data updated:', response);
+              alert('수정되었습니다.');
+              navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
+            })
+            .catch((error) => console.error('Error updating CEO:', error));
         } else {
-          console.error('로고 이미지 가져오기 실패');
+          // 이미지를 변경하지 않은 경우
+          axios
+            .put(`${PROMOTION_BASIC_PATH}/api/ceo/modify`, formData)
+            .then((response) => {
+              console.log('CEO updated:', response);
+              alert('수정되었습니다.');
+              navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
+            })
+            .catch((error) => console.error('Error updating CEO:', error));
         }
-        axios
-          .put(`${PROMOTION_BASIC_PATH}/api/ceo`, formData)
-          .then((response) => {
-            console.log('CEO data updated:', response);
-            alert('수정되었습니다.');
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
-          })
-          .catch((error) => console.error('Error updating CEO:', error));
-      } else {
-        // 이미지를 변경하지 않은 경우
-        axios
-          .put(`${PROMOTION_BASIC_PATH}/api/ceo/modify`, formData)
-          .then((response) => {
-            console.log('CEO updated:', response);
-            alert('수정되었습니다.');
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
-          })
-          .catch((error) => console.error('Error updating CEO:', error));
       }
     }
   };
@@ -146,110 +167,172 @@ const CEOEditPage = () => {
   if (isLoading) return <>is Loading..</>;
   if (error) return <>{error.message}</>;
   return (
-    <>
-      <Wrapper>
-        {data && (
-          <form onSubmit={handleSubmit(onValid)}>
-            <ContentBlock>
-              <Title>Basic</Title>
-              <InputWrapper>
+    <Wrapper>
+      {data && (
+        <form onSubmit={handleSubmit(onValid)}>
+          <ContentBlock>
+            <ButtonWrapper>
+              <Button onClick={() => handleDelete()}>삭제하기</Button>
+            </ButtonWrapper>
+            <InputWrapper>
+              <InputTitle>
                 <p>Name</p>
-                <input
-                  {...register('name', {
-                    required: '이름 입력해주세요',
-                  })}
-                  placeholder='이름 입력해주세요'
-                />
-              </InputWrapper>
-            </ContentBlock>
-
-            <ContentBlock>
-              <Title>Introduction</Title>
-              <InputWrapper>
+              </InputTitle>
+              <input
+                {...register('name', {
+                  required: '이름 입력해주세요',
+                })}
+                placeholder='이름 입력해주세요'
+              />
+              <InputTitle>
                 <p>Introduction</p>
-                <TextEditor editorState={editorState} onEditorStateChange={updateTextDescription} />
-              </InputWrapper>
-            </ContentBlock>
-
-            <ContentBlock>
-              <Title>Logo</Title>
-              <InputWrapper>
-                <LogoWrapper>
-                  <img src={putData.file} />
-                  <label htmlFor='file'>
-                    <div>Logo Upload</div>
-                    <input id='file' type='file' accept='image/*' onChange={handleImageChange} />
-                  </label>
-                </LogoWrapper>
-              </InputWrapper>
-            </ContentBlock>
-            <button>저장하기</button>
-          </form>
-        )}
-        <button onClick={() => handleDelete()}>삭제하기</button>
-      </Wrapper>
-    </>
+              </InputTitle>
+              <TextColorEditor
+                editorState={editorState}
+                onEditorStateChange={updateTextDescription}
+                attribute='CEO Introduction'
+              />
+              <InputImgWrapper>
+                <Box>
+                  <InputTitle>{DATAEDIT_TITLES_COMPONENTS.CEOIMG}</InputTitle>
+                  {DATAEDIT_NOTICE_COMPONENTS.IMAGE.CEOIMG}
+                  {DATAEDIT_NOTICE_COMPONENTS.COLOR.CEOIMG}
+                  <LogoWrapper>
+                    <FileButton id='CEOImgFile' description='CEO Image Upload' onChange={handleImageChange} />
+                    <ImgBox>
+                      <img src={putData.file} />
+                    </ImgBox>
+                  </LogoWrapper>
+                </Box>
+              </InputImgWrapper>
+              <ButtonWrapper>
+                <Button>등록하기</Button>
+              </ButtonWrapper>
+            </InputWrapper>
+          </ContentBlock>
+        </form>
+      )}
+    </Wrapper>
   );
 };
 
 export default CEOEditPage;
 
-const Wrapper = styled.div`
-  width: 800px;
-`;
-const ContentBlock = styled.div`
+export const Wrapper = styled.div`
   display: flex;
-  padding: 25px 10px;
-  border-bottom: 2px solid ${(props) => props.theme.color.black.pale};
+  input,
+  textarea {
+    outline: none;
+  }
+
+  input:focus,
+  textarea:focus {
+    transition: 0.2s;
+    border-bottom: 3px solid ${(props) => props.theme.color.symbol};
+  }
 `;
-const Title = styled.div`
-  font-size: 22px;
-  font-family: ${(props) => props.theme.font.medium};
-  width: 300px;
+
+export const ContentBlock = styled.div<{ width?: number; height?: number }>`
+  padding: 25px;
+  background-color: ${(props) => props.theme.color.white.pale};
+  position: relative;
+  box-shadow: 2px 2px 5px 0.3px ${(props) => props.theme.color.black.pale};
+  margin-bottom: 30px;
+  margin-right: 30px;
+
+  border-radius: 4px;
+  width: ${(props) => (props.width ? props.width + 'px;' : '40vw;')};
+  height: ${(props) => (props.height ? props.height + 'px;' : 'fit-content;')};
 `;
-const InputWrapper = styled.div`
+
+export const InputWrapper = styled.div`
   display: flex;
-  width: 400px;
+  background-color: ${(props) => props.theme.color.white.light};
   flex-direction: column;
-  font-family: ${(props) => props.theme.font.light};
+  font-family: ${(props) => props.theme.font.regular};
   p {
     font-size: 18px;
     padding-top: 7px;
     padding-bottom: 3px;
   }
   input {
+    outline: none;
+    font-family: ${(props) => props.theme.font.regular};
+    font-size: 14px;
+    padding-left: 10px;
+    width: 30%;
     height: 30px;
+    border: none;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  }
+
+  input:focus,
+  textarea:focus {
+    transition: 0.2s;
+    border-bottom: 3px solid ${(props) => props.theme.color.symbol};
   }
 `;
 
-const LogoWrapper = styled.div`
+export const InputImgWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+`;
+
+export const InputTitle = styled.div`
+  display: flex;
+  padding-top: 20px;
+  align-items: center;
+  height: 40px;
+  svg {
+    cursor: pointer;
+    margin-right: 10px;
+  }
+`;
+export const Box = styled.div`
+  width: 100%;
+`;
+
+export const ImgBox = styled.div`
+  display: flex;
+  height: 200px;
+  width: 80%;
+  justify-content: center;
+  align-items: center;
+  background-color: #1a1a1a;
+  border-radius: 5px;
+  margin-top: 15px;
+`;
+export const LogoWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  div {
-    cursor: pointer;
-    border: none;
-    background-color: ${(props) => props.theme.color.white.bold};
-    box-shadow: 1px 1px 4px 0.1px #c6c6c6;
-    padding: 0.4rem 1.4rem;
-    border-radius: 0.2rem;
-    transition: 0.2s;
-    width: 130px;
-    display: flex;
-    justify-content: center;
-    font-weight: 700;
-    margin-right: 20px;
-
-    &:hover {
-      background-color: ${(props) => props.theme.color.yellow.light};
-    }
-  }
-
+  margin-top: 30px;
   input {
     display: none;
   }
 
   img {
-    width: 200px;
+    max-width: 300px;
+    max-height: 150px;
     margin-bottom: 10px;
+  }
+`;
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+`;
+
+const Button = styled.button`
+  cursor: pointer;
+  border: none;
+  background-color: ${(props) => props.theme.color.white.bold};
+  box-shadow: 1px 1px 4px 0.5px #c6c6c6;
+  padding: 0.4rem 1.4rem;
+  border-radius: 0.2rem;
+  transition: 0.2s;
+
+  &:hover {
+    background-color: ${(props) => props.theme.color.yellow.light}; /* 버튼 호버 시 색상 조정 */
   }
 `;

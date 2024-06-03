@@ -24,17 +24,24 @@ export const INPUT_MAX_LENGTH = {
 const IMAGE_PIXEL = {
   LOGO: '200x200',
   SLOGAN: '1080x1080',
+  CEOIMG: '320x330',
 };
 
 const IMAGE_COLOR = {
   LOGO: '밝은 색상',
   SLOGAN: '밝은 색상',
+  CEOIMG: '밝은 색상',
 };
 
 const DATAEDIT_COLUMNS = {
   CEO: {
     title: 'CEO',
     description: 'About 화면에 반영됩니다.',
+  },
+
+  CEOIMG: {
+    title: 'CEO Image',
+    description: 'CEO 이미지 설정입니다. (CEO 소개 배경과 아래 사진 배경이 같습니다.)',
   },
 
   Basic: {
@@ -87,15 +94,31 @@ export const DATAEDIT_NOTICE_COMPONENTS = {
       </NoticeComponentWrapper>
     ),
     SLOGAN: <NoticeComponent description={`권장 픽셀: ${IMAGE_PIXEL.SLOGAN}`} />,
+    CEOIMG: <NoticeComponent description={`권장 픽셀: ${IMAGE_PIXEL.CEOIMG}`} />,
   },
 
   COLOR: {
     LOGO: <NoticeComponent description={`권장 색상: ${IMAGE_COLOR.LOGO}`} />,
     SLOGAN: <NoticeComponent description={`권장 색상: ${IMAGE_COLOR.SLOGAN}`} />,
+    CEOIMG: <NoticeComponent description={`권장 색상: ${IMAGE_COLOR.CEOIMG}`} />,
   },
 };
 
 export const DATAEDIT_TITLES_COMPONENTS = {
+  CEO: (
+    <TitleWrapper>
+      <Tooltip description={DATAEDIT_COLUMNS.CEO.description} svgComponent={<InfoIcon width={20} height={20} />} />
+      <Title description={DATAEDIT_COLUMNS.CEO.title} />
+    </TitleWrapper>
+  ),
+
+  CEOIMG: (
+    <TitleWrapper>
+      <Tooltip description={DATAEDIT_COLUMNS.CEOIMG.description} svgComponent={<InfoIcon width={20} height={20} />} />
+      <Title description={DATAEDIT_COLUMNS.CEOIMG.title} />
+    </TitleWrapper>
+  ),
+
   Basic: (
     <TitleWrapper>
       <Tooltip description={DATAEDIT_COLUMNS.Basic.description} svgComponent={<InfoIcon width={20} height={20} />} />

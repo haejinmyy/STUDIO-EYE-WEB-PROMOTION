@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import logo from '../../../assets/logo/Logo.png';
+import BackgroundYellowCircle from '@/components/BackgroundYellowCircle/BackgroundYellowCircle';
 import { PP_ROUTES } from '@/constants/routerConstants';
 import { useNavigate } from 'react-router-dom';
 import { getCompanyBasicData } from '../../../apis/PromotionAdmin/dataEdit';
@@ -87,6 +88,7 @@ const ContactUsPage = () => {
     } else {
       const element = containerRef.current;
       if (element && !isTextarea) {
+        e.preventDefault();
         if (e.deltaY > 0) {
           element.scrollBy({
             top: element.clientHeight,
@@ -389,8 +391,7 @@ const ContactUsPage = () => {
             )}
           </IntroNumberWrapper>
         </div>
-        <BlurryCircle style={{ top: '50%', left: '-5%' }} />
-        <BlurryCircle style={{ top: '10%', left: '85%' }} />
+        <BackgroundYellowCircle> </BackgroundYellowCircle>
       </IntroSection>
 
       <RequestSection>
@@ -596,14 +597,6 @@ const IntroSection = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`;
-const BlurryCircle = styled.div`
-  position: absolute;
-  background-color: rgba(255, 169, 0, 0.3);
-  border-radius: 50%;
-  width: 450px;
-  height: 450px;
-  filter: blur(40px);
 `;
 const IntroTitleWrapper = styled.div`
   display: flex;
