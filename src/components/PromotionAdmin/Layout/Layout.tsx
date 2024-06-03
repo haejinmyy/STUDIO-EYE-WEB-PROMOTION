@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Header from '../Header';
@@ -13,11 +13,12 @@ const Layout = () => {
   const navigate = useNavigate();
   const auth = useRecoilValue(authState);
 
-  if (!auth.accessToken || !auth.userId) {
-    alert('접근 권한이 없습니다.');
-    navigate(`/`);
-    return null;
-  }
+  useEffect(() => {
+    if (!auth.accessToken || !auth.userId) {
+      alert('접근 권한이 없습니다.');
+      navigate('/', { replace: true });
+    }
+  }, [auth]);
   return (
     <Container>
       <ScrollToTop />
