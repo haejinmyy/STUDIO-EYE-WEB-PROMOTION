@@ -6,14 +6,9 @@ import getArtworkDefaultValue, { DefaultValueItem } from '../ArtworkCreating/Art
 import { ArtworkData, projectType, UpdateArtwork } from '@/types/PromotionAdmin/artwork';
 import styled from 'styled-components';
 import ArtworkValueLayout from '../ArtworkCreating/ArtworkValueLayout';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import ScrollToTop from '@/hooks/useScrollToTop';
 import { PA_ROUTES } from '@/constants/routerConstants';
-import { useQueryClient, useQuery } from 'react-query';
-
-interface ProjectImage {
-  imageUrlList: string;
-}
 
 const ArtworkDetail = () => {
   const [getModeMainImg, setGetModeMainImg] = useState('');
@@ -27,7 +22,6 @@ const ArtworkDetail = () => {
   const [detailImages, setDetailImages] = useState<File[]>([]);
   const [title, setTitle] = useState('');
   const [customer, setCustomer] = useState('');
-  const [producingIsOpend, setProducingIsOpened] = useRecoilState(backdropState);
   const [overview, setOverview] = useState('');
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
@@ -274,6 +268,7 @@ const ArtworkDetail = () => {
     getModeMainImg,
     getModeDetailImgs,
   );
+
   return (
     <Container>
       <ScrollToTop />
