@@ -40,10 +40,24 @@ export default CategoryDropDown;
 const Wrapper = styled.div`
   position: relative;
   height: 30px;
-  width: 100%;
+  width: 90%;
   text-align: center;
   border-radius: 5px;
   z-index: 90;
+  background-color: #dadada9f;
+  padding: 8px;
+  &:hover {
+    cursor: pointer;
+    background-color: #ffffff73;
+    transition: all 300ms ease-in-out;
+  }
+  &:focus {
+    background-color: white;
+    transition: all 300ms ease-in-out;
+  }
+  ::placeholder {
+    color: #7a7a7a;
+  }
 `;
 
 const CategoryButton = styled.button`
