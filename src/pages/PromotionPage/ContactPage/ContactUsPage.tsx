@@ -738,7 +738,7 @@ const RequestLeftLogoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: left;
+  align-items: center;
   width: 100%;
 `;
 const RequestLeftLogo = styled.img`

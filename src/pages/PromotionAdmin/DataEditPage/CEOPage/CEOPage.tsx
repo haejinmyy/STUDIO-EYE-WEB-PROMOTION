@@ -5,10 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '@/components/PromotionAdmin/DataEdit/StyleComponents/Button';
 import styled from 'styled-components';
 import CEOWritePage from './CEOWritePage';
-import {
-  DATAEDIT_NOTICE_COMPONENTS,
-  DATAEDIT_TITLES_COMPONENTS,
-} from '../../../../components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import { DATAEDIT_TITLES_COMPONENTS } from '../../../../components/PromotionAdmin/DataEdit/Company/StyleComponents';
 
 function CEOPage2() {
   const { data, isLoading } = useQuery<ICEOData>(['ceo', 'id'], getCEOData);
@@ -32,13 +29,13 @@ function CEOPage2() {
           <InputTitle>
             <p>Introduction</p>
           </InputTitle>
-          <Content dangerouslySetInnerHTML={{ __html: data?.introduction ?? '' }}></Content>
+          <Content dangerouslySetInnerHTML={{ __html: data?.introduction ?? '' }} />
           <InputImgWrapper>
             <Box>
               <InputTitle>{DATAEDIT_TITLES_COMPONENTS.CEOIMG}</InputTitle>
               <LogoWrapper>
                 <ImgBox>
-                  <img src={data?.imageUrl} />
+                  <img src={data?.imageUrl} alt='' />
                 </ImgBox>
               </LogoWrapper>
             </Box>
@@ -77,13 +74,15 @@ export const ContentBlock = styled.div<{ width?: number; height?: number }>`
   height: ${(props) => (props.height ? props.height + 'px;' : 'fit-content;')};
 `;
 const Content = styled.div`
-  white-space: pre-line;
   padding: 12px;
   font-size: 14px;
   font-family: ${(props) => props.theme.font.regular};
   width: 70%;
   min-height: 15px;
   box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-word;
 
   & p,
   span {

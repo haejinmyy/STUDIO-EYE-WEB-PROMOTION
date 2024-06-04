@@ -157,12 +157,15 @@ const CeoInfoContainer = styled.div`
   flex-direction: column;
   text-align: right;
   justify-content: center;
+  width: 40%;
 `;
 const CeoImageContainer = styled.div`
   padding-left: 70px;
 `;
 const CeoInfo = styled.div<IFontStyleProps>`
   white-space: pre-line;
+  word-wrap: break-word;
+  word-break: break-word;
   line-height: 1.3;
   margin-bottom: 30px;
   font-family: ${(props) => props.fontFamily || 'Pretendard-regular'};
