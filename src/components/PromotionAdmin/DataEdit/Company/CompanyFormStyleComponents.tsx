@@ -30,7 +30,7 @@ export const ContentBlock = styled.div<{ width?: number; height?: number }>`
   margin-right: 30px;
 
   border-radius: 4px;
-  width: ${(props) => (props.width ? props.width + 'px;' : '700px;')};
+  width: ${(props) => (props.width ? props.width + 'px;' : '750px;')};
   height: ${(props) => (props.height ? props.height + 'px;' : 'fit-content;')};
 `;
 
@@ -177,10 +177,11 @@ export const DetailItem = styled.div`
     font-family: ${(props) => props.theme.font.regular};
     max-height: 130px;
     min-height: 30px;
-    min-width: 400px;
-    max-width: 400px;
+    min-width: 360px;
+    max-width: 360px;
     border: none;
     box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+    padding-right: 70px;
   }
 
   .detail_title {
@@ -193,6 +194,20 @@ export const DetailItem = styled.div`
 export const DetailTitleInputWrapper = styled.div`
   display: flex;
   position: relative;
+  span {
+    position: absolute;
+    font-size: 12px;
+    right: 10px;
+    top: 10px;
+    color: ${(props) => props.theme.color.black.light};
+    font-family: ${(props) => props.theme.font.light};
+  }
+`;
+
+export const DetailContentWrapper = styled.div`
+  display: flex;
+  position: relative;
+
   span {
     position: absolute;
     font-size: 12px;

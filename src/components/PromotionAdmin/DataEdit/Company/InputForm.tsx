@@ -26,11 +26,12 @@ import {
   Box,
   LeftContentWrapper,
   RightContentWrapper,
+  DetailContentWrapper,
 } from './CompanyFormStyleComponents';
 import Button from '../StyleComponents/Button';
 import FileButton from '../StyleComponents/FileButton';
 import styled from 'styled-components';
-import { DATAEDIT_NOTICE_COMPONENTS, DATAEDIT_TITLES_COMPONENTS } from './StyleComponents';
+import { DATAEDIT_NOTICE_COMPONENTS, DATAEDIT_TITLES_COMPONENTS, INPUT_MAX_LENGTH } from './StyleComponents';
 
 interface IFormData {
   mainOverview?: string;
@@ -70,13 +71,6 @@ const InputForm = () => {
 
   // 글자수 확인
   const watchFields = watch('detailInformation');
-  const INPUT_MAX_LENGTH = {
-    BASIC_ADDRESS: 10,
-    BASIC_PHONE: 10,
-    BASIC_FAX: 10,
-    DETAIL_TITLE: 15,
-    DETAIL_CONTENT: 100,
-  };
 
   // detail 요소 추가 삭제
   const { fields, append, remove } = useFieldArray({
@@ -405,16 +399,25 @@ const InputForm = () => {
                         control={control}
                         defaultValue={field.value}
                         render={({ field }) => (
-                          <>
+                          <DetailContentWrapper>
                             <textarea
                               {...register(`detailInformation.${index}.value`, {
                                 required: '내용을 입력해주세요',
+                                maxLength: INPUT_MAX_LENGTH.DETAIL_CONTENT,
                               })}
                               className='detail_content'
                               {...field}
                               placeholder='내용을 입력해주세요.'
+                              onChange={(e) => {
+                                if (e.target.value.length <= INPUT_MAX_LENGTH.DETAIL_CONTENT) {
+                                  field.onChange(e);
+                                }
+                              }}
                             />
-                          </>
+                            <span>
+                              {watchFields[index].value.length} / {INPUT_MAX_LENGTH.DETAIL_CONTENT}자
+                            </span>
+                          </DetailContentWrapper>
                         )}
                       />
                     </DetailItem>
