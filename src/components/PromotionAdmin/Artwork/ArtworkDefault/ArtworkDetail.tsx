@@ -245,6 +245,8 @@ const ArtworkDetail = () => {
       alert('아트워크 수정 성공'); // * TODO alert component 변경
       await fetchArtworkDetails();
       setIsGetMode(true);
+      setErrorMessage('');
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error: any) {
       console.log('Error creating artwork:', error);
