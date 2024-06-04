@@ -12,7 +12,6 @@ import { backdropState } from '@/recoil/atoms';
 import BackDrop from '@/components/Backdrop/Backdrop';
 import ArtworkCreating from '../ArtworkCreating/ArtworkCreating';
 import Pagination from '@/components/Pagination/Pagination';
-import ScrollToTop from '@/hooks/useScrollToTop';
 
 const Artwork = () => {
   const { data, isLoading, error, refetch } = useQuery<ArtworkData[], Error>('artworks', getAllArtworks);
@@ -28,11 +27,7 @@ const Artwork = () => {
     const queryParams = new URLSearchParams(location.search);
     const page = parseInt(queryParams.get('page') || '1', 10) - 1; // 페이지 인덱스를 0부터 시작하게 조정
     setCurrentPage(page);
-  }, [location]);
-
-  useEffect(() => {
-    setCurrentPage(0); // 검색어 또는 카테고리가 변경될 때 페이지를 초기화
-  }, [searchQuery, selectedCategory, data]);
+  }, [location.search, selectedCategory]);
 
   if (isLoading) return <LoadingWrapper>Loading...</LoadingWrapper>;
   if (error) return <div>Error: {error.message}</div>;
@@ -80,7 +75,7 @@ const Artwork = () => {
           ) : (
             <>
               {currentArtworks.map((artwork) => (
-                <LinkStyle to={`${PA_ROUTES.ARTWORK}/${artwork.id}`} key={artwork.id}>
+                <LinkStyle to={`${PA_ROUTES.ARTWORK}/${artwork.id}?page=${currentPage + 1}`} key={artwork.id}>
                   <ArtworkBox
                     mainImg={artwork.mainImg}
                     client={artwork.client}
@@ -115,10 +110,12 @@ const Container = styled.div`
   display: flex;
   width: 100%;
 `;
+
 const LinkStyle = styled(Link)`
   text-decoration: none;
   margin-bottom: 20px;
 `;
+
 const ArtworkBoxWrapper = styled.div`
   width: 700px;
   min-width: 700px;
@@ -138,6 +135,7 @@ const LoadingWrapper = styled.div`
   font-family: 'pretendard-regular';
   font-size: 17px;
 `;
+
 const SearchWrapper = styled.div`
   input {
     width: 300px;
@@ -169,6 +167,7 @@ const SearchWrapper = styled.div`
 const CategoryWrapper = styled.div`
   width: 200px;
 `;
+
 const UtilWrapper = styled.div`
   display: flex;
   justify-content: space-between;
