@@ -2,22 +2,18 @@ import { getRequestsData } from '@/apis/PromotionAdmin/request';
 import { IRequest } from '@/types/PromotionAdmin/request';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
-import { useState } from 'react';
-import Pagination from '../../../components/PromotionAdmin/FAQ/Pagination';
-import { PA_ROUTES } from '@/constants/routerConstants';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import WaitingRequestsList from '@/components/PromotionAdmin/Home/RequestSummary/WaitingRequestsList';
 import { ContentBox } from '@/components/PromotionAdmin/Request/Components';
 
 function RequestList() {
-  const { data, isLoading } = useQuery<IRequest[]>('requests', getRequestsData);
-  console.log(data);
+  const { data, isLoading, refetch } = useQuery<IRequest[]>('requests', getRequestsData, { refetchOnWindowFocus: false });
 
   // pagination 구현에 사용되는 변수
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [postsPerPage, setPostsPerPage] = useState<number>(10);
-  const indexOfLast = currentPage * postsPerPage;
-  const indexOfFirst = indexOfLast - postsPerPage;
+
   const [showWaitingApproval, setShowWaitingApproval] = useState<boolean>(false);
   const [showCompletedRequest, setShowCompletedRequest] = useState<boolean>(false);
 
@@ -31,35 +27,49 @@ function RequestList() {
   const filterWaitingRequests = (requests: IRequest[]): IRequest[] => {
     return requests.filter((request) => request.state === 'WAITING');
   };
-  
-  const filteredRequests = showWaitingApproval ? filterWaitingRequests(data || []) : data;
+
+  const filteredRequests = (showWaitingApproval ? filterWaitingRequests(data || []) : data) || [];
+
+  const indexOfLast = currentPage * postsPerPage;
+  const indexOfFirst = indexOfLast - postsPerPage;
+  const slicedRequests = filteredRequests?.slice(indexOfFirst, indexOfLast) || [];
+
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // 페이지 변경 시 데이터 다시 불러오기
+  useEffect(() => {
+    refetch();
+  }, [currentPage, postsPerPage]);
 
   return (
     <Wrapper>
+      <TitleWrapper>
+        <Title>
+          Request 관리
+          <Info>총 {filteredRequests.length}건</Info>
+
+        </Title>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <ToggleLabel>
+            {showWaitingApproval ? '대기 중인 문의' : '전체 문의'}
+          </ToggleLabel>
+          <ToggleButton onClick={handleWaitingToggle}>
+            <ToggleSlider active={showWaitingApproval} />
+          </ToggleButton>
+        </div>
+      </TitleWrapper>
       <ContentBox>
         {!data || data.length === 0 ? (
-          <> 😊 의뢰 데이터가 존재하지 않습니다.</>
+          <> 😊 문의 데이터가 존재하지 않습니다.</>
         ) : (
           <>
-            <TitleWrapper>
-              <Title>
-                Request 관리
-                <Info>총 {data.length}건</Info>
-              </Title>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <ToggleLabel>
-                  {showWaitingApproval ? '대기 중인 의뢰' : '전체 의뢰'}
-                </ToggleLabel>
-                <ToggleButton onClick={handleWaitingToggle}>
-                  <ToggleSlider active={showWaitingApproval} />
-                </ToggleButton>
-              </div>
-            </TitleWrapper>
             <TableWrapper>
               {isLoading ? (
                 <h1>Loading...</h1>
-              ) : filteredRequests && filteredRequests.length > 0 ? (
-                filteredRequests.map((request) => {
+              ) : slicedRequests && slicedRequests.length > 0 ? (
+                slicedRequests.map((request) => {
                   return (
                     <RequestWrapper key={request.id}>
                       <StateText requestState={request.state}>
@@ -76,19 +86,17 @@ function RequestList() {
                         date={`${request.year}년 ${request.month.toString().padStart(2, '0')}월`}
                         email={request.email}
                         requestId={request.id.toString()}
+                        hoverBackgroundColor={'transparent'}
                       />
                     </RequestWrapper>
                   );
                 })
               ) : (
-                <h1>😊 대기 중인 의뢰가 없습니다.</h1>
+                <h1>대기 중인 문의가 없습니다.</h1>
               )}
             </TableWrapper>
-            <Pagination
-              postsPerPage={postsPerPage}
-              totalPosts={data.length}
-              paginate={setCurrentPage}
-            />
+            <PaginationWrapper>
+            </PaginationWrapper>
           </>
         )}
       </ContentBox>
@@ -108,14 +116,14 @@ const TitleWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2rem;
+  padding: 0 0 2rem 0;
 `;
 
 const Title = styled.div`
   display: flex;
   align-items: center;
   color: black;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: 600;
 `;
 
@@ -170,19 +178,23 @@ const TableWrapper = styled.div`
 
 const StateText = styled.div<{ requestState: string }>`
   color: ${(props) =>
-    props.requestState === 'WAITING' ? 'black' : 'gray'};
+    props.requestState === 'WAITING' ? 'gray' : 'gray'};
   font-weight: bold;
-  margin: 0 1rem;
+  padding: 1rem;
 `;
 
 const RequestWrapper = styled.div`
   display: flex;
   align-items: center;
-  width: 90%;
+  width: 95%;
   border-bottom: 0.1px solid rgba(0, 0, 0, 0.05);
   &:hover {
     cursor: pointer;
-    background-color: #afafaf;
+    background-color: #afafaf1d;
     transition: all ease-in-out 200ms;
   }
 `;
+
+const PaginationWrapper = styled.div`
+  margin: 1rem 0;
+`

@@ -54,6 +54,7 @@ const WatingRequests = () => {
               date={request.createdAt}
               email={request.email}
               requestId={request.id.toString()}
+              hoverBackgroundColor={'#afafaf1d'}
             />
           ))
         ) : (
