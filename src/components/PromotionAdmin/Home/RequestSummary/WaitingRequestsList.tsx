@@ -11,16 +11,17 @@ type Props = {
   category: string;
   date: string;
   email: string;
+  hoverBackgroundColor: string;
 };
 
-const WaitingRequestsList = ({ requestId, organization, clientName, description, category, date, email }: Props) => {
-  const limitedOrganization = organization.length > 13 ? organization.slice(0, 13) + '...' : organization;
-  const limitedDescription = description.length > 33 ? description.slice(0, 33) + '...' : description;
+const WaitingRequestsList = ({ requestId, organization, clientName, description, category, date, email, hoverBackgroundColor }: Props) => {
+  const limitedOrganization = organization.length > 10 ? organization.slice(0, 10) + '...' : organization;
+  const limitedDescription = description.length > 28 ? description.slice(0, 28) + '...' : description;
   const limitedName = clientName.length > 7 ? clientName.slice(0, 7) + '...' : clientName;
-  const limitedEmail = email.length > 25 ? email.slice(0, 25) + '...' : email;
+  const limitedEmail = email.length > 20 ? email.slice(0, 20) + '...' : email;
   const slicedDate = date.slice(0, 10);
   return (
-    <Container to={`${PA_ROUTES.REQUEST}/${requestId}`}>
+    <Container to={`${PA_ROUTES.REQUEST}/${requestId}`} hoverBackgroundColor={hoverBackgroundColor}>
       <OrganizationWrapper>{limitedOrganization}</OrganizationWrapper>
       <DetailWrapper>
         <h2>{limitedDescription}</h2>
@@ -35,7 +36,7 @@ const WaitingRequestsList = ({ requestId, organization, clientName, description,
 
 export default WaitingRequestsList;
 
-const Container = styled(Link)`
+const Container = styled(Link)<{ hoverBackgroundColor: string }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -47,7 +48,7 @@ const Container = styled(Link)`
   text-decoration: none;
   &:hover {
     cursor: pointer;
-    background-color: #afafaf1d;
+    background-color: ${(props) => props.hoverBackgroundColor};
     transition: all ease-in-out 200ms;
   }
   h4 {
