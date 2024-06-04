@@ -204,6 +204,24 @@ export const DetailTitleInputWrapper = styled.div`
   }
 `;
 
+export const BasicInputWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  position: relative;
+  input {
+    width: 100%;
+    padding-right: 100px;
+  }
+  span {
+    position: absolute;
+    font-size: 12px;
+    right: 10px;
+    top: 10px;
+    color: ${(props) => props.theme.color.black.light};
+    font-family: ${(props) => props.theme.font.light};
+  }
+`;
+
 export const DetailContentWrapper = styled.div`
   display: flex;
   position: relative;
