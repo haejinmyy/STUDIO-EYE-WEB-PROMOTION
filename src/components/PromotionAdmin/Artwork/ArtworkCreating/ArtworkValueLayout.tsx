@@ -26,7 +26,7 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   margin-bottom: 15px;
-  width: 430px;
+  width: 330px;
   white-space: pre-line;
 `;
 
@@ -36,14 +36,14 @@ const ContentWrapper = styled.div`
 `;
 const Title = styled.div`
   font-family: 'pretendard-bold';
-  font-size: 18px;
+  font-size: 17px;
   margin-bottom: 10px;
   color: #282828;
 `;
 const Description = styled.div`
   font-family: 'pretendard-regular';
   width: 100%;
-  font-size: 14px;
+  font-size: 13px;
   color: #595959;
   margin-bottom: 10px;
   line-height: 120%;

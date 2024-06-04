@@ -6,6 +6,9 @@ import { projectType } from '@/types/PromotionAdmin/artwork';
 import { backdropState } from '@/recoil/atoms';
 import { useRecoilState } from 'recoil';
 import { postArtwork } from '@/apis/PromotionAdmin/artwork';
+import { linkCheck } from '@/components/ValidationRegEx/ValidationRegEx';
+import { useNavigate } from 'react-router-dom';
+import { PA_ROUTES } from '@/constants/routerConstants';
 
 const ArtworkCreating = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -20,8 +23,11 @@ const ArtworkCreating = () => {
   const [producingIsOpend, setProducingIsOpened] = useRecoilState(backdropState);
   const [overview, setOverview] = useState('');
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
+  const [linkRegexMessage, setLinkRegexMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isTopMainArtwork, setIsTopMainArtwork] = useState(false);
+  const [isGetMode, setIsGetMode] = useState<boolean>(true);
+  const navigate = useNavigate();
   useEffect(() => {
     setSubmitButtonDisabled(
       !selectedDate ||
@@ -47,14 +53,15 @@ const ArtworkCreating = () => {
     overview,
   ]);
 
-  // useEffect(() => {
-  //   if (projectType === 'top' || projectType === 'main') {
-  //     setIsTopMainArtwork(true);
-  //   } else {
-  //     setIsTopMainArtwork(false);
-  //   }
-  //   console.log('바뀜', isTopMainArtwork);
-  // }, [projectType]);
+  useEffect(() => {
+    setErrorMessage('');
+    if (projectType === 'top' || projectType === 'main') {
+      setIsTopMainArtwork(true);
+    } else {
+      setIsTopMainArtwork(false);
+    }
+    console.log('바뀜', isTopMainArtwork);
+  }, [projectType]);
 
   const handleOverviewChange = (newOverview: string) => {
     setOverview(newOverview);
@@ -70,6 +77,12 @@ const ArtworkCreating = () => {
 
   const handleLinkChange = (newLink: string) => {
     setLink(newLink);
+    if (linkCheck(newLink)) {
+      setLink(newLink);
+      setLinkRegexMessage('');
+    } else {
+      setLinkRegexMessage('외부 연결 링크는 http 혹은 https로 시작해야합니다.');
+    }
   };
 
   const handleMainImageChange = (newImage: File | File[]) => {
@@ -111,7 +124,7 @@ const ArtworkCreating = () => {
         formData.append('files', file);
       });
     }
-    console.log(formData);
+
     try {
       const response = await postArtwork(formData);
       if (response.code === 400 && response.data === null && response.message) {
@@ -120,10 +133,13 @@ const ArtworkCreating = () => {
       }
       alert('아트워크 등록 성공'); // * TODO alert component 변경
       setProducingIsOpened(false);
+      console.log(response.data.id);
+      navigate(`${PA_ROUTES.ARTWORK}/${response.data.id}?page=1`);
     } catch (error: any) {
       console.log('Error creating artwork:', error);
     }
   };
+
   const defaultValue = getArtworkDefaultValue(
     selectedDate,
     handleDateChange,
@@ -150,19 +166,19 @@ const ArtworkCreating = () => {
 
   return (
     <Container>
-      {' '}
       <CloseContainer onClick={() => setProducingIsOpened(false)}>x</CloseContainer>
       <ValueWrapper>
         {defaultValue.map((item: DefaultValueItem, index: number) => (
           <div key={index}>
             {errorMessage && item.name === 'artworkType' && <ErrorMessage> ⚠ {errorMessage}</ErrorMessage>}
+            {linkRegexMessage && item.name === 'link' && <ErrorMessage> ⚠ {linkRegexMessage}</ErrorMessage>}
             <ArtworkValueLayout valueTitle={item.title} description={item.description} content={item.content} />
           </div>
         ))}
         <div />
         <SubmitBtn
           title={submitButtonDisabled ? '모든 항목을 다 입력해주세요!' : ''}
-          disabled={submitButtonDisabled}
+          disabled={submitButtonDisabled || errorMessage !== '' || linkRegexMessage !== ''}
           onClick={() => handleSubmit()}
         >
           저장하기
@@ -181,12 +197,12 @@ const Container = styled.div`
 `;
 
 const ValueWrapper = styled.div`
-  background-color: rgba(255, 255, 255, 0.74);
+  background-color: rgba(255, 255, 255, 0.699);
   border-radius: 10px;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(10px);
   box-sizing: border-box;
   width: fit-content;
-  height: 800px;
+  height: 700px;
   overflow-y: scroll;
   padding: 55px 55px;
   display: grid;
@@ -232,10 +248,11 @@ const SubmitBtn = styled.button`
 `;
 
 const ErrorMessage = styled.div`
-  font-family: 'pretendard-bold';
-  background-color: #ca0505c5;
-  color: #e7e7e7;
-  padding: 10px;
+  font-family: 'pretendard-semibold';
+  background-color: #ca050599;
+  color: #ffffff;
+  font-size: 13px;
+  padding: 7px;
   border-radius: 5px;
   width: fit-content;
   margin-bottom: 15px;

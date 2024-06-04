@@ -36,29 +36,12 @@ export const getArtworkDefaultValue = (
   handleCustomerChange: (newCustomer: string) => void,
   overview: string,
   handleOverviewChange: (newOverview: string) => void,
-  isGetMode?: boolean,
+  isTopMainArtwork: boolean,
   getModeMainImg?: string,
   getModeDetailImgs?: string[],
-  isTopMainArtwork?: boolean,
+  isGetMode?: boolean,
 ) => {
   const defaultValue: DefaultValueItem[] = [
-    {
-      name: 'mainImage',
-      title: '메인 이미지 설정',
-      description: '메인 이미지는 최대 한 개만 설정 가능합니다.',
-      content:
-        isGetMode && getModeMainImg ? (
-          <img src={getModeMainImg} alt='메인 이미지' style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
-        ) : (
-          <>
-            <ImageUpload
-              type='main'
-              value={mainImage}
-              onChange={(newImage: File | File[]) => handleMainImageChange(newImage)}
-            />
-          </>
-        ),
-    },
     {
       name: 'title',
       title: '아트워크 제목',
@@ -78,7 +61,7 @@ export const getArtworkDefaultValue = (
     {
       name: 'overview',
       title: '아트워크 설명',
-      description: '아트워크에 설명은 최대 120자까지 입력 가능합니다.',
+      description: '아트워크 설명은 최대 120자까지 입력 가능합니다.',
       content: isGetMode ? (
         <GetInputWrapper>{overview}</GetInputWrapper>
       ) : (
@@ -93,8 +76,8 @@ export const getArtworkDefaultValue = (
     },
     {
       name: 'customer',
-      title: '고객사',
-      description: '고객사는 최대 30자까지 입력 가능합니다.',
+      title: '아트워크 고객사',
+      description: '아트워크 고객사는 최대 30자까지 입력 가능합니다.',
       content: isGetMode ? (
         <GetInputWrapper>{customer}</GetInputWrapper>
       ) : (
@@ -109,8 +92,8 @@ export const getArtworkDefaultValue = (
     },
     {
       name: 'date',
-      title: '날짜',
-      description: '',
+      title: '아트워크 제작 일시',
+      description: '해당 아트워크의 제작 일시를 선택해주세요.',
       content: isGetMode ? (
         <GetInputWrapper>{selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : ''}</GetInputWrapper>
       ) : (
@@ -122,7 +105,7 @@ export const getArtworkDefaultValue = (
             slotProps={{
               textField: {
                 sx: {
-                  backgroundColor: '#d1d1d1a0',
+                  backgroundColor: '#dadada9f',
                   '.MuiOutlinedInput-root': {
                     border: 'none',
                     '&:hover': {
@@ -144,7 +127,7 @@ export const getArtworkDefaultValue = (
     },
     {
       name: 'category',
-      title: '카테고리',
+      title: '아트워크 카테고리',
       description: '',
       content: isGetMode ? (
         <GetInputWrapper>{selectedCategory}</GetInputWrapper>
@@ -154,7 +137,7 @@ export const getArtworkDefaultValue = (
     },
     {
       name: 'link',
-      title: '외부 연결 미디어 링크',
+      title: '아트워크 외부 연결 미디어 링크',
       description: '',
       content: isGetMode ? (
         <GetHrefContainer>
@@ -173,32 +156,9 @@ export const getArtworkDefaultValue = (
       ),
     },
     {
-      name: 'isOpened',
-      title: '프로모션 페이지 공개 여부',
-      description: '비공개로 설정할 시, 프로모션 페이지의 메인화면 및 아트워크 화면에서 숨겨집니다.',
-      content: (
-        <>
-          {isTopMainArtwork ? (
-            <>
-              <IsTopMainArtworkText>Top, Main 선택 시 항상 프로모션 페이지에 공개됩니다.</IsTopMainArtworkText>
-              <IsTopMainArtworkContainer>
-                <div onClick={() => !isGetMode && !isprojectopened && handleTogglePosted()}>공개</div>
-                <div onClick={() => !isGetMode && isprojectopened && handleTogglePosted()}>비공개</div>
-              </IsTopMainArtworkContainer>
-            </>
-          ) : (
-            <Ispostedcontainer isopened={isprojectopened ? 'true' : 'false'}>
-              <div onClick={() => !isGetMode && !isprojectopened && handleTogglePosted()}>공개</div>
-              <div onClick={() => !isGetMode && isprojectopened && handleTogglePosted()}>비공개</div>
-            </Ispostedcontainer>
-          )}
-        </>
-      ),
-    },
-    {
       name: 'artworkType',
       title: '아트워크 타입',
-      description: `Top: 메인 페이지의 가장 먼저 보이는 아트워크입니다. 최대 1개만 지정할 수 있습니다. \n Main: 메인 페이지에서 대표적으로 보이는 아트워크입니다. 최대 5개까지 지정할 수 있습니다. \n Others: 그 외의 아트워크 유형입니다. 아트워크 페이지에서 보여집니다.`,
+      description: `① Top\n 메인 페이지에서 가장 먼저 보이는 아트워크이며, 1개만 지정할 수 있습니다. \n\n ③ Main\n 메인 페이지에서 슬라이드로 보이는 아트워크이며, 최대 5개까지 지정할 수 있습니다. \n\n ② Others\n 그 외의 아트워크 유형으로, 아트워크 페이지에서 보여집니다.`,
       content: (
         <TypeContainer projectType={projectType}>
           <div onClick={() => !isGetMode && projectType !== 'top' && setProjectType('top')}>Top</div>
@@ -208,14 +168,56 @@ export const getArtworkDefaultValue = (
       ),
     },
     {
+      name: 'isOpened',
+      title: '아트워크 프로모션 페이지 공개 여부',
+      description: '비공개로 설정할 시, 프로모션의 아트워크 페이지에서 숨겨집니다.',
+      content: isTopMainArtwork ? (
+        <>
+          <IsTopMainArtworkText>⚠ Top, Main 선택 시 항상 프로모션 페이지에 공개됩니다.</IsTopMainArtworkText>
+          <IsTopMainArtworkContainer>
+            <div onClick={() => !isGetMode && !isprojectopened && handleTogglePosted()}>공개</div>
+            <div onClick={() => !isGetMode && isprojectopened && handleTogglePosted()}>비공개</div>
+          </IsTopMainArtworkContainer>
+        </>
+      ) : (
+        <Ispostedcontainer isopened={isprojectopened ? 'true' : 'false'}>
+          <div onClick={() => !isGetMode && !isprojectopened && handleTogglePosted()}>공개</div>
+          <div onClick={() => !isGetMode && isprojectopened && handleTogglePosted()}>비공개</div>
+        </Ispostedcontainer>
+      ),
+    },
+
+    {
+      name: 'mainImage',
+      title: '아트워크 썸네일 이미지 설정',
+      description: '썸네일 이미지는 최대 한 개만 설정 가능합니다.',
+      content:
+        isGetMode && getModeMainImg ? (
+          <IsGetModeImg
+            src={getModeMainImg}
+            alt='메인 이미지'
+            style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+          />
+        ) : (
+          <>
+            <ImageUpload
+              type='main'
+              value={mainImage}
+              onChange={(newImage: File | File[]) => handleMainImageChange(newImage)}
+            />
+          </>
+        ),
+    },
+    {
       name: 'detailImages',
-      title: '아트워크 상세 이미지',
-      description: '아트워크 상세 이미지는 최소 1개에서 최대 3개까지 지정 가능합니다.',
+      title: '아트워크 서브 이미지',
+      description:
+        '아트워크 서브 이미지는 해당 아트워크 페이지 안에서 보이며, 최소 1개에서 최대 3개까지 지정 가능합니다.',
 
       content:
         isGetMode && getModeDetailImgs ? (
           getModeDetailImgs.map((i, index) => (
-            <img
+            <IsGetModeImg
               src={i}
               alt='메인 이미지'
               style={{ width: '100%', height: 'auto', objectFit: 'contain', marginBottom: '30px' }}
@@ -235,11 +237,15 @@ export const getArtworkDefaultValue = (
 
 export default getArtworkDefaultValue;
 
+const IsGetModeImg = styled.img`
+  border-radius: 10px;
+`;
+
 const IsTopMainArtworkText = styled.h1`
   font-family: 'pretendard-semibold';
   margin-bottom: 8px;
-  font-size: 16px;
-  color: #ca0505c5;
+  font-size: 13px;
+  color: #4e4e4ec5;
 `;
 
 const IsTopMainArtworkContainer = styled.div`
@@ -271,7 +277,7 @@ const Ispostedcontainer = styled.div<{ isopened: string }>`
   align-items: center;
   cursor: pointer;
   font-family: 'pretendard-semibold';
-  background-color: #cacaca88;
+  background-color: #a3a3a360;
   height: 40px;
   border-radius: 20px;
   position: relative;
@@ -282,7 +288,7 @@ const Ispostedcontainer = styled.div<{ isopened: string }>`
     position: absolute;
     width: 75px;
     height: 100%;
-    background-color: #f0f0f0;
+    background-color: #fcfcfce2;
     border-radius: 20px;
     transition: transform 0.3s ease-in-out;
     transform: ${(props) => (props.isopened === 'true' ? 'translateX(0)' : 'translateX(75px)')};
@@ -312,7 +318,7 @@ const TypeContainer = styled.div<{ projectType: projectType }>`
   align-items: center;
   cursor: pointer;
   font-family: 'pretendard-semibold';
-  background-color: #cacaca88;
+  background-color: #a3a3a360;
   height: 40px;
   border-radius: 20px;
   position: relative;
@@ -323,7 +329,7 @@ const TypeContainer = styled.div<{ projectType: projectType }>`
     position: absolute;
     width: 75px;
     height: 100%;
-    background-color: #f0f0f0;
+    background-color: #fcfcfce2;
     border-radius: 20px;
     transition: transform 0.3s ease-in-out;
     transform: ${(props) => {
@@ -375,9 +381,9 @@ const StyledInput = styled.input`
   border-radius: 5px;
   font-size: 15px;
   border: none;
-  background-color: #d1d1d1a0;
   color: black;
   margin-bottom: 20px;
+  background-color: #dadada9f;
   &:hover {
     cursor: pointer;
     background-color: #ffffff73;
@@ -392,12 +398,11 @@ const StyledInput = styled.input`
   }
 `;
 const GetInputWrapper = styled.div`
-  width: 100%;
-
+  width: 80%;
   padding: 8px;
   border: none;
   border-bottom: 1px solid #ccc;
-  font-size: 17px;
+  font-size: 15px;
   line-height: 140%;
   font-family: 'pretendard-regular';
 `;
