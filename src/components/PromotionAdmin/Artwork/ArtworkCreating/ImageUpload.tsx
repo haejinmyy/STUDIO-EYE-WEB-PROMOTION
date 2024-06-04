@@ -61,7 +61,7 @@ const ImageUpload = ({ type, value, onChange }: ImageUploadProps) => {
   return (
     <>
       <ImageUploadContainer>
-        <UploadLabel htmlFor={`${type}-image-upload`}>{type === 'main' ? '메인' : '디테일'} 이미지 업로드</UploadLabel>
+        <UploadLabel htmlFor={`${type}-image-upload`}>이미지 업로드</UploadLabel>
         <input
           id={`${type}-image-upload`}
           type='file'

@@ -9,6 +9,7 @@ import ArtworkValueLayout from '../ArtworkCreating/ArtworkValueLayout';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import ScrollToTop from '@/hooks/useScrollToTop';
 import { PA_ROUTES } from '@/constants/routerConstants';
+import { linkCheck } from '@/components/ValidationRegEx/ValidationRegEx';
 
 const ArtworkDetail = () => {
   const [getModeMainImg, setGetModeMainImg] = useState('');
@@ -29,6 +30,8 @@ const ArtworkDetail = () => {
   const [artworkData, setArtworkData] = useState<ArtworkData>();
   const [isGetMode, setIsGetMode] = useState<boolean>(true);
   const navigate = useNavigate();
+  const [linkRegexMessage, setLinkRegexMessage] = useState('');
+  const [isTopMainArtwork, setIsTopMainArtwork] = useState(false);
 
   const [putData, setPutData] = useState<UpdateArtwork>({
     request: {
@@ -77,7 +80,14 @@ const ArtworkDetail = () => {
     console.log('읭', mainImage);
     console.log('초기에 넣은 putData', putData);
   }, [artworkId]);
-
+  useEffect(() => {
+    setErrorMessage('');
+    if (projectType === 'top' || projectType === 'main') {
+      setIsTopMainArtwork(true);
+    } else {
+      setIsTopMainArtwork(false);
+    }
+  }, [projectType]);
   async function urlToFile(url: string, fileName: string): Promise<File> {
     try {
       const response = await fetch(url);
@@ -116,6 +126,11 @@ const ArtworkDetail = () => {
         file: data.mainImg,
         files: [],
       });
+      if (data.projectType === 'top' || data.projectType === 'main') {
+        setIsTopMainArtwork(true);
+      } else {
+        setIsTopMainArtwork(false);
+      }
       if (data.mainImg) {
         setGetModeMainImg(data.mainImg);
         try {
@@ -172,6 +187,12 @@ const ArtworkDetail = () => {
 
   const handleLinkChange = (newLink: string) => {
     setLink(newLink);
+    if (linkCheck(newLink)) {
+      setLink(newLink);
+      setLinkRegexMessage('');
+    } else {
+      setLinkRegexMessage('외부 연결 링크는 http 혹은 https로 시작해야합니다.');
+    }
   };
 
   const handleMainImageChange = (newImage: File | File[]) => {
@@ -201,7 +222,7 @@ const ArtworkDetail = () => {
       date: selectedDate,
       link: link,
       overView: overview,
-      isPosted: isProjectOpened,
+      isPosted: isTopMainArtwork ? true : isProjectOpened,
       projectType: projectType,
     };
     formData.append('request', new Blob([JSON.stringify(requestData)], { type: 'application/json' }));
@@ -265,9 +286,11 @@ const ArtworkDetail = () => {
     handleCustomerChange,
     overview,
     handleOverviewChange,
-    isGetMode,
+    isTopMainArtwork,
+
     getModeMainImg,
     getModeDetailImgs,
+    isGetMode,
   );
 
   return (
@@ -278,7 +301,8 @@ const ArtworkDetail = () => {
           <div key={index}>
             {errorMessage && !isGetMode && item.name === 'artworkType' && (
               <ErrorMessage> ⚠ {errorMessage}</ErrorMessage>
-            )}
+            )}{' '}
+            {linkRegexMessage && item.name === 'link' && <ErrorMessage> ⚠ {linkRegexMessage}</ErrorMessage>}
             <ArtworkValueLayout valueTitle={item.title} description={item.description} content={item.content} />
           </div>
         ))}
@@ -286,7 +310,7 @@ const ArtworkDetail = () => {
         {!isGetMode && (
           <SubmitBtn
             title={submitButtonDisabled ? '모든 항목을 다 입력해주세요!' : ''}
-            disabled={submitButtonDisabled}
+            disabled={submitButtonDisabled || errorMessage !== '' || linkRegexMessage !== ''}
             onClick={() => handleSubmit()}
           >
             저장하기
@@ -304,14 +328,14 @@ export default ArtworkDetail;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  width: 110%;
+  width: 100%;
   position: relative;
 `;
 
 const ValueWrapper = styled.div`
-  background-color: rgba(255, 255, 255, 0.74);
+  background-color: rgba(255, 255, 255, 0.336);
   border-radius: 10px;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(7px);
   box-sizing: border-box;
   width: 100%;
   padding: 55px 55px;
@@ -348,10 +372,11 @@ const SubmitBtn = styled.button`
 `;
 
 const ErrorMessage = styled.div`
-  font-family: 'pretendard-bold';
-  background-color: #ca0505c5;
-  color: #e7e7e7;
-  padding: 10px;
+  font-family: 'pretendard-semibold';
+  background-color: #ca050599;
+  color: #ffffff;
+  font-size: 13px;
+  padding: 7px;
   border-radius: 5px;
   width: fit-content;
   margin-bottom: 15px;
@@ -370,6 +395,7 @@ const DeleteWrapper = styled.div`
   cursor: pointer;
   padding: 10px 20px;
   margin-left: auto;
+  margin-right: 20px;
   margin-top: 20px;
 
   &:hover {

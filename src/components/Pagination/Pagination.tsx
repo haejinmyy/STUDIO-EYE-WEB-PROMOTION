@@ -1,8 +1,7 @@
-import ScrollToTop from '@/hooks/useScrollToTop';
-import { theme } from '@/styles/theme';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { theme } from '@/styles/theme';
 
 interface IPaginationProps {
   postsPerPage: number;
@@ -12,9 +11,9 @@ interface IPaginationProps {
 
 const Pagination = ({ postsPerPage, totalPosts, paginate }: IPaginationProps) => {
   const [index, setIndex] = useState<null | number>(0);
-  const navigator = useNavigate();
-  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
-  const [currentPageRange, setCurrentPageRange] = useState(0); // 현재 페이지 범위 상태
+  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPageRange, setCurrentPageRange] = useState(0);
   const location = useLocation();
 
   const pageNumbers = [];
@@ -66,9 +65,9 @@ const Pagination = ({ postsPerPage, totalPosts, paginate }: IPaginationProps) =>
           key={number}
           className='page-item'
           onClick={() => {
-            paginate(number);
+            paginate(number + 1); // 페이지 인덱스를 1부터 시작하게 조정
             setIndex(number);
-            navigator(`?page=${number + 1}`);
+            navigate(`?page=${number + 1}`);
           }}
           selected={number === index ? true : false}
         >
