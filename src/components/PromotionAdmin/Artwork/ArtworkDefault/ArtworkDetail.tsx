@@ -29,6 +29,7 @@ const ArtworkDetail = () => {
   const [artworkData, setArtworkData] = useState<ArtworkData>();
   const [isGetMode, setIsGetMode] = useState<boolean>(true);
   const navigate = useNavigate();
+  const [isTopMainArtwork, setIsTopMainArtwork] = useState(false);
 
   const [putData, setPutData] = useState<UpdateArtwork>({
     request: {
@@ -77,7 +78,14 @@ const ArtworkDetail = () => {
     console.log('읭', mainImage);
     console.log('초기에 넣은 putData', putData);
   }, [artworkId]);
-
+  useEffect(() => {
+    if (projectType === 'top' || projectType === 'main') {
+      setIsTopMainArtwork(true);
+    } else {
+      setIsTopMainArtwork(false);
+    }
+    console.log('바뀜', isTopMainArtwork);
+  }, [projectType]);
   async function urlToFile(url: string, fileName: string): Promise<File> {
     try {
       const response = await fetch(url);
@@ -116,6 +124,11 @@ const ArtworkDetail = () => {
         file: data.mainImg,
         files: [],
       });
+      if (data.projectType === 'top' || data.projectType === 'main') {
+        setIsTopMainArtwork(true);
+      } else {
+        setIsTopMainArtwork(false);
+      }
       if (data.mainImg) {
         setGetModeMainImg(data.mainImg);
         try {
@@ -267,6 +280,7 @@ const ArtworkDetail = () => {
     isGetMode,
     getModeMainImg,
     getModeDetailImgs,
+    isTopMainArtwork,
   );
 
   return (

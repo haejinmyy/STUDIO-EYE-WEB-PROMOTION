@@ -39,6 +39,7 @@ export const getArtworkDefaultValue = (
   isGetMode?: boolean,
   getModeMainImg?: string,
   getModeDetailImgs?: string[],
+  isTopMainArtwork?: boolean,
 ) => {
   const defaultValue: DefaultValueItem[] = [
     {
@@ -176,10 +177,22 @@ export const getArtworkDefaultValue = (
       title: '프로모션 페이지 공개 여부',
       description: '비공개로 설정할 시, 프로모션 페이지의 메인화면 및 아트워크 화면에서 숨겨집니다.',
       content: (
-        <Ispostedcontainer isopened={isprojectopened ? 'true' : 'false'}>
-          <div onClick={() => !isGetMode && !isprojectopened && handleTogglePosted()}>공개</div>
-          <div onClick={() => !isGetMode && isprojectopened && handleTogglePosted()}>비공개</div>
-        </Ispostedcontainer>
+        <>
+          {isTopMainArtwork ? (
+            <>
+              <IsTopMainArtworkText>Top, Main 선택 시 항상 프로모션 페이지에 공개됩니다.</IsTopMainArtworkText>
+              <IsTopMainArtworkContainer>
+                <div onClick={() => !isGetMode && !isprojectopened && handleTogglePosted()}>공개</div>
+                <div onClick={() => !isGetMode && isprojectopened && handleTogglePosted()}>비공개</div>
+              </IsTopMainArtworkContainer>
+            </>
+          ) : (
+            <Ispostedcontainer isopened={isprojectopened ? 'true' : 'false'}>
+              <div onClick={() => !isGetMode && !isprojectopened && handleTogglePosted()}>공개</div>
+              <div onClick={() => !isGetMode && isprojectopened && handleTogglePosted()}>비공개</div>
+            </Ispostedcontainer>
+          )}
+        </>
       ),
     },
     {
@@ -221,6 +234,37 @@ export const getArtworkDefaultValue = (
 };
 
 export default getArtworkDefaultValue;
+
+const IsTopMainArtworkText = styled.h1`
+  font-family: 'pretendard-semibold';
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #ca0505c5;
+`;
+
+const IsTopMainArtworkContainer = styled.div`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-family: 'pretendard-semibold';
+  background-color: #cacaca88;
+  height: 40px;
+  border-radius: 20px;
+  position: relative;
+  width: 150px;
+
+  h1 {
+  }
+
+  div {
+    z-index: 1;
+    flex: 1;
+    text-align: center;
+    padding: 5px 0;
+    font-weight: normal;
+    color: grey;
+  }
+`;
 
 const Ispostedcontainer = styled.div<{ isopened: string }>`
   display: flex;

@@ -21,6 +21,7 @@ const ArtworkCreating = () => {
   const [overview, setOverview] = useState('');
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isTopMainArtwork, setIsTopMainArtwork] = useState(false);
   useEffect(() => {
     setSubmitButtonDisabled(
       !selectedDate ||
@@ -45,6 +46,16 @@ const ArtworkCreating = () => {
     customer,
     overview,
   ]);
+
+  // useEffect(() => {
+  //   if (projectType === 'top' || projectType === 'main') {
+  //     setIsTopMainArtwork(true);
+  //   } else {
+  //     setIsTopMainArtwork(false);
+  //   }
+  //   console.log('바뀜', isTopMainArtwork);
+  // }, [projectType]);
+
   const handleOverviewChange = (newOverview: string) => {
     setOverview(newOverview);
   };
@@ -87,7 +98,7 @@ const ArtworkCreating = () => {
       date: selectedDate ? selectedDate.toISOString() : '',
       link: link,
       projectType: projectType,
-      isPosted: isProjectOpened,
+      isPosted: isTopMainArtwork ? true : isProjectOpened,
       overView: overview,
     };
     formData.append('request', new Blob([JSON.stringify(requestData)], { type: 'application/json' }));
@@ -134,6 +145,7 @@ const ArtworkCreating = () => {
     handleCustomerChange,
     overview,
     handleOverviewChange,
+    isTopMainArtwork,
   );
 
   return (
