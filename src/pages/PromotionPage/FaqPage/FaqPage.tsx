@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import styled, { createGlobalStyle, keyframes } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { FaSearch } from 'react-icons/fa';
+import BackgroundYellowCircle from '@/components/PromotionPage/BackgroundYellowCircle/BackgroundYellowCircle';
 
 interface FaqData {
   id: number;
@@ -104,63 +104,64 @@ const FaqPage = () => {
   };
 
   return (
-    <Container>
-      <GradientOverlayTopLeft />
-      <GradientOverlayBottomRight />
-      <Header>
-        <Title>
-          <AnimatedSpan delay={0.1}>F</AnimatedSpan>requently
-          <AnimatedSpan delay={0.3}> A</AnimatedSpan>sked
-          <AnimatedSpan delay={0.5}> Q</AnimatedSpan>uestions
-        </Title>
-        <SubContent>이곳에 자주 묻는 질문들에 대한 답변을 모아 놓았습니다.</SubContent>
-      </Header>
-      <Content>
-        <InputWrapper>
-          {faqQuestion.length === 0 ? (
-            <SearchFaqQuestion
-              placeholder='컨텐츠 문의, 회사 위치 등의 검색어를 입력해 주세요.'
-              autoComplete='off'
-              name='searchingfaqquestion'
-              value={faqQuestion}
-              onChange={handleTextAreaDataChange}
-            />
+    <BackgroundYellowCircle>
+      {' '}
+      <Container>
+        <Header>
+          <Title>
+            <AnimatedSpan delay={0.1}>F</AnimatedSpan>requently
+            <AnimatedSpan delay={0.3}> A</AnimatedSpan>sked
+            <AnimatedSpan delay={0.5}> Q</AnimatedSpan>uestions
+          </Title>
+          <SubContent>이곳에 자주 묻는 질문들에 대한 답변을 모아 놓았습니다.</SubContent>
+        </Header>
+        <Content>
+          <InputWrapper>
+            {faqQuestion.length === 0 ? (
+              <SearchFaqQuestion
+                placeholder='컨텐츠 문의, 회사 위치 등의 검색어를 입력해 주세요.'
+                autoComplete='off'
+                name='searchingfaqquestion'
+                value={faqQuestion}
+                onChange={handleTextAreaDataChange}
+              />
+            ) : (
+              <>
+                <SearchFaqQuestion autoComplete='off' name='searchingfaqquestion' onChange={handleTextAreaDataChange} />
+              </>
+            )}
+          </InputWrapper>
+          {searchResult === 'fail' ? (
+            <NoResults>검색 결과가 없습니다.</NoResults>
           ) : (
-            <>
-              <SearchFaqQuestion autoComplete='off' name='searchingfaqquestion' onChange={handleTextAreaDataChange} />
-            </>
+            searchData.map((item: any, i: number) => (
+              <FaqDetailButton
+                key={i}
+                initial={{ height: 30, opacity: 0.5, scale: 0.9 }}
+                animate={
+                  expandedItems.has(i)
+                    ? { height: 'auto', opacity: 1, scale: 1 }
+                    : { height: 30, opacity: 0.5, scale: 0.9 }
+                }
+                transition={{ duration: 0.4, ease: 'easeInOut' }}
+                onClick={() => searchToggleItem(i)}
+              >
+                <FaqBrief>
+                  <FaqBriefQuestion>
+                    {item.question.length >= 100 ? item.question.substring(0, 70) + '...' : item.question}
+                  </FaqBriefQuestion>
+                </FaqBrief>
+                {expandedItems.has(i) && (
+                  <FaqDetailBox>
+                    <FaqDetailAnswer dangerouslySetInnerHTML={{ __html: item.answer }} />
+                  </FaqDetailBox>
+                )}
+              </FaqDetailButton>
+            ))
           )}
-        </InputWrapper>
-        {searchResult === 'fail' ? (
-          <NoResults>검색 결과가 없습니다.</NoResults>
-        ) : (
-          searchData.map((item: any, i: number) => (
-            <FaqDetailButton
-              key={i}
-              initial={{ height: 30, opacity: 0.5, scale: 0.9 }}
-              animate={
-                expandedItems.has(i)
-                  ? { height: 'auto', opacity: 1, scale: 1 }
-                  : { height: 30, opacity: 0.5, scale: 0.9 }
-              }
-              transition={{ duration: 0.4, ease: 'easeInOut' }}
-              onClick={() => searchToggleItem(i)}
-            >
-              <FaqBrief>
-                <FaqBriefQuestion>
-                  {item.question.length >= 100 ? item.question.substring(0, 70) + '...' : item.question}
-                </FaqBriefQuestion>
-              </FaqBrief>
-              {expandedItems.has(i) && (
-                <FaqDetailBox>
-                  <FaqDetailAnswer dangerouslySetInnerHTML={{ __html: item.answer }} />
-                </FaqDetailBox>
-              )}
-            </FaqDetailButton>
-          ))
-        )}
-      </Content>
-    </Container>
+        </Content>
+      </Container>
+    </BackgroundYellowCircle>
   );
 };
 
@@ -301,6 +302,9 @@ const FaqDetailAnswer = styled.p`
   font-weight: 400;
   text-align: justify;
   color: white;
+  a {
+    color: #ffa900;
+  }
 `;
 
 const NoResults = styled.div`

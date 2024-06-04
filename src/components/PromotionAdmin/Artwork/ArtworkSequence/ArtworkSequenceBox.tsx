@@ -61,10 +61,10 @@ const Container = styled.div`
   }
   img {
     width: 50px;
+    min-width: 50px;
     height: 50px;
     object-fit: cover;
     border-radius: 5px;
-    transition: 0.3s;
   }
   h1 {
     font-family: 'pretendard-semibold';

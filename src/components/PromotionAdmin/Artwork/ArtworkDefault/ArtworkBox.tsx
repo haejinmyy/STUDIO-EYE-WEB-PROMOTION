@@ -17,23 +17,26 @@ const ArtworkBox = ({
   isPosted,
   mainImg,
   projectImages,
-  sequence
+  sequence,
 }: ArtworkData) => {
+  const slicedName = name.length > 25 ? `${name.slice(0, 25)}...` : name;
+  const slicedOverview = overView.length > 120 ? `${overView.slice(0, 120)}...` : overView;
+  const slicedClient = client.length > 30 ? `${client.slice(0, 30)}...` : client;
   return (
     <Container>
       {mainImg ? <img src={mainImg} alt='mainImg' /> : <NoMainImageWrapper>No Image</NoMainImageWrapper>}
       <DescriptionWrapper>
         <Wrapper>
           <div>
-            <h2>{client}</h2>
-            <h1>{name}</h1>
+            <h2>{slicedClient}</h2>
+            <h1>{slicedName}</h1>
           </div>
           <RightAlignWrapper>
             {isPosted ? <IsPosted /> : <IsNotPosted />}
             <h2>{category}</h2>
           </RightAlignWrapper>
         </Wrapper>
-        <h3>{overView}</h3> <TypeWrapper projectType={projectType}>{projectType}</TypeWrapper>
+        <h3>{slicedOverview}</h3> <TypeWrapper projectType={projectType}>{projectType}</TypeWrapper>
       </DescriptionWrapper>
     </Container>
   );
@@ -105,6 +108,9 @@ const DescriptionWrapper = styled.div`
 `;
 const RightAlignWrapper = styled.div`
   text-align: right;
+  h2 {
+    margin-top: 10px;
+  }
 `;
 
 const TypeWrapper = styled.div<{ projectType: 'others' | 'top' | 'main' }>`

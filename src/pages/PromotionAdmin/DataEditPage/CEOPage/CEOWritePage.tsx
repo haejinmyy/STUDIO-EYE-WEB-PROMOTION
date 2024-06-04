@@ -5,6 +5,11 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
+import FileButton from '@/components/PromotionAdmin/DataEdit/StyleComponents/FileButton';
+import {
+  DATAEDIT_NOTICE_COMPONENTS,
+  DATAEDIT_TITLES_COMPONENTS,
+} from '../../../../components/PromotionAdmin/DataEdit/Company/StyleComponents';
 
 function CEOWritePage() {
   const { data, isLoading, refetch } = useQuery<ICEOData>(['ceo', 'id'], getCEOData);
@@ -18,26 +23,52 @@ function CEOWritePage() {
 
   useEffect(() => {
     refetch();
-  }, [data]);
+  }, [data, refetch]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    let processedValue = value;
+
+    if (name === 'name' && value.length > 30) {
+      processedValue = value.slice(0, 30);
+    }
+
+    if (name === 'introduction') {
+      const lines = value.split('\n').length;
+      if (lines > 5) {
+        const linesArray = value.split('\n');
+        processedValue = linesArray.slice(0, 5).join('\n');
+      }
+      if (value.length > 200) {
+        processedValue = value.slice(0, 200);
+      }
+    }
     setPutData((prevData) => ({
       ...prevData,
       request: {
         ...prevData.request,
-        [name]: value,
+        [name]: processedValue,
       },
     }));
   };
 
-  const [isInvalid, setInvalid] = useState(false);
+  const [isInvalid, setInvalid] = useState(true);
 
   const handleSaveClick = async () => {
     const formData = new FormData();
-
     // 기본 정보 추가
-    formData.append('request', new Blob([JSON.stringify(putData.request)], { type: 'application/json' }));
+    formData.append(
+      'request',
+      new Blob(
+        [
+          JSON.stringify({
+            name: putData.request.name,
+            introduction: putData.request.introduction,
+          }),
+        ],
+        { type: 'application/json' },
+      ),
+    );
     console.log('넣는 request', putData.request);
 
     // 이미지를 변경했는지 확인하고 추가
@@ -109,82 +140,158 @@ function CEOWritePage() {
   if (isLoading) return <div>is Loading...</div>;
   return (
     <Wrapper>
-      <EditComponent>
-        <Content>
-          <Title>Name</Title>
+      <ContentBlock>
+        {DATAEDIT_TITLES_COMPONENTS.CEO}
+        <InputWrapper>
+          <InputTitle>
+            <p>Name</p>
+          </InputTitle>
           <input name='name' value={putData.request.name} onChange={handleChange} placeholder='이름' />
-        </Content>
-
-        <Content>
-          <Title>Introduction</Title>
+          <InputTitle>
+            <p>Introduction</p>
+          </InputTitle>
           <textarea
             name='introduction'
             value={putData.request.introduction}
             onChange={handleChange}
-            placeholder='소개'
+            placeholder='CEO 소개 (5줄, 200자 내로 작성해 주세요.)'
           />
-        </Content>
-
-        <Content>
-          <Title>Logo</Title>
-          <input type='file' accept='image/*' onChange={handleImageChange} />
-          <img src={putData.file} />
-        </Content>
-
-        <ButtonWrapper>
-          <Button onClick={handleSaveClick}>등록하기</Button>
-        </ButtonWrapper>
-      </EditComponent>
+          <InputImgWrapper>
+            <Box>
+              <InputTitle>{DATAEDIT_TITLES_COMPONENTS.CEOIMG}</InputTitle>
+              {DATAEDIT_NOTICE_COMPONENTS.IMAGE.CEOIMG}
+              {DATAEDIT_NOTICE_COMPONENTS.COLOR.CEOIMG}
+              <LogoWrapper>
+                <FileButton id='CEOImgFile' description='CEO Image Upload' onChange={handleImageChange} />
+                <ImgBox>
+                  <img src={putData.file} alt='' />
+                </ImgBox>
+              </LogoWrapper>
+            </Box>
+          </InputImgWrapper>
+          <ButtonWrapper>
+            <Button onClick={handleSaveClick}>등록하기</Button>
+          </ButtonWrapper>
+        </InputWrapper>
+      </ContentBlock>
     </Wrapper>
   );
 }
 
 export default CEOWritePage;
 
-const Wrapper = styled.div`
-  left: 25rem;
-  top: 10rem;
-  border-radius: 1rem;
-  background-color: ${(props) => props.theme.color.white.bold};
-  width: 800px;
-  min-height: 600px;
-  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
-`;
-
-const EditComponent = styled.div`
-  background-color: ${(props) => props.theme.color.white.bold};
-  padding: 20px;
-`;
-
-const Title = styled.div`
-  font-weight: 800;
+export const Wrapper = styled.div`
   display: flex;
-  align-items: center;
-  height: 4rem;
-  font-size: 1.3rem;
-`;
-
-const Content = styled.div`
-  margin-bottom: 40px;
-  img {
-    width: 100px;
-  }
-
+  input,
   textarea {
-    border: none;
-    padding: 10px 20px;
-    height: 200px;
-    width: 700px;
-    font-size: 16px;
+    outline: none;
   }
-
-  input {
+  input:focus {
+    transition: 0.2s;
+    border-bottom: 3px solid ${(props) => props.theme.color.symbol};
+  }
+  ,
+  textarea {
+    outline: none;
+    font-family: ${(props) => props.theme.font.regular};
+    font-size: 14px;
+    padding: 10px;
+    width: 70%;
+    min-height: 200px;
     border: none;
-    font-size: 16px;
-    padding: 10px 20px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    resize: none;
+  }
+  textarea:focus {
+    transition: 0.2s;
+    border-bottom: 3px solid ${(props) => props.theme.color.symbol};
   }
 `;
 
+export const ContentBlock = styled.div<{ width?: number; height?: number }>`
+  padding: 25px;
+  background-color: ${(props) => props.theme.color.white.pale};
+  position: relative;
+  box-shadow: 2px 2px 5px 0.3px ${(props) => props.theme.color.black.pale};
+  margin-bottom: 30px;
+  margin-right: 30px;
+
+  border-radius: 4px;
+  width: ${(props) => (props.width ? props.width + 'px;' : '40vw;')};
+  height: ${(props) => (props.height ? props.height + 'px;' : 'fit-content;')};
+`;
+
+export const InputWrapper = styled.div`
+  display: flex;
+  background-color: ${(props) => props.theme.color.white.light};
+  flex-direction: column;
+  font-family: ${(props) => props.theme.font.regular};
+  p {
+    font-size: 18px;
+    padding-top: 7px;
+    padding-bottom: 3px;
+  }
+  input {
+    outline: none;
+    font-family: ${(props) => props.theme.font.regular};
+    font-size: 14px;
+    padding-left: 10px;
+    width: 30%;
+    height: 30px;
+    border: none;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  }
+  input:focus,
+  textarea:focus {
+    transition: 0.2s;
+    border-bottom: 3px solid ${(props) => props.theme.color.symbol};
+  }
+`;
+
+export const InputImgWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+`;
+
+export const InputTitle = styled.div`
+  display: flex;
+  padding-top: 20px;
+  align-items: center;
+  height: 40px;
+  svg {
+    cursor: pointer;
+    margin-right: 10px;
+  }
+`;
+export const Box = styled.div`
+  width: 100%;
+`;
+
+export const ImgBox = styled.div`
+  display: flex;
+  height: 200px;
+  width: 80%;
+  justify-content: center;
+  align-items: center;
+  background-color: #1a1a1a;
+  border-radius: 5px;
+  margin-top: 15px;
+`;
+export const LogoWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+  input {
+    display: none;
+  }
+
+  img {
+    max-width: 300px;
+    max-height: 150px;
+    margin-bottom: 10px;
+  }
+`;
 const ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -195,7 +302,7 @@ const Button = styled.button`
   cursor: pointer;
   border: none;
   background-color: ${(props) => props.theme.color.white.bold};
-  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+  box-shadow: 1px 1px 4px 0.5px #c6c6c6;
   padding: 0.4rem 1.4rem;
   border-radius: 0.2rem;
   transition: 0.2s;

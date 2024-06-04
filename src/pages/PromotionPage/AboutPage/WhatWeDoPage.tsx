@@ -19,10 +19,13 @@ const WhatWeDoPage = () => {
       .get('http://3.36.95.109:8080/api/company/detail')
       .then((response) => {
         const responseData = response.data.data;
-        const dataKeys: string[] = Object.keys(responseData);
-        const dataValues: string[] = Object.values(responseData);
-        setCompanyDetailDataTitle(dataKeys);
-        setCompanyDetailData(dataValues);
+        if (responseData) {
+          const dataKeys: string[] = Object.keys(responseData);
+          const dataValues: string[] = Object.values(responseData);
+          setCompanyDetailDataTitle(dataKeys);
+          setCompanyDetailData(dataValues);
+          console.log('dataValues', dataValues);
+        }
       })
       .catch((error) => {
         console.error('데이터 수신 오류:', error);
@@ -48,6 +51,9 @@ const WhatWeDoPage = () => {
 
     setHighlighted(closestSection);
   });
+  if (companyDetailData.length === 0) {
+    return <></>;
+  }
 
   return (
     <Container>
@@ -117,7 +123,7 @@ const ScrollBarBox = styled(motion.div)`
 const WhatWeDo = styled(motion.div)<IWhatWeDoProps>`
   position: relative;
   transform: translateX(-50%);
-  width: 65%;
+  width: 70%;
   height: auto;
   background-color: transparent;
   padding: 10px;
@@ -140,11 +146,14 @@ const WhatWeDoTitleInput = styled.div<IWhatWeDoInputProps>`
   word-wrap: break-word;
 `;
 const WhatWeDoContentInput = styled.div<IWhatWeDoInputProps>`
+  padding-left: 100px;
   margin-bottom: 8px;
   font-family: 'pretendard-regular';
   font-size: 24px;
   text-align: ${({ leftInput }) => (leftInput ? 'left' : 'right')};
   word-wrap: break-word;
+  line-height: 1.5;
+  white-space: pre-line;
 `;
 const Circle = styled.div`
   background-color: #ffa900;

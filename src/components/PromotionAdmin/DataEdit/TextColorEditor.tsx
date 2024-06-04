@@ -5,13 +5,17 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 interface ITextEditorProps {
   editorState: EditorState;
-  onEditorStateChange: (state: any) => Promise<void>;
+  onEditorStateChange: (state: EditorState) => void;
+  attribute: string;
+}
+
+interface IEditorWrapperProps {
   attribute: string;
 }
 
 function TextColorEditor({ editorState, onEditorStateChange, attribute }: ITextEditorProps) {
   return (
-    <EditorWrapper>
+    <EditorWrapper attribute={attribute}>
       <Editor
         placeholder={`${attribute}을(를) 작성해주세요`}
         editorState={editorState}
@@ -76,8 +80,8 @@ function TextColorEditor({ editorState, onEditorStateChange, attribute }: ITextE
 
 export default TextColorEditor;
 
-const EditorWrapper = styled.div`
-  width: 100%;
+const EditorWrapper = styled.div<IEditorWrapperProps>`
+  width: ${(props) => (props.attribute === 'CEO Introduction' ? '80%' : '100%')};
   .rdw-editor-toolbar {
     background-color: #f5f5f5;
     height: 25px;
@@ -94,7 +98,7 @@ const EditorWrapper = styled.div`
   }
   .rdw-editor-main {
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    min-height: 100px;
+    min-height: ${(props) => (props.attribute === 'CEO Introduction' ? '150px' : '100px')};
     padding: 10px;
     font-family: ${(props) => props.theme.font.medium};
     font-size: 14px;
