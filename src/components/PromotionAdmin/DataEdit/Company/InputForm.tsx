@@ -409,6 +409,7 @@ const InputForm = () => {
             {/* Introduntion */}
             <ContentBlock>
               {DATAEDIT_TITLES_COMPONENTS.Introduction}
+              {DATAEDIT_NOTICE_COMPONENTS.TEXT.INTRODUCTION}
               <InputWrapper>
                 <InputTitle>Main Overview</InputTitle>
                 <TextColorEditor
