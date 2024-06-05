@@ -75,7 +75,7 @@ function PartnerEditPage() {
         logoImg: clickedPartner.logoImg,
       });
     }
-  }, [partnerEditMatch?.params.partnerId, reset]);
+  }, [clickedPartner, reset]);
 
   const onValid = (data: IFormData) => {
     handleSaveClick(data);
@@ -203,6 +203,7 @@ function PartnerEditPage() {
               <input
                 {...register('name', {
                   required: '이름을 입력해주세요',
+                  validate: (value) => value.trim().length > 0 || '공백만으로는 이름을 입력할 수 없습니다.',
                 })}
               />
               {errors.name && <p>{errors.name.message}</p>}
@@ -321,6 +322,7 @@ const InputWrapper = styled.div`
   }
 
   p {
+    font-size: 14px;
     color: ${(props) => props.theme.color.symbol};
   }
 `;
