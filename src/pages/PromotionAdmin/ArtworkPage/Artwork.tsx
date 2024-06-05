@@ -4,7 +4,6 @@ import ArtworkSequence from '@/components/PromotionAdmin/Artwork/ArtworkSequence
 
 import React, { useState } from 'react';
 import styled from 'styled-components';
-
 import { useQuery } from 'react-query';
 import { ArtworkData } from '@/types/PromotionAdmin/artwork';
 import { getAllArtworks } from '@/apis/PromotionAdmin/artwork';

@@ -22,7 +22,7 @@ const RotatedCircle = ({ label, link }: Props) => {
   };
 
   const handleClick=(event:MouseEvent<HTMLAnchorElement>)=>{
-    if(!link.startsWith('https://')){
+    if(!link.startsWith('https://'||!link.startsWith('http://'))){
       event.preventDefault();
       alert('링크가 잘못되었습니다. 관리자에게 문의해주세요.');
     }

@@ -1,13 +1,13 @@
-import { getAllArtworks, putArtworkMainSequence, putArtworkSequence } from "@/apis/PromotionAdmin/artwork";
+import { putArtworkMainSequence, putArtworkSequence } from "@/apis/PromotionAdmin/artwork";
 import { ArtworkData } from "@/types/PromotionAdmin/artwork";
 import styled from "styled-components";
 import ArtworkSequenceBox from "./ArtworkSequenceBox";
 import { useEffect, useState } from "react";
 import {DragDropContext,Draggable,Droppable} from 'react-beautiful-dnd'
 import { DResult,DragProvied,DropProvied } from "@/types/PromotionAdmin/react-beautiful-dnd-types";
-import { useQuery } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { theme } from "@/styles/theme";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { dataUpdateState } from "@/recoil/atoms";
 
 interface ArtworkSequenceProps{
@@ -19,9 +19,17 @@ interface ArtworkSequenceProps{
 }
 
 const ArtworkSequence=({type,data,isLoading,error,refetch}:ArtworkSequenceProps)=>{
+  const queryClient=useQueryClient()
+  const editMainSequence=useMutation({
+    mutationFn:(sequenceData:any[])=>putArtworkMainSequence(sequenceData),
+    onSuccess:()=>queryClient.invalidateQueries(["artworksequence"]),
+  })
+  const editSequence=useMutation(
+    (sequenceData:any[])=>putArtworkSequence(sequenceData),
+  { onSuccess:()=>queryClient.invalidateQueries(["artworksequence"]),
+  })
   const [realData,setRealData]=useState<ArtworkData[]>([])
   const [onEdit,setOnEdit]=useState<boolean>(false)
-  const [isUpdated,setIsUpdated]=useState<boolean>(false)
   const setupdate = useSetRecoilState(dataUpdateState);
 
   /**
@@ -34,16 +42,12 @@ const ArtworkSequence=({type,data,isLoading,error,refetch}:ArtworkSequenceProps)
     setOnEdit(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]); 
-  useEffect(()=>{//api로 업데이트 하지 않으면 기존 데이터를 이용할 수 있도록 분리
-    refetch()
-    setOnEdit(false)
-  }, [isUpdated])
   useEffect(()=>{
     onEdit?setupdate(true):setupdate(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[onEdit])
 
   const handleDataSort=()=>{
-    setIsUpdated(false)
     if(type==="main"){
       setRealData(data?data.filter(i=>i.projectType==="main").sort((a:ArtworkData,b:ArtworkData)=>a.mainSequence-b.mainSequence):[])
     }else{
@@ -61,15 +65,15 @@ const ArtworkSequence=({type,data,isLoading,error,refetch}:ArtworkSequenceProps)
             return Object.fromEntries([["projectId",i.id],["mainSequence",i.mainSequence]])
           })
           // console.log(realData)
-          putArtworkMainSequence(sequenceData)
+          editMainSequence.mutate(sequenceData)
         }else{
           const sequenceData=realData.map((i)=>{
             return Object.fromEntries([["projectId",i.id],["sequence",i.sequence]])
           })
           // console.log(sequenceData)
-          putArtworkSequence(sequenceData)
+          editSequence.mutate(sequenceData)
         }
-        setIsUpdated(true)
+        setOnEdit(false)
       }
     }
     const handleCancleSequence=()=>{
@@ -95,15 +99,11 @@ const ArtworkSequence=({type,data,isLoading,error,refetch}:ArtworkSequenceProps)
       })
     }
 
-    const handleEditMode=(is:boolean)=>{
-      setOnEdit(is)
-    }
-
     return(
       <div>
         {onEdit?<><SendButton onClick={()=>{handleCancleSequence()}}>취소</SendButton>
         <SendButton onClick={()=>{handleSequence()}}>완료</SendButton></>
-        :<SendButton onClick={()=>{handleEditMode(true)}}>편집</SendButton>
+        :<SendButton onClick={()=>{setOnEdit(true)}}>편집</SendButton>
         }
           
         {data?.length===0?
@@ -137,7 +137,7 @@ const ArtworkSequence=({type,data,isLoading,error,refetch}:ArtworkSequenceProps)
           )}
         </Droppable>
         </DragDropContext>
-        :<div>
+        :<div>{/*edit 모드 아니면 일반 리스트*/}
           {type==="main"? //main sequence면 top 고정
             data?.filter(i=>i.projectType==="top").map((i)=>(
             <div style={{marginBottom:"3px"}}>
