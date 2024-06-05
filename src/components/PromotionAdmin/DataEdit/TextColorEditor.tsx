@@ -5,7 +5,7 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 interface ITextEditorProps {
   editorState: EditorState;
-  onEditorStateChange: (state: any) => Promise<void>;
+  onEditorStateChange: (state: EditorState) => void;
   attribute: string;
 }
 

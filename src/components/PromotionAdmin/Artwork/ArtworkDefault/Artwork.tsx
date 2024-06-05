@@ -12,7 +12,6 @@ import { backdropState } from '@/recoil/atoms';
 import BackDrop from '@/components/Backdrop/Backdrop';
 import ArtworkCreating from '../ArtworkCreating/ArtworkCreating';
 import Pagination from '@/components/Pagination/Pagination';
-import ScrollToTop from '@/hooks/useScrollToTop';
 
 const Artwork = () => {
   const { data, isLoading, error, refetch } = useQuery<ArtworkData[], Error>('artworks', getAllArtworks);
@@ -20,34 +19,40 @@ const Artwork = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [producingIsOpend, setProducingIsOpened] = useRecoilState(backdropState);
   const [currentPage, setCurrentPage] = useState(0);
-  const postsPerPage = 6;
+  const postsPerPage = 7;
   const location = useLocation();
   const navigate = useNavigate();
-
+  const [sortedByIdArtworks, setSortedByIdArtworks] = useState<ArtworkData[]>([]);
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const page = parseInt(queryParams.get('page') || '1', 10) - 1; // 페이지 인덱스를 0부터 시작하게 조정
     setCurrentPage(page);
-  }, [location]);
+  }, [location.search]);
 
   useEffect(() => {
-    setCurrentPage(0); // 검색어 또는 카테고리가 변경될 때 페이지를 초기화
-  }, [searchQuery, selectedCategory, data]);
+    navigate(PA_ROUTES.ARTWORK);
+    setCurrentPage(0);
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    if (data) {
+      const filteredArtworks = data.filter((artwork) => {
+        const isMatchingSearch = artwork.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const isMatchingCategory = selectedCategory === '' || artwork.category.includes(selectedCategory);
+        return isMatchingSearch && isMatchingCategory;
+      });
+
+      setSortedByIdArtworks(filteredArtworks.sort((a, b) => b.id - a.id));
+      console.log(sortedByIdArtworks);
+    }
+  }, [data, searchQuery, selectedCategory]);
 
   if (isLoading) return <LoadingWrapper>Loading...</LoadingWrapper>;
   if (error) return <div>Error: {error.message}</div>;
 
-  const filteredArtworks = data
-    ? data.filter((artwork) => {
-        const isMatchingSearch = artwork.name.toLowerCase().includes(searchQuery.toLowerCase());
-        const isMatchingCategory = selectedCategory === '' || artwork.category.includes(selectedCategory);
-        return isMatchingSearch && isMatchingCategory;
-      })
-    : [];
-
   const indexOfLastPost = (currentPage + 1) * postsPerPage;
   const indexOfFirstPost = currentPage * postsPerPage;
-  const currentArtworks = filteredArtworks.slice(indexOfFirstPost, indexOfLastPost);
+  const currentArtworks = sortedByIdArtworks.slice(indexOfFirstPost, indexOfLastPost);
 
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber - 1); // 페이지 인덱스를 0부터 시작하게 조정
@@ -75,12 +80,12 @@ const Artwork = () => {
             아트워크 생성하기
           </ArtworkProducingWrapper>
 
-          {filteredArtworks.length === 0 ? (
+          {sortedByIdArtworks.length === 0 ? (
             <NoDataWrapper>😊 아트워크 데이터가 존재하지 않습니다.</NoDataWrapper>
           ) : (
             <>
               {currentArtworks.map((artwork) => (
-                <LinkStyle to={`${PA_ROUTES.ARTWORK}/${artwork.id}`} key={artwork.id}>
+                <LinkStyle to={`${PA_ROUTES.ARTWORK}/${artwork.id}?page=${currentPage + 1}`} key={artwork.id}>
                   <ArtworkBox
                     mainImg={artwork.mainImg}
                     client={artwork.client}
@@ -101,7 +106,7 @@ const Artwork = () => {
               ))}
             </>
           )}
-          <Pagination postsPerPage={postsPerPage} totalPosts={filteredArtworks.length} paginate={paginate} />
+          <Pagination postsPerPage={postsPerPage} totalPosts={sortedByIdArtworks.length} paginate={paginate} />
         </ArtworkBoxWrapper>
         <Outlet />
       </Container>
@@ -115,12 +120,14 @@ const Container = styled.div`
   display: flex;
   width: 100%;
 `;
+
 const LinkStyle = styled(Link)`
   text-decoration: none;
   margin-bottom: 20px;
 `;
+
 const ArtworkBoxWrapper = styled.div`
-  width: 700px;
+  width: 500px;
   min-width: 700px;
   height: fit-content;
   min-height: 100px;
@@ -138,19 +145,22 @@ const LoadingWrapper = styled.div`
   font-family: 'pretendard-regular';
   font-size: 17px;
 `;
+
 const SearchWrapper = styled.div`
   input {
     width: 300px;
-    height: 30px;
+    height: 100%;
     padding-left: 20px;
     font-family: 'pretendard-medium';
     outline-style: none;
     border-radius: 5px;
     font-size: 15px;
     border: none;
-    background-color: #e9e9e9;
+
     color: black;
     margin-bottom: 20px;
+    background-color: #dadada9f;
+
     &:hover {
       cursor: pointer;
       background-color: #ffffff73;
@@ -169,6 +179,7 @@ const SearchWrapper = styled.div`
 const CategoryWrapper = styled.div`
   width: 200px;
 `;
+
 const UtilWrapper = styled.div`
   display: flex;
   justify-content: space-between;
@@ -182,6 +193,7 @@ const ArtworkProducingWrapper = styled.div`
   background-color: #6c757d;
   color: white;
   border-radius: 5px;
+  margin-top: 15px;
   margin-bottom: 30px;
 
   &:hover {

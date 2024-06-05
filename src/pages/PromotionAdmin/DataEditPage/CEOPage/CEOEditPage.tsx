@@ -2,7 +2,7 @@ import { getCEOData } from '@/apis/PromotionAdmin/dataEdit';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import { ICEOData } from '@/types/PromotionAdmin/dataEdit';
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
@@ -10,7 +10,6 @@ import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import htmlToDraft from 'html-to-draftjs';
 import draftToHtml from 'draftjs-to-html';
-import TextEditor from '@/components/PromotionAdmin/FAQ/TextEditor';
 import { IEditorData } from '@/types/PromotionAdmin/faq';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import { useNavigate } from 'react-router-dom';
@@ -27,7 +26,7 @@ interface IFormData {
 
 const CEOEditPage = () => {
   const navigator = useNavigate();
-  const { data, isLoading, error } = useQuery<ICEOData, Error>(['ceo', 'id'], getCEOData);
+  const { data, isLoading, error, refetch } = useQuery<ICEOData, Error>(['ceo', 'id'], getCEOData);
   const [putData, setPutData] = useState({
     request: {
       name: data?.name,
@@ -35,6 +34,7 @@ const CEOEditPage = () => {
     },
     file: data ? data?.imageUrl : '',
   });
+
   const [imgChange, setImgChange] = useState(false);
 
   const { register, handleSubmit } = useForm<IFormData>({
@@ -55,8 +55,19 @@ const CEOEditPage = () => {
   });
   const [blocks, setBlocks] = useState<IEditorData[]>([]);
 
-  const updateTextDescription = async (state: any) => {
-    await setEditorState(state);
+  useEffect(() => {
+    refetch();
+  }, [data, refetch]);
+
+  const updateTextDescription = (state: any) => {
+    const contentState = state.getCurrentContent();
+    const plainText = contentState.getPlainText();
+    const lineBreaks = (plainText.match(/\n/g) || []).length;
+    if (plainText.length > 200 || lineBreaks >= 6) {
+      setEditorState(editorState);
+      return;
+    }
+    setEditorState(state);
     setBlocks(convertToRaw(editorState.getCurrentContent()).blocks);
   };
 
@@ -172,8 +183,9 @@ const CEOEditPage = () => {
         <form onSubmit={handleSubmit(onValid)}>
           <ContentBlock>
             <ButtonWrapper>
-              <Button onClick={() => handleDelete()}>삭제하기</Button>
+              <Button>등록하기</Button>
             </ButtonWrapper>
+            {DATAEDIT_TITLES_COMPONENTS.CEO}
             <InputWrapper>
               <InputTitle>
                 <p>Name</p>
@@ -200,13 +212,13 @@ const CEOEditPage = () => {
                   <LogoWrapper>
                     <FileButton id='CEOImgFile' description='CEO Image Upload' onChange={handleImageChange} />
                     <ImgBox>
-                      <img src={putData.file} />
+                      <img src={putData.file} alt='' />
                     </ImgBox>
                   </LogoWrapper>
                 </Box>
               </InputImgWrapper>
               <ButtonWrapper>
-                <Button>등록하기</Button>
+                <Button onClick={() => handleDelete()}>삭제하기</Button>
               </ButtonWrapper>
             </InputWrapper>
           </ContentBlock>

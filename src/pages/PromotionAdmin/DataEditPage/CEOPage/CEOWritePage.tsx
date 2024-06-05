@@ -1,14 +1,10 @@
 import { getCEOData } from '@/apis/PromotionAdmin/dataEdit';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import { ICEOData } from '@/types/PromotionAdmin/dataEdit';
-import { EditorState, convertToRaw } from 'draft-js';
-import draftToHtml from 'draftjs-to-html';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
-import { IEditorData } from '@/types/PromotionAdmin/faq';
-import TextColorEditor from '@/components/PromotionAdmin/DataEdit/TextColorEditor';
 import FileButton from '@/components/PromotionAdmin/DataEdit/StyleComponents/FileButton';
 import {
   DATAEDIT_NOTICE_COMPONENTS,
@@ -27,15 +23,31 @@ function CEOWritePage() {
 
   useEffect(() => {
     refetch();
-  }, [data]);
+  }, [data, refetch]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    let processedValue = value;
+
+    if (name === 'name' && value.length > 30) {
+      processedValue = value.slice(0, 30);
+    }
+
+    if (name === 'introduction') {
+      const lines = value.split('\n').length;
+      if (lines > 5) {
+        const linesArray = value.split('\n');
+        processedValue = linesArray.slice(0, 5).join('\n');
+      }
+      if (value.length > 200) {
+        processedValue = value.slice(0, 200);
+      }
+    }
     setPutData((prevData) => ({
       ...prevData,
       request: {
         ...prevData.request,
-        [name]: value,
+        [name]: processedValue,
       },
     }));
   };
@@ -51,7 +63,7 @@ function CEOWritePage() {
         [
           JSON.stringify({
             name: putData.request.name,
-            introduction: draftToHtml(convertToRaw(CEOIntroductionState.getCurrentContent())),
+            introduction: putData.request.introduction,
           }),
         ],
         { type: 'application/json' },
@@ -76,7 +88,7 @@ function CEOWritePage() {
     if (putData.request.name === undefined) {
       alert('이름을 입력해주세요');
       setInvalid(true);
-    } else if (blocks === undefined || null || blocks.length === 0) {
+    } else if (putData.request.introduction === undefined) {
       alert('소개를 입력해주세요');
       setInvalid(true);
     } else if (putData.file === undefined) {
@@ -125,13 +137,6 @@ function CEOWritePage() {
     }
   }
 
-  const [CEOIntroductionState, setCEOIntroductionState] = useState(EditorState.createEmpty());
-  const [blocks, setBlocks] = useState<IEditorData[]>([]);
-  const updateCEOIntroduction = async (state: any) => {
-    await setCEOIntroductionState(state);
-    setBlocks(convertToRaw(CEOIntroductionState.getCurrentContent()).blocks);
-  };
-
   if (isLoading) return <div>is Loading...</div>;
   return (
     <Wrapper>
@@ -145,10 +150,11 @@ function CEOWritePage() {
           <InputTitle>
             <p>Introduction</p>
           </InputTitle>
-          <TextColorEditor
-            editorState={CEOIntroductionState}
-            onEditorStateChange={updateCEOIntroduction}
-            attribute='CEO Introduction'
+          <textarea
+            name='introduction'
+            value={putData.request.introduction}
+            onChange={handleChange}
+            placeholder='CEO 소개 (5줄, 200자 내로 작성해 주세요.)'
           />
           <InputImgWrapper>
             <Box>
@@ -158,7 +164,7 @@ function CEOWritePage() {
               <LogoWrapper>
                 <FileButton id='CEOImgFile' description='CEO Image Upload' onChange={handleImageChange} />
                 <ImgBox>
-                  <img src={putData.file} />
+                  <img src={putData.file} alt='' />
                 </ImgBox>
               </LogoWrapper>
             </Box>
@@ -180,8 +186,22 @@ export const Wrapper = styled.div`
   textarea {
     outline: none;
   }
-
-  input:focus,
+  input:focus {
+    transition: 0.2s;
+    border-bottom: 3px solid ${(props) => props.theme.color.symbol};
+  }
+  ,
+  textarea {
+    outline: none;
+    font-family: ${(props) => props.theme.font.regular};
+    font-size: 14px;
+    padding: 10px;
+    width: 70%;
+    min-height: 200px;
+    border: none;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    resize: none;
+  }
   textarea:focus {
     transition: 0.2s;
     border-bottom: 3px solid ${(props) => props.theme.color.symbol};
@@ -221,7 +241,6 @@ export const InputWrapper = styled.div`
     border: none;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   }
-
   input:focus,
   textarea:focus {
     transition: 0.2s;

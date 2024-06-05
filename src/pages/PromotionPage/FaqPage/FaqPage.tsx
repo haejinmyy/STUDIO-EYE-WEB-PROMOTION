@@ -302,6 +302,9 @@ const FaqDetailAnswer = styled.p`
   font-weight: 400;
   text-align: justify;
   color: white;
+  a {
+    color: #ffa900;
+  }
 `;
 
 const NoResults = styled.div`

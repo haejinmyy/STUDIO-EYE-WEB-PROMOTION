@@ -13,6 +13,7 @@ export const PA_ROUTES_CHILD = {
   REQUEST: 'request',
   REQUEST_DETAIL: 'request/:id',
   ARTWORK: 'artwork',
+  ARTWORK_DETAIL: 'artwork/:id',
   DATA_EDIT: 'dataEdit',
   DATA_EDIT_CEO: 'ceo',
   DATA_EDIT_COMPANY: 'company',
