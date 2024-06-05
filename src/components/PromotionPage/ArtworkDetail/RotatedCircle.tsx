@@ -3,6 +3,7 @@ import circle from '@/assets/images/PP/circle.png';
 import styled from 'styled-components';
 import { motion, TargetAndTransition } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { linkCheck } from '@/components/ValidationRegEx/ValidationRegEx';
 
 type Props = {
   label: string;
@@ -22,7 +23,7 @@ const RotatedCircle = ({ label, link }: Props) => {
   };
 
   const handleClick=(event:MouseEvent<HTMLAnchorElement>)=>{
-    if(!link.startsWith('https://'||!link.startsWith('http://'))){
+    if(!linkCheck(link)){
       event.preventDefault();
       alert('링크가 잘못되었습니다. 관리자에게 문의해주세요.');
     }
