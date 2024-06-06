@@ -11,7 +11,6 @@ import DetailEdit from './EditForm/Detail';
 import Image from './EditForm/Image';
 import IntroductionInfo from './InfoCard/Introduction';
 import IntroductionEdit from './EditForm/Introduction';
-import Button from '../StyleComponents/Button';
 
 const CompanyInfo = () => {
   const { data, isLoading, error } = useQuery<ICompanyData, Error>(['client', 'id'], getCompanyData);
@@ -29,6 +28,8 @@ const CompanyInfo = () => {
             <div>
               {/* Basic */}
               {editBasic ? <BasicEdit setEditBasic={setEditBasic} /> : <BasicInfo setEditBasic={setEditBasic} />}
+
+              {/* Image */}
               <Image />
             </div>
 

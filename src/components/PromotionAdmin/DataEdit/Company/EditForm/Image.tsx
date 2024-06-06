@@ -10,6 +10,7 @@ import { DATAEDIT_NOTICE_COMPONENTS, DATAEDIT_TITLES_COMPONENTS } from '../Style
 import FileButton from '../../StyleComponents/FileButton';
 import Button from '../../StyleComponents/Button';
 import styled from 'styled-components';
+import { MSG } from '@/constants/messages';
 
 const Image = () => {
   const { data, isLoading, error } = useQuery<ICompanyData, Error>(['company', 'id'], getCompanyData);
@@ -41,7 +42,7 @@ const Image = () => {
       }
     };
 
-    if (window.confirm('수정하시겠습니까?')) {
+    if (window.confirm(MSG.CONFIRM_MSG.SAVE)) {
       if (logoChange && sloganChange) {
         const logoFile = await urlToFile(putData.logoImageUrl, 'Logo.png');
         const sloganFile = await urlToFile(putData.sloganImageUrl, 'Slogan.png');
@@ -51,7 +52,7 @@ const Image = () => {
           .put(`${PROMOTION_BASIC_PATH}/api/company/logo&slogan`, formData)
           .then((response) => {
             console.log('Company Images updated:', response);
-            alert('수정되었습니다.');
+            alert(MSG.ALERT_MSG.SAVE);
             setEditMode(false);
           })
           .catch((error) => console.error('Error updating company:', error));
@@ -62,7 +63,7 @@ const Image = () => {
           .put(`${PROMOTION_BASIC_PATH}/api/company/logo`, formData)
           .then((response) => {
             console.log('Company Logo updated:', response);
-            alert('수정되었습니다.');
+            alert(MSG.ALERT_MSG.SAVE);
             setEditMode(false);
           })
           .catch((error) => console.error('Error updating company:', error));
@@ -73,7 +74,7 @@ const Image = () => {
           .put(`${PROMOTION_BASIC_PATH}/api/company/slogan`, formData)
           .then((response) => {
             console.log('Company Slogan updated:', response);
-            alert('수정되었습니다.');
+            alert(MSG.ALERT_MSG.SAVE);
             setEditMode(false);
           })
           .catch((error) => console.error('Error updating company:', error));
@@ -138,7 +139,11 @@ const Image = () => {
 
                   <LogoWrapper>
                     {editMode && (
-                      <FileButton id='logoFile' description='Logo Upload' onChange={handleLogoImageChange} />
+                      <FileButton
+                        id='logoFile'
+                        description={MSG.BUTTON_MSG.UPLOAD.LOGO}
+                        onChange={handleLogoImageChange}
+                      />
                     )}
 
                     <ImgBox>
@@ -152,7 +157,11 @@ const Image = () => {
                   {editMode && DATAEDIT_NOTICE_COMPONENTS.COLOR.SLOGAN}
                   <LogoWrapper>
                     {editMode && (
-                      <FileButton id='sloganFile' description='Slogan Upload' onChange={handleSloganImageChange} />
+                      <FileButton
+                        id='sloganFile'
+                        description={MSG.BUTTON_MSG.UPLOAD.SLOGAN}
+                        onChange={handleSloganImageChange}
+                      />
                     )}
                     <ImgBox>
                       <img src={putData.sloganImageUrl} />
@@ -161,9 +170,14 @@ const Image = () => {
                 </Box>
                 <ButtonWrapper>
                   {editMode ? (
-                    <Button fontSize={14} width={100} description='저장하기' onClick={handleSaveClick} />
+                    <Button fontSize={14} width={100} description={MSG.BUTTON_MSG.SAVE} onClick={handleSaveClick} />
                   ) : (
-                    <Button fontSize={14} width={100} description='수정하기' onClick={() => setEditMode(true)} />
+                    <Button
+                      fontSize={14}
+                      width={100}
+                      description={MSG.BUTTON_MSG.MODIFY}
+                      onClick={() => setEditMode(true)}
+                    />
                   )}
                 </ButtonWrapper>
               </InputImgWrapper>
