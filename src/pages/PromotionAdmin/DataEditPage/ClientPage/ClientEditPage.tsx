@@ -15,8 +15,8 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
-import { useMatch, useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useMatch } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 interface IFormData {
@@ -25,10 +25,8 @@ interface IFormData {
 }
 
 function ClientEditPage() {
-  const [isEditing, setIsEditing] = useRecoilState(dataUpdateState);
-
+  const setIsEditing = useSetRecoilState(dataUpdateState);
   const { data, isLoading, error } = useQuery<IClientData[], Error>(['client', 'id'], getClientData);
-  const navigator = useNavigate();
   const clientEditMatch = useMatch(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}/:clientId`);
   const clickedClient =
     clientEditMatch?.params.clientId &&
@@ -111,7 +109,6 @@ function ClientEditPage() {
             console.log('Client updated:', response);
             alert(MSG.ALERT_MSG.SAVE);
             setIsEditing(false);
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
           })
           .catch((error) => console.error('Error updating client:', error));
       } else {
@@ -121,7 +118,6 @@ function ClientEditPage() {
             console.log('Client updated:', response);
             alert(MSG.ALERT_MSG.SAVE);
             setIsEditing(false);
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
           })
           .catch((error) => console.error('Error updating client:', error));
       }
@@ -161,9 +157,8 @@ function ClientEditPage() {
         .delete(`${PROMOTION_BASIC_PATH}/api/client/${id}`)
         .then((response) => {})
         .catch((error) => console.log(error));
-
       alert(MSG.ALERT_MSG.DELETE);
-      navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
+      setIsEditing(false);
     }
   };
 

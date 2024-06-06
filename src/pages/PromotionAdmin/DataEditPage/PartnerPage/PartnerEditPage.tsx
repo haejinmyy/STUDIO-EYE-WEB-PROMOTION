@@ -6,18 +6,18 @@ import SubTitle from '@/components/PromotionAdmin/DataEdit/StyleComponents/SubTi
 import Title from '@/components/PromotionAdmin/DataEdit/StyleComponents/Title';
 import ToggleSwitch from '@/components/PromotionAdmin/DataEdit/StyleComponents/ToggleSwitch';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
-import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
+import { PA_ROUTES } from '@/constants/routerConstants';
 import { IPartnersData } from '@/types/PromotionAdmin/dataEdit';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
-import { useMatch, useNavigate } from 'react-router-dom';
+import { useMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { validateUrl } from './PartnerWritePage';
 import { DATAEDIT_NOTICE_COMPONENTS } from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
 import { MSG } from '@/constants/messages';
-import { useRecoilState } from 'recoil';
+import { useSetRecoilState } from 'recoil';
 import { dataUpdateState } from '@/recoil/atoms';
 
 interface IFormData {
@@ -27,9 +27,8 @@ interface IFormData {
 }
 
 function PartnerEditPage() {
-  const [isEditing, setIsEditing] = useRecoilState(dataUpdateState);
+  const setIsEditing = useSetRecoilState(dataUpdateState);
   const { data, isLoading, error } = useQuery<IPartnersData[], Error>(['partners', 'id'], getPartnersData);
-  const navigator = useNavigate();
   const partnerEditMatch = useMatch(`${PA_ROUTES.DATA_EDIT}/partner/:partnerId`);
   const clickedPartner =
     partnerEditMatch?.params.partnerId &&
@@ -118,7 +117,6 @@ function PartnerEditPage() {
             console.log('Partner updated:', response);
             alert(MSG.ALERT_MSG.SAVE);
             setIsEditing(false);
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}`);
           })
           .catch((error) => console.error('Error updating partner:', error));
       } else {
@@ -128,7 +126,6 @@ function PartnerEditPage() {
             console.log('Partners updated:', response);
             alert(MSG.ALERT_MSG.SAVE);
             setIsEditing(false);
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}`);
           })
           .catch((error) => console.error('Error updating partner:', error));
       }
@@ -168,79 +165,82 @@ function PartnerEditPage() {
         .delete(`${PROMOTION_BASIC_PATH}/api/partners/${id}`)
         .then((response) => {})
         .catch((error) => console.log(error));
-
       alert(MSG.ALERT_MSG.DELETE);
-      navigator(`${PA_ROUTES.DATA_EDIT}/partner`);
+      setIsEditing(false);
     }
   };
 
   if (isLoading) return <>is Loading..</>;
   if (error) return <>{error.message}</>;
   return (
-    <ContentBlock height={380}>
-      <TitleWrapper>
-        <Title description='Partner 수정' />
-      </TitleWrapper>
+    <>
       {clickedPartner && (
-        <FormContainer onSubmit={handleSubmit(onValid)}>
-          <LeftContainer>
-            <LogoContainer>
-              <SubTitle description='Logo' />
-              {DATAEDIT_NOTICE_COMPONENTS.IMAGE.LOGO}
-              {DATAEDIT_NOTICE_COMPONENTS.COLOR.LOGO}
+        <ContentBlock height={380}>
+          <TitleWrapper>
+            <Title description='Partner 수정' />
+          </TitleWrapper>
 
-              <ImgBox>{putData.logoImg && <img src={putData.logoImg} />}</ImgBox>
-              <FileButton description='Logo Upload' id='file' width={230} onChange={handleImageChange} />
-            </LogoContainer>
-          </LeftContainer>
+          <FormContainer onSubmit={handleSubmit(onValid)}>
+            <LeftContainer>
+              <LogoContainer>
+                <SubTitle description='Logo' />
+                {DATAEDIT_NOTICE_COMPONENTS.IMAGE.LOGO}
+                {DATAEDIT_NOTICE_COMPONENTS.COLOR.LOGO}
 
-          <RightContainer>
-            <SubTitle description='Link' />
-            <InputWrapper>
-              <input
-                {...register('link', {
-                  required: MSG.PLACEHOLDER_MSG.LINK,
-                  validate: validateUrl,
-                })}
-                placeholder={MSG.PLACEHOLDER_MSG.LINK}
+                <ImgBox>{putData.logoImg && <img src={putData.logoImg} />}</ImgBox>
+                <FileButton description='Logo Upload' id='file' width={230} onChange={handleImageChange} />
+              </LogoContainer>
+            </LeftContainer>
+
+            <RightContainer>
+              <SubTitle description='Link' />
+              <InputWrapper>
+                <input
+                  {...register('link', {
+                    required: MSG.PLACEHOLDER_MSG.LINK,
+                    validate: validateUrl,
+                  })}
+                  placeholder={MSG.PLACEHOLDER_MSG.LINK}
+                />
+                {errors.link && <p>{errors.link.message}</p>}
+
+                <SubTitle description='Name' />
+                <input
+                  {...register('name', {
+                    required: MSG.PLACEHOLDER_MSG.NAME,
+                    validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
+                  })}
+                  placeholder={MSG.PLACEHOLDER_MSG.NAME}
+                />
+                {errors.name && <p>{errors.name.message}</p>}
+              </InputWrapper>
+              <VisibilityWrapper>
+                공개여부
+                <input type='checkbox' id='switch' defaultChecked {...register('is_main')} />
+                <ToggleSwitch
+                  option1='공개'
+                  option2='비공개'
+                  selected={clickedPartner.partnerInfo.is_main}
+                  onToggle={setIsVisibility}
+                />
+              </VisibilityWrapper>
+            </RightContainer>
+
+            <ButtonWrapper>
+              <Button description={MSG.BUTTON_MSG.SAVE} width={100} />
+              <Button
+                onClick={() => {
+                  handleDelete(clickedPartner.partnerInfo.id);
+                }}
+                description={MSG.BUTTON_MSG.DELETE}
+                width={100}
+                as={'div'}
               />
-              {errors.link && <p>{errors.link.message}</p>}
-
-              <SubTitle description='Name' />
-              <input
-                {...register('name', {
-                  required: MSG.PLACEHOLDER_MSG.NAME,
-                  validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
-                })}
-                placeholder={MSG.PLACEHOLDER_MSG.NAME}
-              />
-              {errors.name && <p>{errors.name.message}</p>}
-            </InputWrapper>
-            <VisibilityWrapper>
-              공개여부
-              <input type='checkbox' id='switch' defaultChecked {...register('is_main')} />
-              <ToggleSwitch
-                option1='공개'
-                option2='비공개'
-                selected={clickedPartner.partnerInfo.is_main}
-                onToggle={setIsVisibility}
-              />
-            </VisibilityWrapper>
-          </RightContainer>
-
-          <ButtonWrapper>
-            <Button description={MSG.BUTTON_MSG.SAVE} width={100} />
-            <Button
-              onClick={() => {
-                handleDelete(clickedPartner.partnerInfo.id);
-              }}
-              description={MSG.BUTTON_MSG.DELETE}
-              width={100}
-            />
-          </ButtonWrapper>
-        </FormContainer>
+            </ButtonWrapper>
+          </FormContainer>
+        </ContentBlock>
       )}
-    </ContentBlock>
+    </>
   );
 }
 

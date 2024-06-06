@@ -9,7 +9,6 @@ import { IEditorData } from '@/types/PromotionAdmin/faq';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import { useNavigate } from 'react-router-dom';
 import TextColorEditor from '../TextColorEditor';
-
 import { ReactComponent as DeleteIcon } from '@/assets/images/PA/minusIcon.svg';
 import { ReactComponent as AddedIcon } from '@/assets/images/PA/plusIcon.svg';
 import {
@@ -34,6 +33,8 @@ import FileButton from '../StyleComponents/FileButton';
 import styled from 'styled-components';
 import { DATAEDIT_NOTICE_COMPONENTS, DATAEDIT_TITLES_COMPONENTS, INPUT_MAX_LENGTH } from './StyleComponents';
 import { MSG } from '@/constants/messages';
+import { useRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
 
 interface IFormData {
   mainOverview?: string;
@@ -54,6 +55,7 @@ interface IBasicFormData {
 }
 
 const InputForm = () => {
+  const [isEditing, setIsEditing] = useRecoilState(dataUpdateState);
   const navigator = useNavigate();
   const [putData, setPutData] = useState({
     request: {
@@ -101,6 +103,7 @@ const InputForm = () => {
       const trimmedValue = event.target.value.slice(0, maxLength);
       setValue(field, trimmedValue, { shouldValidate: true });
     }
+    setIsEditing(true);
   };
 
   const handleAddressChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -146,16 +149,19 @@ const InputForm = () => {
   const updateMainOverview = async (state: any) => {
     await setMainOverviewState(state);
     setBlocks(convertToRaw(mainOverviewState.getCurrentContent()).blocks);
+    setIsEditing(true);
   };
 
   const updateCommitment = async (state: any) => {
     await setCommitmentState(state);
     setBlocks(convertToRaw(commitmentState.getCurrentContent()).blocks);
+    setIsEditing(true);
   };
 
   const updateIntroduction = async (state: any) => {
     await setIntroductionState(state);
     setBlocks(convertToRaw(introductionState.getCurrentContent()).blocks);
+    setIsEditing(true);
   };
 
   const onValid = (data: IFormData) => {
@@ -231,6 +237,7 @@ const InputForm = () => {
         .then((response) => {
           console.log('Company Information post:', response);
           alert(MSG.ALERT_MSG.POST);
+          setIsEditing(false);
           navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_COMPANY}`);
         })
         .catch((error) => console.error('Error post partner:', error));
@@ -249,6 +256,7 @@ const InputForm = () => {
       };
       reader.readAsDataURL(logoImageUrl);
     }
+    setIsEditing(true);
   };
 
   const handleSloganImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -263,6 +271,7 @@ const InputForm = () => {
       };
       reader.readAsDataURL(sloganImageUrl);
     }
+    setIsEditing(true);
   };
 
   async function urlToFile(url: string, fileName: string): Promise<File> {
@@ -404,7 +413,7 @@ const InputForm = () => {
                       id='sloganFile'
                       description={MSG.BUTTON_MSG.UPLOAD.SLOGAN}
                       onChange={handleSloganImageChange}
-                    />{' '}
+                    />
                     <ImgBox>
                       <img src={putData.sloganImageUrl} />
                     </ImgBox>
@@ -448,7 +457,11 @@ const InputForm = () => {
                 <Button
                   description={MSG.BUTTON_MSG.ADD.DETAIL}
                   svgComponent={<AddedIcon width={14} height={14} />}
-                  onClick={() => append({ key: '', value: '' })}
+                  onClick={() => {
+                    append({ key: '', value: '' });
+                    setIsEditing(true);
+                  }}
+                  as={'div'}
                 />
               </TitleWrapper>
 

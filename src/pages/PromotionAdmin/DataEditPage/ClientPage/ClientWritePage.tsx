@@ -1,9 +1,7 @@
 import styled from 'styled-components';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import { ContentBlock } from '@/components/PromotionAdmin/DataEdit/Company/CompanyFormStyleComponents';
@@ -13,9 +11,11 @@ import FileButton from '@/components/PromotionAdmin/DataEdit/StyleComponents/Fil
 import ToggleSwitch from '@/components/PromotionAdmin/DataEdit/StyleComponents/ToggleSwitch';
 import Button from '@/components/PromotionAdmin/DataEdit/StyleComponents/Button';
 import { DATAEDIT_NOTICE_COMPONENTS } from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
-import { useRecoilState } from 'recoil';
+import { useSetRecoilState } from 'recoil';
 import { dataUpdateState } from '@/recoil/atoms';
 import { MSG } from '@/constants/messages';
+import { useNavigate } from 'react-router-dom';
+import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 
 interface IFormData {
   name: string;
@@ -23,8 +23,8 @@ interface IFormData {
 }
 
 function ClientWritePage() {
-  const navigator = useNavigate();
-  const [isEditing, setIsEditing] = useRecoilState(dataUpdateState);
+  const setIsEditing = useSetRecoilState(dataUpdateState);
+  const navigate = useNavigate();
   const [postData, setPostData] = useState({
     clientInfo: {
       name: '',
@@ -74,8 +74,7 @@ function ClientWritePage() {
           console.log('Client posted:', response);
           alert(MSG.ALERT_MSG.POST);
           setIsEditing(false);
-
-          navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
+          navigate(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
         })
         .catch((error) => console.error('Error updating client:', error));
     }
