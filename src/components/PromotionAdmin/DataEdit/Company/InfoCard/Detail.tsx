@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
 import Button from '../../StyleComponents/Button';
 import { ContentBlock } from '../CompanyFormStyleComponents';
+import { MSG } from '@/constants/messages';
 
 interface IDetailProps {
   setEditDetail: (editMode: boolean) => void;
@@ -27,7 +28,14 @@ const Detail = ({ setEditDetail }: IDetailProps) => {
         <ContentBlock>
           <TitleWrapper>
             {DATAEDIT_TITLES_COMPONENTS.Detail}
-            <Button description='수정하기' onClick={() => setEditDetail(true)} fontSize={14} width={100} />
+            <Button
+              description={MSG.BUTTON_MSG.MODIFY}
+              onClick={() => {
+                setEditDetail(true);
+              }}
+              fontSize={14}
+              width={100}
+            />
           </TitleWrapper>
           <InputWrapper>
             <div>

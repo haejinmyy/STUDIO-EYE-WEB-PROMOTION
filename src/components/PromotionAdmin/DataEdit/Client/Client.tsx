@@ -1,6 +1,6 @@
-import { getClientData, getClientPaginateData } from '@/apis/PromotionAdmin/dataEdit';
+import { getClientPaginateData } from '@/apis/PromotionAdmin/dataEdit';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
-import { IClientData, IClientPaginationData } from '@/types/PromotionAdmin/dataEdit';
+import { IClientPaginationData } from '@/types/PromotionAdmin/dataEdit';
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ import { DATAEDIT_TITLES_COMPONENTS } from '../Company/StyleComponents';
 import { ContentBlock } from '../Company/CompanyFormStyleComponents';
 import LogoListItem from '../StyleComponents/LogoListItem';
 import Pagination from '@/components/Pagination/Pagination';
+import { MSG } from '@/constants/messages';
 const Client = () => {
   const navigator = useNavigate();
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -31,7 +32,7 @@ const Client = () => {
         <TitleWrapper>
           {DATAEDIT_TITLES_COMPONENTS.Client}
           <Button
-            description='Add New Client'
+            description={MSG.BUTTON_MSG.ADD.CLIENT}
             svgComponent={<AddedIcon width={14} height={14} />}
             onClick={() => {
               navigator(`write?page=${currentPage + 1}`);

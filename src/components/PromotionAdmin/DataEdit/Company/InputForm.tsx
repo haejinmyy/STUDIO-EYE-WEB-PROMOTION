@@ -33,6 +33,7 @@ import Button from '../StyleComponents/Button';
 import FileButton from '../StyleComponents/FileButton';
 import styled from 'styled-components';
 import { DATAEDIT_NOTICE_COMPONENTS, DATAEDIT_TITLES_COMPONENTS, INPUT_MAX_LENGTH } from './StyleComponents';
+import { MSG } from '@/constants/messages';
 
 interface IFormData {
   mainOverview?: string;
@@ -129,10 +130,10 @@ const InputForm = () => {
 
   // detail 요소 삭제
   const safeRemove = (index: number) => {
-    if (fields.length > 1 && window.confirm('삭제하시겠습니까?')) {
+    if (fields.length > 1 && window.confirm(MSG.CONFIRM_MSG.DELETE)) {
       remove(index);
     } else {
-      alert('Detail 항목은 최소 1개 이상 등록되어야 합니다.');
+      alert(MSG.INVALID_MSG.DETAIL);
     }
   };
 
@@ -159,15 +160,15 @@ const InputForm = () => {
 
   const onValid = (data: IFormData) => {
     if (data.detailInformation.length < 1) {
-      alert('Detail 항목은 최소 1개 이상 등록되어야 합니다.');
+      alert(MSG.INVALID_MSG.DETAIL);
       return;
     }
 
     if (putData.logoImageUrl == '') {
-      alert('Logo 파일을 업로드해주세요');
+      alert(MSG.INVALID_MSG.LOGO);
       return;
     } else if (putData.sloganImageUrl == '') {
-      alert('Slogan 파일을 업로드해주세요');
+      alert(MSG.INVALID_MSG.SLOGAN);
       return;
     }
 
@@ -224,12 +225,12 @@ const InputForm = () => {
     const sloganFile = await urlToFile(putData.sloganImageUrl, 'Slogan.png');
     formData.append('sloganImageUrl', sloganFile);
 
-    if (!isEmpty && window.confirm('등록하시겠습니까?')) {
+    if (!isEmpty && window.confirm(MSG.CONFIRM_MSG.POST)) {
       axios
         .post(`${PROMOTION_BASIC_PATH}/api/company/information`, formData)
         .then((response) => {
           console.log('Company Information post:', response);
-          alert('등록되었습니다.');
+          alert(MSG.ALERT_MSG.POST);
           navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_COMPANY}`);
         })
         .catch((error) => console.error('Error post partner:', error));
@@ -292,11 +293,11 @@ const InputForm = () => {
                 <BasicInputWrapper>
                   <input
                     {...register('address', {
-                      required: '주소를 입력해주세요',
+                      required: MSG.PLACEHOLDER_MSG.ADDRESS,
                       maxLength: INPUT_MAX_LENGTH.BASIC_ADDRESS,
                     })}
                     onChange={handleAddressChange}
-                    placeholder='주소를 입력해주세요'
+                    placeholder={MSG.PLACEHOLDER_MSG.ADDRESS}
                   />
                   <span>
                     {watchBasicFields[basicInputIndex.address]?.length} / {INPUT_MAX_LENGTH.BASIC_ADDRESS}자
@@ -310,15 +311,15 @@ const InputForm = () => {
                 <BasicInputWrapper>
                   <input
                     {...register('addressEnglish', {
-                      required: '영문주소를 입력해주세요',
+                      required: MSG.PLACEHOLDER_MSG.ENGLISH_ADDRESS,
                       maxLength: INPUT_MAX_LENGTH.BASIC_ENGLISH_ADDRESS,
                       pattern: {
                         value: /^[A-Za-z0-9\s,.'-]{3,}$/,
-                        message: '유효한 영어 주소를 입력해주세요.',
+                        message: MSG.INVALID_MSG.ENGLISH_ADDRESS,
                       },
                     })}
                     onChange={handleEnglishAddressChange}
-                    placeholder='영문주소를 입력해주세요'
+                    placeholder={MSG.PLACEHOLDER_MSG.ENGLISH_ADDRESS}
                   />
                   <span>
                     {watchBasicFields[basicInputIndex.addressEnglish]?.length} /{' '}
@@ -334,15 +335,15 @@ const InputForm = () => {
                 <BasicInputWrapper>
                   <input
                     {...register('phone', {
-                      required: '전화번호를 입력해주세요',
+                      required: MSG.PLACEHOLDER_MSG.PHONE,
                       maxLength: INPUT_MAX_LENGTH.BASIC_PHONE,
                       pattern: {
                         value: /^\+?\d{2,3}-\d{3,4}-\d{4}$/,
-                        message: '유효한 전화번호를 입력해주세요. (예: 010-1234-5678) ',
+                        message: MSG.INVALID_MSG.PHONE,
                       },
                     })}
                     onChange={handlePhoneChange}
-                    placeholder='전화번호를 입력해주세요'
+                    placeholder={MSG.PLACEHOLDER_MSG.PHONE}
                   />
                   <span>
                     {watchBasicFields[basicInputIndex.phone]?.length} / {INPUT_MAX_LENGTH.BASIC_PHONE}자
@@ -356,15 +357,15 @@ const InputForm = () => {
                 <BasicInputWrapper>
                   <input
                     {...register('fax', {
-                      required: '팩스번호를 입력해주세요',
+                      required: MSG.PLACEHOLDER_MSG.FAX,
                       maxLength: INPUT_MAX_LENGTH.BASIC_FAX,
                       pattern: {
                         value: /^\+?\d{2,3}-\d{3,4}-\d{4}$/,
-                        message: '유효한 팩스번호 형식을 입력해주세요. (예: 02-123-4567 또는 031-1234-5678)',
+                        message: MSG.INVALID_MSG.FAX,
                       },
                     })}
                     onChange={handleFaxChange}
-                    placeholder='팩스번호를 입력해주세요'
+                    placeholder={MSG.PLACEHOLDER_MSG.FAX}
                   />
                   <span>
                     {watchBasicFields[basicInputIndex.fax]?.length} / {INPUT_MAX_LENGTH.BASIC_FAX}자
@@ -383,7 +384,11 @@ const InputForm = () => {
                   {DATAEDIT_NOTICE_COMPONENTS.COLOR.LOGO}
 
                   <LogoWrapper>
-                    <FileButton id='logoFile' description='Logo Upload' onChange={handleLogoImageChange} />
+                    <FileButton
+                      id='logoFile'
+                      description={MSG.BUTTON_MSG.UPLOAD.LOGO}
+                      onChange={handleLogoImageChange}
+                    />
                     <ImgBox>
                       <img src={putData.logoImageUrl} />
                     </ImgBox>
@@ -395,7 +400,11 @@ const InputForm = () => {
                   {DATAEDIT_NOTICE_COMPONENTS.COLOR.SLOGAN}
 
                   <LogoWrapper>
-                    <FileButton id='sloganFile' description='Slogan Upload' onChange={handleSloganImageChange} />
+                    <FileButton
+                      id='sloganFile'
+                      description={MSG.BUTTON_MSG.UPLOAD.SLOGAN}
+                      onChange={handleSloganImageChange}
+                    />{' '}
                     <ImgBox>
                       <img src={putData.sloganImageUrl} />
                     </ImgBox>
@@ -437,7 +446,7 @@ const InputForm = () => {
               <TitleWrapper space_between={true}>
                 {DATAEDIT_TITLES_COMPONENTS.Detail}
                 <Button
-                  description='Add New Detail'
+                  description={MSG.BUTTON_MSG.ADD.DETAIL}
                   svgComponent={<AddedIcon width={14} height={14} />}
                   onClick={() => append({ key: '', value: '' })}
                 />
@@ -456,12 +465,12 @@ const InputForm = () => {
                           <DetailTitleInputWrapper>
                             <input
                               {...register(`detailInformation.${index}.key`, {
-                                required: '제목을 입력해주세요',
+                                required: MSG.PLACEHOLDER_MSG.DETAIL.TITLE,
                                 maxLength: INPUT_MAX_LENGTH.DETAIL_TITLE,
                               })}
                               className='detail_title'
                               {...field}
-                              placeholder='제목을 입력해주세요.'
+                              placeholder={MSG.PLACEHOLDER_MSG.DETAIL.TITLE}
                               onChange={(e) => {
                                 if (e.target.value.length <= INPUT_MAX_LENGTH.DETAIL_TITLE) {
                                   field.onChange(e);
@@ -482,12 +491,12 @@ const InputForm = () => {
                           <DetailContentWrapper>
                             <textarea
                               {...register(`detailInformation.${index}.value`, {
-                                required: '내용을 입력해주세요',
+                                required: MSG.PLACEHOLDER_MSG.DETAIL.CONTENT,
                                 maxLength: INPUT_MAX_LENGTH.DETAIL_CONTENT,
                               })}
                               className='detail_content'
                               {...field}
-                              placeholder='내용을 입력해주세요.'
+                              placeholder={MSG.PLACEHOLDER_MSG.DETAIL.CONTENT}
                               onChange={(e) => {
                                 if (e.target.value.length <= INPUT_MAX_LENGTH.DETAIL_CONTENT) {
                                   field.onChange(e);
@@ -505,7 +514,7 @@ const InputForm = () => {
                 </div>
               </InputWrapper>
             </ContentBlock>
-            <Button description='등록하기' fontSize={14} width={100} />
+            <Button description={MSG.BUTTON_MSG.POST} fontSize={14} width={100} />
           </RightContentWrapper>
         </Form>
       </Wrapper>
