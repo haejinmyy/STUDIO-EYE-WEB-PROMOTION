@@ -5,6 +5,8 @@ import { useQuery } from 'react-query';
 import styled from 'styled-components';
 import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
 import Button from '../../StyleComponents/Button';
+import { ContentBlock } from '../CompanyFormStyleComponents';
+import { MSG } from '@/constants/messages';
 
 interface IDetailProps {
   setEditDetail: (editMode: boolean) => void;
@@ -26,7 +28,14 @@ const Detail = ({ setEditDetail }: IDetailProps) => {
         <ContentBlock>
           <TitleWrapper>
             {DATAEDIT_TITLES_COMPONENTS.Detail}
-            <Button description='수정하기' onClick={() => setEditDetail(true)} fontSize={14} width={100} />
+            <Button
+              description={MSG.BUTTON_MSG.MODIFY}
+              onClick={() => {
+                setEditDetail(true);
+              }}
+              fontSize={14}
+              width={100}
+            />
           </TitleWrapper>
           <InputWrapper>
             <div>
@@ -59,17 +68,6 @@ const Wrapper = styled.div`
     transition: 0.2s;
     border-bottom: 3px solid ${(props) => props.theme.color.symbol};
   }
-`;
-
-const ContentBlock = styled.div`
-  padding: 25px;
-  background-color: ${(props) => props.theme.color.white.light};
-  box-shadow: 2px 2px 5px 0.3px ${(props) => props.theme.color.black.pale};
-  margin-bottom: 30px;
-  margin-right: 30px;
-  width: 700px;
-  border-radius: 4px;
-  height: fit-content;
 `;
 
 const TitleWrapper = styled.div`
@@ -105,6 +103,7 @@ const DetailItem = styled.div`
   justify-content: space-around;
   padding: 5px 0px;
   font-size: 15px;
+  background-color: white;
 
   .detail_content {
     display: flex;

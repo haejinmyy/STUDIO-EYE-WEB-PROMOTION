@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
 import InnerHTML from '../../StyleComponents/InnerHTML';
 import Button from '../../StyleComponents/Button';
+import { MSG } from '@/constants/messages';
 
 interface IIntrodutionProps {
   setEditIntroduction: (editMode: boolean) => void;
@@ -24,7 +25,7 @@ const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
         <ContentBlock>
           <TitleWrapper>
             {DATAEDIT_TITLES_COMPONENTS.Introduction}
-            <Button description='수정하기' onClick={() => setEditIntroduction(true)} width={100} />
+            <Button description={MSG.BUTTON_MSG.MODIFY} onClick={() => setEditIntroduction(true)} width={100} />
           </TitleWrapper>
           <InputWrapper>
             <InputTitle>Main Overview</InputTitle>
@@ -56,6 +57,8 @@ const Content = styled.div`
   font-family: ${(props) => props.theme.font.regular};
   height: max-content;
   box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+  max-height: 350px;
+  overflow-y: scroll;
 
   & p,
   span {

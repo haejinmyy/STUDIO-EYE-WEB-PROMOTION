@@ -12,9 +12,10 @@ import { Wrapper, ContentBlock, InputWrapper, InputTitle } from '../CompanyFormS
 import axios from 'axios';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import draftToHtml from 'draftjs-to-html';
-import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
+import { DATAEDIT_NOTICE_COMPONENTS, DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
 import Button from '../../StyleComponents/Button';
 import styled from 'styled-components';
+import { MSG } from '@/constants/messages';
 
 interface IIntrodutionProps {
   setEditIntroduction: (editMode: boolean) => void;
@@ -75,15 +76,15 @@ const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
   const [commitmentState, setCommitmentState] = useState(EditorState.createEmpty());
   const [introductionState, setIntroductionState] = useState(EditorState.createEmpty());
   const [blocks, setBlocks] = useState<IEditorData[]>([]);
-  const updateMainOverview = async (state: any) => {
+  const updateMainOverview = async (state: EditorState) => {
     await setMainOverviewState(state);
     setBlocks(convertToRaw(mainOverviewState.getCurrentContent()).blocks);
   };
-  const updateCommitment = async (state: any) => {
+  const updateCommitment = async (state: EditorState) => {
     await setCommitmentState(state);
     setBlocks(convertToRaw(commitmentState.getCurrentContent()).blocks);
   };
-  const updateIntroduction = async (state: any) => {
+  const updateIntroduction = async (state: EditorState) => {
     await setIntroductionState(state);
     setBlocks(convertToRaw(introductionState.getCurrentContent()).blocks);
   };
@@ -109,15 +110,17 @@ const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
       checkIsEmpty(commitmentState, 'Commitment') ||
       checkIsEmpty(introductionState, 'Introduction');
 
-    if (!isEmpty && window.confirm('수정하시겠습니까?')) {
+    if (!isEmpty && window.confirm(MSG.CONFIRM_MSG.SAVE)) {
       axios
         .put(`${PROMOTION_BASIC_PATH}/api/company/introduction`, updateData)
         .then((response) => {
           console.log('Company Introduction updated:', response);
-          alert('수정되었습니다.');
+          alert(MSG.ALERT_MSG.SAVE);
           setEditIntroduction(false);
         })
-        .catch((error) => console.error('Error updating company:', error));
+        .catch((error) => {
+          console.error('Error updating company:', error);
+        });
     }
   };
 
@@ -125,11 +128,13 @@ const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
   if (error) return <>{error.message}</>;
   return (
     <Wrapper>
-      <ContentBlock>
+      <ContentBlock isFocused={true}>
         <TitleWrapper>
           {DATAEDIT_TITLES_COMPONENTS.Introduction}
-          <Button description='저장하기' onClick={handleSaveClick} width={100} />
+          <Button description={MSG.BUTTON_MSG.SAVE} onClick={handleSaveClick} width={100} />
         </TitleWrapper>
+        {DATAEDIT_NOTICE_COMPONENTS.TEXT.INTRODUCTION}
+
         <InputWrapper>
           <InputTitle>Main Overview</InputTitle>
           <TextColorEditor

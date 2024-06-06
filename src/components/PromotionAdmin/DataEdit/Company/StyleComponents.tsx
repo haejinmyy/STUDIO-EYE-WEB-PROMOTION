@@ -8,16 +8,17 @@ const TitleWrapper = styled.div`
   display: flex;
   margin-bottom: 10px;
 `;
-const NoticeComponentWrapper = styled.div`
-  margin-top: 10px;
-`;
 
 export const INPUT_MAX_LENGTH = {
-  BASIC_ADDRESS: 10,
-  BASIC_PHONE: 10,
-  BASIC_FAX: 10,
+  BASIC_ADDRESS: 100,
+  BASIC_ENGLISH_ADDRESS: 150,
+  BASIC_PHONE: 20,
+  BASIC_FAX: 20,
+  INFOMATION_MAIN_OVERVIEW: 200,
+  INFOMATION_COMMITMENT: 200,
+  INFOMATION_INTRODUCTION: 200,
   DETAIL_TITLE: 15,
-  DETAIL_CONTENT: 100,
+  DETAIL_CONTENT: 200,
   FAQ_QUESTION: 50,
 };
 
@@ -68,6 +69,7 @@ const DATAEDIT_COLUMNS = {
     title: 'Introduction',
     description:
       'Main Overview: Main 화면에 반영됩니다. \nCommitment: Main 화면에 반영됩니다. \nIntroduction: About 화면 반영됩니다. ',
+    recommand: '각 항목에 대해 최대 5줄의 설명을 작성하는 것을 권장합니다.',
   },
 
   Partner: {
@@ -88,11 +90,7 @@ const DATAEDIT_COLUMNS = {
 
 export const DATAEDIT_NOTICE_COMPONENTS = {
   IMAGE: {
-    LOGO: (
-      <NoticeComponentWrapper>
-        <NoticeComponent description={`권장 픽셀: ${IMAGE_PIXEL.LOGO}`} />
-      </NoticeComponentWrapper>
-    ),
+    LOGO: <NoticeComponent description={`권장 픽셀: ${IMAGE_PIXEL.LOGO}`} />,
     SLOGAN: <NoticeComponent description={`권장 픽셀: ${IMAGE_PIXEL.SLOGAN}`} />,
     CEOIMG: <NoticeComponent description={`권장 픽셀: ${IMAGE_PIXEL.CEOIMG}`} />,
   },
@@ -101,6 +99,10 @@ export const DATAEDIT_NOTICE_COMPONENTS = {
     LOGO: <NoticeComponent description={`권장 색상: ${IMAGE_COLOR.LOGO}`} />,
     SLOGAN: <NoticeComponent description={`권장 색상: ${IMAGE_COLOR.SLOGAN}`} />,
     CEOIMG: <NoticeComponent description={`권장 색상: ${IMAGE_COLOR.CEOIMG}`} />,
+  },
+
+  TEXT: {
+    INTRODUCTION: <NoticeComponent description={DATAEDIT_COLUMNS.Introduction.recommand} />,
   },
 };
 

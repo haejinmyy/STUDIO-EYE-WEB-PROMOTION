@@ -1,30 +1,44 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-
 import { getPartnerPaginateData } from '@/apis/PromotionAdmin/dataEdit';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import { IPartnerPaginationData } from '@/types/PromotionAdmin/dataEdit';
-
 import { ReactComponent as AddedIcon } from '@/assets/images/PA/plusIcon.svg';
 import { ReactComponent as PublicIcon } from '@/assets/images/PA/public.svg';
 import { ReactComponent as PrivateIcon } from '@/assets/images/PA/private.svg';
-
 import { DATAEDIT_TITLES_COMPONENTS } from '../Company/StyleComponents';
 import { ContentBlock } from '../Company/CompanyFormStyleComponents';
 import Button from '../StyleComponents/Button';
 import LogoItemList from '../StyleComponents/LogoListItem';
 import Pagination from '@/components/Pagination/Pagination';
+import { MSG } from '@/constants/messages';
+import { useSetRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
 
 const Partner = () => {
   const navigator = useNavigate();
-  const [currentPage, setCurrentPage] = useState<number>(0);
+  const setIsEditing = useSetRecoilState(dataUpdateState);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const size = 6;
   const { data, isLoading, error } = useQuery<IPartnerPaginationData, Error>(['partner', currentPage, size], () =>
-    getPartnerPaginateData(currentPage, size),
+    getPartnerPaginateData(currentPage - 1, size),
   );
-  console.log(data);
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (data) {
+      setCurrentPage(data?.totalPages);
+      navigator(`?page=${data?.totalPages}`);
+    }
+  }, [data && data.totalPages]);
+
   if (isLoading) return <>is Loading..</>;
   if (error) return <div>Error: {error.message}</div>;
   return (
@@ -33,10 +47,11 @@ const Partner = () => {
         <TitleWrapper>
           {DATAEDIT_TITLES_COMPONENTS.Partner}
           <Button
-            description='Add New Partner'
+            description={MSG.BUTTON_MSG.ADD.PARTNER}
             svgComponent={<AddedIcon width={14} height={14} />}
             onClick={() => {
-              navigator(`write?page=${currentPage + 1}`);
+              navigator(`write?page=${currentPage}`);
+              setIsEditing(true);
             }}
           />
         </TitleWrapper>
@@ -53,11 +68,12 @@ const Partner = () => {
                   name={partner.name}
                   link={partner.link}
                   is_posted={partner.is_main}
-                  onClick={() =>
+                  onClick={() => {
+                    setIsEditing(true);
                     navigator(
-                      `${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}/${partner.id}?page=${currentPage + 1}`,
-                    )
-                  }
+                      `${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}/${partner.id}?page=${currentPage}`,
+                    );
+                  }}
                   svgComponent={partner.is_main ? <PublicIcon /> : <PrivateIcon />}
                 />
               ))}

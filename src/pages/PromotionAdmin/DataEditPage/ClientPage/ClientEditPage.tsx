@@ -7,13 +7,16 @@ import SubTitle from '@/components/PromotionAdmin/DataEdit/StyleComponents/SubTi
 import Title from '@/components/PromotionAdmin/DataEdit/StyleComponents/Title';
 import ToggleSwitch from '@/components/PromotionAdmin/DataEdit/StyleComponents/ToggleSwitch';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
+import { MSG } from '@/constants/messages';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
+import { dataUpdateState } from '@/recoil/atoms';
 import { IClientData } from '@/types/PromotionAdmin/dataEdit';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
-import { useMatch, useNavigate } from 'react-router-dom';
+import { useMatch } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 interface IFormData {
@@ -22,16 +25,21 @@ interface IFormData {
 }
 
 function ClientEditPage() {
+  const setIsEditing = useSetRecoilState(dataUpdateState);
   const { data, isLoading, error } = useQuery<IClientData[], Error>(['client', 'id'], getClientData);
-  const navigator = useNavigate();
   const clientEditMatch = useMatch(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}/:clientId`);
   const clickedClient =
     clientEditMatch?.params.clientId &&
-    data &&
+    Array.isArray(data) &&
     data.find((c) => String(c.clientInfo.id) === clientEditMatch.params.clientId);
   const [imgChange, setImgChange] = useState(false);
 
-  const { register, handleSubmit, reset } = useForm<IFormData>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<IFormData>({
     defaultValues: {
       name: clickedClient ? clickedClient.clientInfo.name : '',
       visibility: true,
@@ -63,7 +71,7 @@ function ClientEditPage() {
         logoImg: clickedClient.logoImg,
       });
     }
-  }, [clientEditMatch?.params.clientId, reset]);
+  }, [clickedClient, reset]);
 
   const onValid = (data: IFormData) => {
     handleSaveClick(data);
@@ -86,7 +94,7 @@ function ClientEditPage() {
       ),
     );
 
-    if (window.confirm('수정하시겠습니까?')) {
+    if (window.confirm(MSG.CONFIRM_MSG.SAVE)) {
       if (imgChange) {
         const file = await urlToFile(putData.logoImg, 'ClientLogo.png');
         if (file) {
@@ -99,18 +107,17 @@ function ClientEditPage() {
           .put(`${PROMOTION_BASIC_PATH}/api/client`, formData)
           .then((response) => {
             console.log('Client updated:', response);
-            alert('수정되었습니다.');
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
+            alert(MSG.ALERT_MSG.SAVE);
+            setIsEditing(false);
           })
           .catch((error) => console.error('Error updating client:', error));
       } else {
-        console.log('put ', data.visibility);
         axios
           .put(`${PROMOTION_BASIC_PATH}/api/client/modify`, formData)
           .then((response) => {
             console.log('Client updated:', response);
-            alert('수정되었습니다.');
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
+            alert(MSG.ALERT_MSG.SAVE);
+            setIsEditing(false);
           })
           .catch((error) => console.error('Error updating client:', error));
       }
@@ -145,14 +152,13 @@ function ClientEditPage() {
   }
 
   const handleDelete = (id: number) => {
-    if (window.confirm('삭제하시겠습니까?')) {
+    if (window.confirm(MSG.CONFIRM_MSG.DELETE)) {
       axios
         .delete(`${PROMOTION_BASIC_PATH}/api/client/${id}`)
         .then((response) => {})
         .catch((error) => console.log(error));
-
-      alert('삭제되었습니다.');
-      navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
+      alert(MSG.ALERT_MSG.DELETE);
+      setIsEditing(false);
     }
   };
 
@@ -184,10 +190,12 @@ function ClientEditPage() {
                   <SubTitle description='Name' />
                   <input
                     {...register('name', {
-                      required: '이름을 입력해주세요',
+                      required: MSG.PLACEHOLDER_MSG.NAME,
+                      validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
                     })}
-                    placeholder='이름을 입력해주세요'
+                    placeholder={MSG.PLACEHOLDER_MSG.NAME}
                   />
+                  {errors.name && <p>{errors.name.message}</p>}
                 </InputWrapper>
                 <VisibilityWrapper>
                   공개여부
@@ -201,12 +209,12 @@ function ClientEditPage() {
                 </VisibilityWrapper>
               </RightContainer>
               <ButtonWrapper>
-                <Button description='저장하기' width={100} />
+                <Button description={MSG.BUTTON_MSG.SAVE} width={100} />
                 <Button
                   onClick={() => {
                     handleDelete(clickedClient.clientInfo.id);
                   }}
-                  description='삭제하기'
+                  description={MSG.BUTTON_MSG.DELETE}
                   width={100}
                   as={'div'}
                 />
@@ -222,7 +230,7 @@ function ClientEditPage() {
 export default ClientEditPage;
 
 const RightContainer = styled.div`
-  margin-left: 20px;
+  margin-left: 50px;
 `;
 const LeftContainer = styled.div``;
 const LogoContainer = styled.div`
@@ -306,6 +314,7 @@ const InputWrapper = styled.div`
   }
 
   p {
+    font-size: 14px;
     color: ${(props) => props.theme.color.symbol};
   }
 `;

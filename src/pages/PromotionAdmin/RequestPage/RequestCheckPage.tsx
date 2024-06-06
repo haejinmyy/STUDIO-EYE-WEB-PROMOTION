@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useMatch, useNavigate } from 'react-router-dom';
+import { useBlocker, useLocation, useMatch, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { getRequestsData } from '@/apis/PromotionAdmin/request';
 import { PA_ROUTES } from '@/constants/routerConstants';
@@ -9,9 +9,13 @@ import TextEditor from '@/components/PromotionAdmin/Request/TextEditor';
 import { IEditorData, IRequestData } from '../../../types/PromotionAdmin/request';
 import draftToHtml from 'draftjs-to-html';
 import { ContentState, EditorState, convertToRaw } from 'draft-js';
-import Pagination from '@/components/PromotionAdmin/FAQ/Pagination';
 import Tooltip from '@/components/PromotionAdmin/DataEdit/StyleComponents/Tooltip';
 import { ReactComponent as InfoIcon } from '@/assets/images/PA/infoIcon.svg';
+import Pagination from '@/components/Pagination/Pagination';
+import UserInfo from '@/components/PromotionAdmin/Request/UserInfo';
+import EmailListComponent from '@/components/PromotionAdmin/Request/EmailListComponent';
+
+const MAX_TEXT_LENGTH = 255;
 
 const RequestDetailPage = () => {
   // pagination 구현에 사용되는 변수
@@ -33,30 +37,18 @@ const RequestDetailPage = () => {
   const [editorState, setEditorState] = useState(() => {
     return EditorState.createEmpty();
   });
-  const [blocks, setBlocks] = useState<IEditorData[]>([]);
   const [replyState, setReplyState] = useState('WAITING');
-  const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
-  const [userInfoExpanded, setUserInfoExpanded] = useState(false);
+  const [textValue, setTextValue] = useState('');
+  const [textLength, setTextLength] = useState(0);
 
-  const toggleUserInfoExpansion = () => {
-    setUserInfoExpanded(!userInfoExpanded);
-  };
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newTextValue = e.target.value;
+    setTextValue(newTextValue);
+    setTextLength(newTextValue.length);
 
-  const toggleEmailExpansion = (id: number) => {
-    setExpandedItems((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  };
-
-  const updateTextDescription = async (editorState: any) => {
-    await setEditorState(editorState);
-    setBlocks(convertToRaw(editorState.getCurrentContent()).blocks);
+    const contentState = ContentState.createFromText(newTextValue);
+    const newEditorState = EditorState.createWithContent(contentState);
+    setEditorState(newEditorState);
   };
 
   const createDefaultContent = (state: string) => {
@@ -73,8 +65,10 @@ const RequestDetailPage = () => {
   };
 
   useEffect(() => {
-    const contentState = ContentState.createFromText(createDefaultContent(replyState));
-    setEditorState(EditorState.createWithContent(contentState));
+    const content = createDefaultContent(replyState);
+    const contentState = ContentState.createFromText(content);
+    const newEditorState = EditorState.createWithContent(contentState);
+    setEditorState(newEditorState);
   }, [replyState]);
 
   const replyRequest = (state: string) => {
@@ -82,8 +76,15 @@ const RequestDetailPage = () => {
       return;
     }
 
+    const answerText = draftToHtml(convertToRaw(editorState.getCurrentContent())).replace(/<[^>]*>/g, '');
+
+    if (!answerText.trim()) {
+      alert('내용을 입력하세요.');
+      return;
+    }
+
     const formData = {
-      answer: draftToHtml(convertToRaw(editorState.getCurrentContent())).replace(/<[^>]*>/g, ''),
+      answer: answerText,
       state: state,
     };
 
@@ -99,14 +100,14 @@ const RequestDetailPage = () => {
           }));
           emailItems(updatedEmailItems);
           navigator(`${PA_ROUTES.REQUEST}/:requestId`);
+          setTextValue('');
         })
         .catch((error) => {
           console.log(error);
         });
+    } else {
+      return;
     }
-
-    const updatedEditorState = EditorState.createEmpty();
-    setEditorState(updatedEditorState);
   };
 
   const emailItems =
@@ -140,55 +141,11 @@ const RequestDetailPage = () => {
               <Wrapper>
                 <TitleWrapper>
                   <Title>
-                    {clickedRequest.clientName} 님의 {clickedRequest.category} 의뢰
+                    {clickedRequest.clientName} 님의 {clickedRequest.category} 문의
                   </Title>
                 </TitleWrapper>
                 <UserInfoWrapper>
-                  <UserInfoTitle onClick={toggleUserInfoExpansion}>클라이언트 정보</UserInfoTitle>
-                  {userInfoExpanded && (
-                    <UserInfoTable>
-                      <tbody>
-                        <UserInfoRow>
-                          <UserInfoLabel>이메일</UserInfoLabel>
-                          <UserInfoData>{clickedRequest.email}</UserInfoData>
-                        </UserInfoRow>
-                        <UserInfoRow>
-                          <UserInfoLabel>카테고리</UserInfoLabel>
-                          <UserInfoData>{clickedRequest.category}</UserInfoData>
-                        </UserInfoRow>
-                        <UserInfoRow>
-                          <UserInfoLabel>조직</UserInfoLabel>
-                          <UserInfoData>{clickedRequest.organization}</UserInfoData>
-                        </UserInfoRow>
-                        <UserInfoRow>
-                          <UserInfoLabel>연락처</UserInfoLabel>
-                          <UserInfoData>{clickedRequest.contact}</UserInfoData>
-                        </UserInfoRow>
-                        <UserInfoRow>
-                          <UserInfoLabel>직책</UserInfoLabel>
-                          <UserInfoData>{clickedRequest.position}</UserInfoData>
-                        </UserInfoRow>
-                        <UserInfoRow>
-                          <UserInfoLabel>첨부파일</UserInfoLabel>
-                          <UserInfoData>
-                            <ul>
-                              {clickedRequest?.fileUrlList.map((url: string, index: number) => {
-                                const fileName = url.split('amazonaws.com/')[1];
-                                return (
-                                  <li key={index}>
-                                    -{' '}
-                                    <Link href={url} target='_blank' rel='noopener noreferrer'>
-                                      {fileName}
-                                    </Link>
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                          </UserInfoData>
-                        </UserInfoRow>
-                      </tbody>
-                    </UserInfoTable>
-                  )}
+                  <UserInfo clickedRequest={clickedRequest} />
                 </UserInfoWrapper>
                 <Answer className='article' dangerouslySetInnerHTML={{ __html: clickedRequest.description }} />
               </Wrapper>
@@ -196,7 +153,7 @@ const RequestDetailPage = () => {
             <Box>
               <Wrapper>
                 <Tooltip
-                  description='대기: 아직 답장을 하지 않은 상태 / 논의는 승인할지 거절할지 생각해볼게염 / 승인은 의뢰 승인 / 거절은 의뢰 거절'
+                  description='대기: 아직 답장을 하지 않은 상태 / 논의: 승인할지 거절할지 생각해볼게염 / 승인: 문의 승인 / 거절: 문의 거절'
                   svgComponent={<InfoIcon width={18} height={18} />}
                 />
                 <DropDown onChange={(e) => setReplyState(e.target.value)} value={replyState}>
@@ -207,7 +164,15 @@ const RequestDetailPage = () => {
                   <option value='APPROVED'>승인</option>
                   <option value='REJECTED'>거절</option>
                 </DropDown>
-                <TextEditor editorState={editorState} onEditorStateChange={updateTextDescription} />
+                <StyledTextArea
+                  placeholder={createDefaultContent(replyState)}
+                  value={editorState.getCurrentContent().getPlainText('\u0001')}
+                  onChange={handleTextChange}
+                  maxLength={MAX_TEXT_LENGTH}
+                />
+                <TextCounter>
+                  {textLength}/{MAX_TEXT_LENGTH}자
+                </TextCounter>
               </Wrapper>
               <ButtonWrapper>
                 <Button
@@ -222,25 +187,10 @@ const RequestDetailPage = () => {
           </LeftContainer>
           <RightContainer>
             <Box>
-              <EmailList>
-                {emailItems.map(
-                  (email: { id: number; subject: string; date: string; content: string; state: string }) => (
-                    <EmailItem key={email.id}>
-                      <StateButton state={email.state}>
-                        {email.state === 'DISCUSSING' ? '논의중' : email.state === 'APPROVED' ? '승인' : '거절'}
-                      </StateButton>
-                      <EmailSubject onClick={() => toggleEmailExpansion(email.id)}>
-                        {email.subject.length > 30 ? `${email.subject.slice(0, 30)}...` : email.subject}
-                      </EmailSubject>
-                      <EmailDate>{email.date}</EmailDate>
-                      {expandedItems.has(email.id) && <EmailContent>{email.content}</EmailContent>}
-                    </EmailItem>
-                  ),
-                )}
-              </EmailList>
-              <ButtonWrapper>
+              <EmailListComponent emailItems={emailItems} />
+              {/* <ButtonWrapper>
                 <Pagination postsPerPage={postsPerPage} totalPosts={data.length} paginate={setCurrentPage} />
-              </ButtonWrapper>
+              </ButtonWrapper> */}
             </Box>
           </RightContainer>
         </>
@@ -248,25 +198,6 @@ const RequestDetailPage = () => {
     </PageWrapper>
   );
 };
-
-const UserInfoTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-`;
-
-const UserInfoRow = styled.tr`
-  /* border-bottom: 1px solid #eaeaea; */
-`;
-
-const UserInfoLabel = styled.td`
-  font-weight: bold;
-  padding: 0.5rem 1rem;
-  width: 20%;
-`;
-
-const UserInfoData = styled.td`
-  padding: 0.5rem 1rem;
-`;
 
 const PageWrapper = styled.div`
   display: flex;
@@ -276,6 +207,7 @@ const PageWrapper = styled.div`
 `;
 
 const LeftContainer = styled.div`
+  height: 80vh;
   width: 50%;
   display: flex;
   flex-direction: column;
@@ -283,6 +215,7 @@ const LeftContainer = styled.div`
 `;
 
 const RightContainer = styled.div`
+  height: 80vh;
   width: 50%;
   display: flex;
   flex-direction: column;
@@ -308,17 +241,6 @@ const UserInfoWrapper = styled.div`
   width: 90%;
   overflow: hidden;
   word-break: break-word;
-`;
-
-const UserInfoTitle = styled.div`
-  width: fit-content;
-  cursor: pointer;
-  color: gray;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  &:hover {
-    text-decoration: underline;
-  }
 `;
 
 const DropDown = styled.select`
@@ -351,15 +273,6 @@ const Title = styled.div`
   font-weight: 600;
 `;
 
-const Link = styled.a`
-  color: inherit;
-  text-decoration: none;
-  cursor: pointer;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
 const Answer = styled.div`
   border-top: 2px solid #eaeaea;
   margin-top: 20px;
@@ -390,67 +303,20 @@ const Button = styled.div`
   align-items: center;
 `;
 
-const EmailList = styled.div`
-  display: flex;
-  flex-direction: column;
+const StyledTextArea = styled.textarea`
+  width: 95%;
+  height: 18rem;
+  padding: 10px;
+  font-size: 1rem;
+  font-weight: 400;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: none;
 `;
 
-const EmailItem = styled.div`
-  border-bottom: 1px solid #eaeaea;
-  padding: 1rem;
-  justify-content: space-between;
-  position: relative;
-`;
-
-const StateButton = styled.div<{ state: string }>`
-  cursor: default;
-  border: none;
-  padding: 0.2rem 0.6rem;
-  border-radius: 0.2rem;
+const TextCounter = styled.span`
+  margin-top: 0.9rem;
   font-size: 0.9rem;
-  font-weight: bold;
-  color: ${(props) => getColorByState(props.state)};
-  position: absolute;
-  right: 10px;
-  top: 25px;
-  transform: tra nslateY(-50%);
-`;
-const getColorByState = (state: string) => {
-  switch (state) {
-    case 'DISCUSSING':
-      return 'darkorange';
-    case 'APPROVED':
-      return 'green';
-    case 'REJECTED':
-      return 'red';
-    default:
-      return 'black';
-  }
-};
-
-const EmailSubject = styled.div`
-  font-size: 1.1rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  padding-right: 1rem;
-  cursor: pointer;
-
-  &:hover {
-    color: darkorange;
-  }
-`;
-
-const EmailDate = styled.div`
-  font-size: 0.9rem;
-  color: gray;
-`;
-
-const EmailContent = styled.div`
-  /* background-color: #ffffff7a;
-  width: fit-content; */
-  margin: 1.2rem 0 0 0;
-  white-space: pre-wrap;
-  line-height: 1.3;
 `;
 
 export default RequestDetailPage;
