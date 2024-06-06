@@ -1,34 +1,37 @@
 import { getClientPaginateData } from '@/apis/PromotionAdmin/dataEdit';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import { IClientPaginationData } from '@/types/PromotionAdmin/dataEdit';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
+import { dataUpdateState } from '@/recoil/atoms';
+import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
-
 import { ReactComponent as AddedIcon } from '@/assets/images/PA/plusIcon.svg';
 import { ReactComponent as PublicIcon } from '@/assets/images/PA/public.svg';
 import { ReactComponent as PrivateIcon } from '@/assets/images/PA/private.svg';
-
 import Button from '../StyleComponents/Button';
 import { DATAEDIT_TITLES_COMPONENTS } from '../Company/StyleComponents';
 import { ContentBlock } from '../Company/CompanyFormStyleComponents';
 import LogoListItem from '../StyleComponents/LogoListItem';
 import Pagination from '@/components/Pagination/Pagination';
 import { MSG } from '@/constants/messages';
-import { dataUpdateState } from '@/recoil/atoms';
-import { useRecoilState } from 'recoil';
+
 const Client = () => {
   const navigator = useNavigate();
-  const [isEditing, setIsEditing] = useRecoilState(dataUpdateState);
-
+  const setIsEditing = useSetRecoilState(dataUpdateState);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const size = 6;
   const { data, isLoading, error } = useQuery<IClientPaginationData, Error>(['client', currentPage, size], () =>
     getClientPaginateData(currentPage - 1, size),
   );
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     if (data) {
       setCurrentPage(data?.totalPages);
       navigator(`?page=${data?.totalPages}`);

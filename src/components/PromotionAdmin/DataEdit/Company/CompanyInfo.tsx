@@ -2,8 +2,9 @@ import { getCompanyData } from '@/apis/PromotionAdmin/dataEdit';
 import { ICompanyData } from '@/types/PromotionAdmin/dataEdit';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
+import { useSetRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
 import styled from 'styled-components';
-
 import BasicInfo from './InfoCard/Basic';
 import BasicEdit from './EditForm/Basic';
 import DetailInfo from './InfoCard/Detail';
@@ -12,8 +13,6 @@ import ImageInfo from './InfoCard/Image';
 import ImageEdit from './EditForm/Image';
 import IntroductionInfo from './InfoCard/Introduction';
 import IntroductionEdit from './EditForm/Introduction';
-import { useRecoilState } from 'recoil';
-import { dataUpdateState } from '@/recoil/atoms';
 import { MSG } from '@/constants/messages';
 
 const CompanyInfo = () => {
@@ -22,7 +21,7 @@ const CompanyInfo = () => {
   const [editImage, setEditImage] = useState(false);
   const [editIntroduction, setEditIntroduction] = useState(false);
   const [editDetail, setEditDetail] = useState(false);
-  const [isEditing, setIsEditing] = useRecoilState(dataUpdateState);
+  const setIsEditing = useSetRecoilState(dataUpdateState);
 
   const handleEditChange = (editType: string) => {
     if (
