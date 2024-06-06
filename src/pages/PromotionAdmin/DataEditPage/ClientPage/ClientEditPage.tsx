@@ -27,11 +27,16 @@ function ClientEditPage() {
   const clientEditMatch = useMatch(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}/:clientId`);
   const clickedClient =
     clientEditMatch?.params.clientId &&
-    data &&
+    Array.isArray(data) &&
     data.find((c) => String(c.clientInfo.id) === clientEditMatch.params.clientId);
   const [imgChange, setImgChange] = useState(false);
 
-  const { register, handleSubmit, reset } = useForm<IFormData>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<IFormData>({
     defaultValues: {
       name: clickedClient ? clickedClient.clientInfo.name : '',
       visibility: true,
@@ -63,7 +68,7 @@ function ClientEditPage() {
         logoImg: clickedClient.logoImg,
       });
     }
-  }, [clientEditMatch?.params.clientId, reset]);
+  }, [clickedClient, reset]);
 
   const onValid = (data: IFormData) => {
     handleSaveClick(data);
@@ -185,9 +190,11 @@ function ClientEditPage() {
                   <input
                     {...register('name', {
                       required: '이름을 입력해주세요',
+                      validate: (value) => value.trim().length > 0 || '공백만으로는 이름을 입력할 수 없습니다.',
                     })}
                     placeholder='이름을 입력해주세요'
                   />
+                  {errors.name && <p>{errors.name.message}</p>}
                 </InputWrapper>
                 <VisibilityWrapper>
                   공개여부
@@ -306,6 +313,7 @@ const InputWrapper = styled.div`
   }
 
   p {
+    font-size: 14px;
     color: ${(props) => props.theme.color.symbol};
   }
 `;

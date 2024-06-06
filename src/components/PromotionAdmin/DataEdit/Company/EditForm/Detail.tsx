@@ -12,11 +12,13 @@ import {
   DetailItem,
   DetailTitleInputWrapper,
   Form,
+  DetailContentWrapper,
 } from '../CompanyFormStyleComponents';
 import { ReactComponent as DeleteIcon } from '@/assets/images/PA/minusIcon.svg';
 import { ReactComponent as AddedIcon } from '@/assets/images/PA/plusIcon.svg';
 import Button from '../../StyleComponents/Button';
 import { DATAEDIT_TITLES_COMPONENTS, INPUT_MAX_LENGTH } from '../StyleComponents';
+import styled from 'styled-components';
 
 interface IDetailFormData {
   detailInformation: { key: string; value: string }[];
@@ -145,14 +147,25 @@ const Detail = ({ setEditDetail }: IDetailProps) => {
                     control={control}
                     defaultValue={field.value}
                     render={({ field }) => (
-                      <textarea
-                        {...register(`detailInformation.${index}.value`, {
-                          required: '내용을 입력해주세요',
-                        })}
-                        className='detail_content'
-                        {...field}
-                        placeholder='내용을 입력해주세요.'
-                      />
+                      <DetailContentWrapper>
+                        <textarea
+                          {...register(`detailInformation.${index}.value`, {
+                            required: '내용을 입력해주세요',
+                            maxLength: INPUT_MAX_LENGTH.DETAIL_CONTENT,
+                          })}
+                          className='detail_content'
+                          {...field}
+                          placeholder='내용을 입력해주세요.'
+                          onChange={(e) => {
+                            if (e.target.value.length <= INPUT_MAX_LENGTH.DETAIL_CONTENT) {
+                              field.onChange(e);
+                            }
+                          }}
+                        />
+                        <span>
+                          {watchFields[index].value.length} / {INPUT_MAX_LENGTH.DETAIL_CONTENT}자
+                        </span>
+                      </DetailContentWrapper>
                     )}
                   />
                 </DetailItem>

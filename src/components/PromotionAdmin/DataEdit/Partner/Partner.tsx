@@ -24,7 +24,6 @@ const Partner = () => {
   const { data, isLoading, error } = useQuery<IPartnerPaginationData, Error>(['partner', currentPage, size], () =>
     getPartnerPaginateData(currentPage, size),
   );
-  console.log(data);
   if (isLoading) return <>is Loading..</>;
   if (error) return <div>Error: {error.message}</div>;
   return (

@@ -19,5 +19,8 @@ const InnerHTMLStyle = styled.div<InnerHTMLType>`
   font-size: ${(props) => (props.fontSize ? props.fontSize + 'px;' : '15px;')};
   font-family: ${(props) => props.theme.font.light};
   white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   line-height: 22px;
+  max-width: 100%;
 `;

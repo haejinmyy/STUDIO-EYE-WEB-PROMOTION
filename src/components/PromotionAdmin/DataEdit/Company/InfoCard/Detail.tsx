@@ -5,6 +5,7 @@ import { useQuery } from 'react-query';
 import styled from 'styled-components';
 import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
 import Button from '../../StyleComponents/Button';
+import { ContentBlock } from '../CompanyFormStyleComponents';
 
 interface IDetailProps {
   setEditDetail: (editMode: boolean) => void;
@@ -61,17 +62,6 @@ const Wrapper = styled.div`
   }
 `;
 
-const ContentBlock = styled.div`
-  padding: 25px;
-  background-color: ${(props) => props.theme.color.white.light};
-  box-shadow: 2px 2px 5px 0.3px ${(props) => props.theme.color.black.pale};
-  margin-bottom: 30px;
-  margin-right: 30px;
-  width: 700px;
-  border-radius: 4px;
-  height: fit-content;
-`;
-
 const TitleWrapper = styled.div`
   display: flex;
   justify-content: space-between;
@@ -105,6 +95,7 @@ const DetailItem = styled.div`
   justify-content: space-around;
   padding: 5px 0px;
   font-size: 15px;
+  background-color: white;
 
   .detail_content {
     display: flex;

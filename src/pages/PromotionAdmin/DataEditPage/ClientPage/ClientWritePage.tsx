@@ -35,9 +35,12 @@ function ClientWritePage() {
     formState: { errors },
   } = useForm<IFormData>();
 
-  const [isInvalid, setInvalid] = useState(true);
-
   const onValid = (data: IFormData) => {
+    if (postData.logoImg === '') {
+      alert('파일을 업로드해주세요');
+      return;
+    }
+
     handleSaveClick(data);
   };
 
@@ -57,28 +60,18 @@ function ClientWritePage() {
       ),
     );
 
-    // 이미지를 변경했는지 확인하고 추가
     const file = await urlToFile(postData.logoImg, 'ClientLogo.png');
     formData.append('logoImg', file);
 
-    if (postData.logoImg === '') {
-      alert('파일을 업로드해주세요');
-      setInvalid(true);
-    } else {
-      setInvalid(false);
-    }
-
-    if (!isInvalid) {
-      if (window.confirm('등록하시겠습니까?')) {
-        axios
-          .post(`${PROMOTION_BASIC_PATH}/api/client`, formData)
-          .then((response) => {
-            console.log('Client posted:', response);
-            alert('등록되었습니다.');
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
-          })
-          .catch((error) => console.error('Error updating client:', error));
-      }
+    if (window.confirm('등록하시겠습니까?')) {
+      axios
+        .post(`${PROMOTION_BASIC_PATH}/api/client`, formData)
+        .then((response) => {
+          console.log('Client posted:', response);
+          alert('등록되었습니다.');
+          navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
+        })
+        .catch((error) => console.error('Error updating client:', error));
     }
   };
 
@@ -100,7 +93,7 @@ function ClientWritePage() {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
-      console.log(blob);
+      // console.log(blob);
       return new File([blob], fileName);
     } catch (error) {
       console.error('Error URL to file:', error);
@@ -132,6 +125,7 @@ function ClientWritePage() {
             <input
               {...register('name', {
                 required: '이름을 입력해주세요',
+                validate: (value) => value.trim().length > 0 || '공백만으로는 이름을 입력할 수 없습니다.',
               })}
               placeholder='이름을 입력해주세요'
             />
@@ -235,6 +229,7 @@ const InputWrapper = styled.div`
   }
 
   p {
+    font-size: 14px;
     color: ${(props) => props.theme.color.symbol};
   }
 `;

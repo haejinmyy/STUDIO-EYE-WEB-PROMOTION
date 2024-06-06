@@ -23,10 +23,19 @@ interface IFormData {
 // URL 유효성 검사 함수
 export const validateUrl = (value: string) => {
   try {
-    new URL(value);
+    const url = new URL(value);
+    // 허용된 프로토콜 확인
+    const allowedProtocols = ['http:', 'https:'];
+    if (!allowedProtocols.includes(url.protocol)) {
+      return 'URL은 http:// 또는 https://로 시작해야 합니다.';
+    }
+    // 호스트 존재 확인
+    if (!url.hostname) {
+      return 'URL에는 도메인 이름이 있어야 합니다 (예: example.com).';
+    }
     return true; // 유효한 URL일 경우
   } catch (e) {
-    return '유효한 URL을 입력해주세요.'; // 잘못된 URL일 경우
+    return '올바른 형식의 URL을 입력해주세요. (예: https://www.example.com)';
   }
 };
 
@@ -56,6 +65,10 @@ function PartnerWritePage() {
   const [isInvalid, setInvalid] = useState(true);
 
   const onValid = (data: IFormData) => {
+    if (postData.logoImg === '') {
+      alert('파일을 업로드해주세요');
+      return;
+    }
     handleSaveClick(data);
   };
 
@@ -76,28 +89,18 @@ function PartnerWritePage() {
       ),
     );
 
-    // 이미지를 변경했는지 확인하고 추가
     const file = await urlToFile(postData.logoImg, 'PartnerLogo.png');
     formData.append('logoImg', file);
 
-    if (postData.logoImg === '') {
-      alert('파일을 업로드해주세요');
-      setInvalid(true);
-    } else {
-      setInvalid(false);
-    }
-
-    if (!isInvalid) {
-      if (window.confirm('등록하시겠습니까?')) {
-        axios
-          .post(`${PROMOTION_BASIC_PATH}/api/partners`, formData)
-          .then((response) => {
-            console.log('Partenr posted:', response);
-            alert('등록되었습니다.');
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}`);
-          })
-          .catch((error) => console.error('Error updating partner:', error));
-      }
+    if (window.confirm('등록하시겠습니까?')) {
+      axios
+        .post(`${PROMOTION_BASIC_PATH}/api/partners`, formData)
+        .then((response) => {
+          console.log('Partenr posted:', response);
+          alert('등록되었습니다.');
+          navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}`);
+        })
+        .catch((error) => console.error('Error updating partner:', error));
     }
   };
 
@@ -119,7 +122,7 @@ function PartnerWritePage() {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
-      console.log(blob);
+      // console.log(blob);
       return new File([blob], fileName);
     } catch (error) {
       console.error('Error URL to file:', error);
@@ -161,6 +164,7 @@ function PartnerWritePage() {
             <input
               {...register('name', {
                 required: '이름을 입력해주세요',
+                validate: (value) => value.trim().length > 0 || '공백만으로는 이름을 입력할 수 없습니다.',
               })}
             />
             {errors.name && <p>{errors.name.message}</p>}
@@ -263,6 +267,7 @@ const InputWrapper = styled.div`
   }
 
   p {
+    font-size: 14px;
     color: ${(props) => props.theme.color.symbol};
   }
 `;

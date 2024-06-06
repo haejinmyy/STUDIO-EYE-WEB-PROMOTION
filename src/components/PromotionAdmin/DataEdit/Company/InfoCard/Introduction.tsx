@@ -56,6 +56,8 @@ const Content = styled.div`
   font-family: ${(props) => props.theme.font.regular};
   height: max-content;
   box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+  max-height: 350px;
+  overflow-y: scroll;
 
   & p,
   span {
