@@ -16,6 +16,9 @@ import { useMatch, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { validateUrl } from './PartnerWritePage';
 import { DATAEDIT_NOTICE_COMPONENTS } from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import { MSG } from '@/constants/messages';
+import { useRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
 
 interface IFormData {
   is_main: boolean;
@@ -24,6 +27,7 @@ interface IFormData {
 }
 
 function PartnerEditPage() {
+  const [isEditing, setIsEditing] = useRecoilState(dataUpdateState);
   const { data, isLoading, error } = useQuery<IPartnersData[], Error>(['partners', 'id'], getPartnersData);
   const navigator = useNavigate();
   const partnerEditMatch = useMatch(`${PA_ROUTES.DATA_EDIT}/partner/:partnerId`);
@@ -99,7 +103,7 @@ function PartnerEditPage() {
       ),
     );
 
-    if (window.confirm('수정하시겠습니까?')) {
+    if (window.confirm(MSG.CONFIRM_MSG.SAVE)) {
       if (imgChange) {
         const file = await urlToFile(putData.logoImg, 'Logo.png');
         if (file) {
@@ -112,7 +116,8 @@ function PartnerEditPage() {
           .put(`${PROMOTION_BASIC_PATH}/api/partners`, formData)
           .then((response) => {
             console.log('Partner updated:', response);
-            alert('수정되었습니다.');
+            alert(MSG.ALERT_MSG.SAVE);
+            setIsEditing(false);
             navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}`);
           })
           .catch((error) => console.error('Error updating partner:', error));
@@ -121,7 +126,8 @@ function PartnerEditPage() {
           .put(`${PROMOTION_BASIC_PATH}/api/partners/modify`, formData)
           .then((response) => {
             console.log('Partners updated:', response);
-            alert('수정되었습니다.');
+            alert(MSG.ALERT_MSG.SAVE);
+            setIsEditing(false);
             navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}`);
           })
           .catch((error) => console.error('Error updating partner:', error));
@@ -157,13 +163,13 @@ function PartnerEditPage() {
   }
 
   const handleDelete = (id: number) => {
-    if (window.confirm('삭제하시겠습니까?')) {
+    if (window.confirm(MSG.CONFIRM_MSG.DELETE)) {
       axios
         .delete(`${PROMOTION_BASIC_PATH}/api/partners/${id}`)
         .then((response) => {})
         .catch((error) => console.log(error));
 
-      alert('삭제되었습니다.');
+      alert(MSG.ALERT_MSG.DELETE);
       navigator(`${PA_ROUTES.DATA_EDIT}/partner`);
     }
   };
@@ -193,18 +199,20 @@ function PartnerEditPage() {
             <InputWrapper>
               <input
                 {...register('link', {
-                  required: '링크를 입력해주세요',
+                  required: MSG.PLACEHOLDER_MSG.LINK,
                   validate: validateUrl,
                 })}
+                placeholder={MSG.PLACEHOLDER_MSG.LINK}
               />
               {errors.link && <p>{errors.link.message}</p>}
 
               <SubTitle description='Name' />
               <input
                 {...register('name', {
-                  required: '이름을 입력해주세요',
-                  validate: (value) => value.trim().length > 0 || '공백만으로는 이름을 입력할 수 없습니다.',
+                  required: MSG.PLACEHOLDER_MSG.NAME,
+                  validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
                 })}
+                placeholder={MSG.PLACEHOLDER_MSG.NAME}
               />
               {errors.name && <p>{errors.name.message}</p>}
             </InputWrapper>
@@ -221,12 +229,12 @@ function PartnerEditPage() {
           </RightContainer>
 
           <ButtonWrapper>
-            <Button description='저장하기' width={100} />
+            <Button description={MSG.BUTTON_MSG.SAVE} width={100} />
             <Button
               onClick={() => {
                 handleDelete(clickedPartner.partnerInfo.id);
               }}
-              description='삭제하기'
+              description={MSG.BUTTON_MSG.DELETE}
               width={100}
             />
           </ButtonWrapper>
@@ -239,7 +247,7 @@ function PartnerEditPage() {
 export default PartnerEditPage;
 
 const RightContainer = styled.div`
-  margin-left: 20px;
+  margin-left: 50px;
 `;
 const LeftContainer = styled.div``;
 const LogoContainer = styled.div`

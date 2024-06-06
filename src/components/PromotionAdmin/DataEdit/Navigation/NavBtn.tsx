@@ -1,6 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import { NavLink } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
+import { MSG } from '@/constants/messages';
 
 type Props = {
   path: string;
@@ -8,8 +11,30 @@ type Props = {
 };
 
 const NavBtn = ({ path, pathName }: Props) => {
+  const navigator = useNavigate();
+  const location = useLocation();
+  const isActive = location.pathname.includes(path);
+  const [isEditing, setIsEditing] = useRecoilState(dataUpdateState);
+
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    if (location.pathname === path) {
+      // 현재 경로와 이동할 경로가 같으면 confirm을 띄우지 않음
+      return;
+    }
+    if (isEditing) {
+      const confirmNavigation = window.confirm(MSG.CONFIRM_MSG.EXIT);
+      if (confirmNavigation) {
+        navigator(path);
+        setIsEditing(false);
+      }
+    } else {
+      navigator(path);
+    }
+  };
   return (
-    <LinkStyle to={path}>
+    <LinkStyle onClick={handleClick} isActive={isActive}>
       <Name>{pathName}</Name>
     </LinkStyle>
   );
@@ -17,7 +42,7 @@ const NavBtn = ({ path, pathName }: Props) => {
 
 export default NavBtn;
 
-const LinkStyle = styled(NavLink)`
+const LinkStyle = styled.div<{ isActive: boolean }>`
   width: 127px;
   height: 55px;
   display: flex;
@@ -30,9 +55,11 @@ const LinkStyle = styled(NavLink)`
     color: ${(props) => props.theme.color.symbol};
   }
 
-  &.active {
-    border-bottom: 2.5px solid ${(props) => props.theme.color.symbol};
-  }
+  ${(props) =>
+    props.isActive &&
+    `
+    border-bottom: 2.5px solid ${props.theme.color.symbol};
+  `}
 `;
 
 const Name = styled.div`

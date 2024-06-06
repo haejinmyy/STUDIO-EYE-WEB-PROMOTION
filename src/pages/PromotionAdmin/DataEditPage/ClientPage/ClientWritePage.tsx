@@ -13,6 +13,9 @@ import FileButton from '@/components/PromotionAdmin/DataEdit/StyleComponents/Fil
 import ToggleSwitch from '@/components/PromotionAdmin/DataEdit/StyleComponents/ToggleSwitch';
 import Button from '@/components/PromotionAdmin/DataEdit/StyleComponents/Button';
 import { DATAEDIT_NOTICE_COMPONENTS } from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import { useRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
+import { MSG } from '@/constants/messages';
 
 interface IFormData {
   name: string;
@@ -21,6 +24,7 @@ interface IFormData {
 
 function ClientWritePage() {
   const navigator = useNavigate();
+  const [isEditing, setIsEditing] = useRecoilState(dataUpdateState);
   const [postData, setPostData] = useState({
     clientInfo: {
       name: '',
@@ -37,7 +41,7 @@ function ClientWritePage() {
 
   const onValid = (data: IFormData) => {
     if (postData.logoImg === '') {
-      alert('파일을 업로드해주세요');
+      alert(MSG.INVALID_MSG.FILE);
       return;
     }
 
@@ -63,12 +67,14 @@ function ClientWritePage() {
     const file = await urlToFile(postData.logoImg, 'ClientLogo.png');
     formData.append('logoImg', file);
 
-    if (window.confirm('등록하시겠습니까?')) {
+    if (window.confirm(MSG.CONFIRM_MSG.POST)) {
       axios
         .post(`${PROMOTION_BASIC_PATH}/api/client`, formData)
         .then((response) => {
           console.log('Client posted:', response);
-          alert('등록되었습니다.');
+          alert(MSG.ALERT_MSG.POST);
+          setIsEditing(false);
+
           navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
         })
         .catch((error) => console.error('Error updating client:', error));
@@ -124,10 +130,10 @@ function ClientWritePage() {
             <SubTitle description='Name' />
             <input
               {...register('name', {
-                required: '이름을 입력해주세요',
-                validate: (value) => value.trim().length > 0 || '공백만으로는 이름을 입력할 수 없습니다.',
+                required: MSG.PLACEHOLDER_MSG.NAME,
+                validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
               })}
-              placeholder='이름을 입력해주세요'
+              placeholder={MSG.PLACEHOLDER_MSG.NAME}
             />
             {errors.name && <p>{errors.name.message}</p>}
           </InputWrapper>
@@ -139,7 +145,7 @@ function ClientWritePage() {
         </RightContainer>
       </FormContainer>
       <ButtonWrapper>
-        <Button onClick={handleSubmit(onValid)} description='등록하기' width={100} />
+        <Button onClick={handleSubmit(onValid)} description={MSG.BUTTON_MSG.POST} width={100} />
       </ButtonWrapper>
     </ContentBlock>
   );
@@ -148,7 +154,7 @@ function ClientWritePage() {
 export default ClientWritePage;
 
 const RightContainer = styled.div`
-  margin-left: 20px;
+  margin-left: 50px;
 `;
 const LeftContainer = styled.div``;
 const LogoContainer = styled.div`

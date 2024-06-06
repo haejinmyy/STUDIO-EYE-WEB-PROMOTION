@@ -12,6 +12,9 @@ import ImageInfo from './InfoCard/Image';
 import ImageEdit from './EditForm/Image';
 import IntroductionInfo from './InfoCard/Introduction';
 import IntroductionEdit from './EditForm/Introduction';
+import { useRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
+import { MSG } from '@/constants/messages';
 
 const CompanyInfo = () => {
   const { data, isLoading, error } = useQuery<ICompanyData, Error>(['client', 'id'], getCompanyData);
@@ -19,11 +22,12 @@ const CompanyInfo = () => {
   const [editImage, setEditImage] = useState(false);
   const [editIntroduction, setEditIntroduction] = useState(false);
   const [editDetail, setEditDetail] = useState(false);
+  const [isEditing, setIsEditing] = useRecoilState(dataUpdateState);
 
   const handleEditChange = (editType: string) => {
     if (
       [editBasic, editImage, editIntroduction, editDetail].filter((v) => v).length > 0 &&
-      !window.confirm(`변경사항을 잃을 수 있습니다. ${editType}을(를) 수정하시겠습니까?`)
+      !window.confirm(MSG.CONFIRM_MSG.DATA_EDIT.EXIT)
     ) {
       return;
     }
@@ -50,7 +54,16 @@ const CompanyInfo = () => {
       default:
         break;
     }
+
+    setIsEditing(true);
   };
+
+  useEffect(() => {
+    // 컴포넌트가 언마운트되거나 모든 편집 상태가 false가 되면 Recoil 상태를 false로 설정
+    if (![editBasic, editImage, editIntroduction, editDetail].includes(true)) {
+      setIsEditing(false);
+    }
+  }, [editBasic, editImage, editIntroduction, editDetail, setIsEditing]);
 
   if (isLoading) return <>is Loading...</>;
   if (error) return <>{error.message}</>;
