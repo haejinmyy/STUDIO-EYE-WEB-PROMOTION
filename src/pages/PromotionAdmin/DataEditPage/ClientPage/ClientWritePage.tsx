@@ -14,6 +14,8 @@ import { DATAEDIT_NOTICE_COMPONENTS } from '@/components/PromotionAdmin/DataEdit
 import { useSetRecoilState } from 'recoil';
 import { dataUpdateState } from '@/recoil/atoms';
 import { MSG } from '@/constants/messages';
+import { useNavigate } from 'react-router-dom';
+import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 
 interface IFormData {
   name: string;
@@ -22,6 +24,7 @@ interface IFormData {
 
 function ClientWritePage() {
   const setIsEditing = useSetRecoilState(dataUpdateState);
+  const navigate = useNavigate();
   const [postData, setPostData] = useState({
     clientInfo: {
       name: '',
@@ -71,6 +74,7 @@ function ClientWritePage() {
           console.log('Client posted:', response);
           alert(MSG.ALERT_MSG.POST);
           setIsEditing(false);
+          navigate(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
         })
         .catch((error) => console.error('Error updating client:', error));
     }

@@ -14,6 +14,8 @@ import { DATAEDIT_NOTICE_COMPONENTS } from '@/components/PromotionAdmin/DataEdit
 import { useSetRecoilState } from 'recoil';
 import { dataUpdateState } from '@/recoil/atoms';
 import { MSG } from '@/constants/messages';
+import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
+import { useNavigate } from 'react-router-dom';
 
 interface IFormData {
   is_main: boolean;
@@ -42,6 +44,7 @@ export const validateUrl = (value: string) => {
 
 function PartnerWritePage() {
   const setIsEditing = useSetRecoilState(dataUpdateState);
+  const navigate = useNavigate();
   const [postData, setPostData] = useState({
     partnerInfo: {
       is_main: true,
@@ -98,6 +101,7 @@ function PartnerWritePage() {
           console.log('Partenr posted:', response);
           alert(MSG.ALERT_MSG.POST);
           setIsEditing(false);
+          navigate(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}`);
         })
         .catch((error) => console.error('Error updating partner:', error));
     }
