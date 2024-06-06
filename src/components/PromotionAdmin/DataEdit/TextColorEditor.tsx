@@ -110,6 +110,7 @@ const EditorWrapper = styled.div<IEditorWrapperProps>`
     font-family: ${(props) => props.theme.font.light};
     font-size: 14px;
     max-height: 350px;
+    background-color: ${(props) => props.theme.color.white.light};
 
     /* overflow: scroll; */
   }
