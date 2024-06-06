@@ -17,6 +17,7 @@ export const theme: DefaultTheme = {
     yellow: {
       bold: '#FFA900',
       light: '#FFF0D1',
+      pale: '#fffcf5',
     },
   },
 
