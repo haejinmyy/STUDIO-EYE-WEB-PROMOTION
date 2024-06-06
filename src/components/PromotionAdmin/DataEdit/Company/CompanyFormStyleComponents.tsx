@@ -1,3 +1,4 @@
+import { theme } from '@/styles/theme';
 import styled from 'styled-components';
 
 export const Wrapper = styled.div`
@@ -21,9 +22,8 @@ export const Form = styled.form`
 export const LeftContentWrapper = styled.div``;
 export const RightContentWrapper = styled.div``;
 
-export const ContentBlock = styled.div<{ width?: number; height?: number }>`
+export const ContentBlock = styled.div<{ width?: number; height?: number; isFocused?: boolean }>`
   padding: 25px;
-  background-color: ${(props) => props.theme.color.white.pale};
   position: relative;
   box-shadow: 2px 2px 5px 0.3px ${(props) => props.theme.color.black.pale};
   margin-bottom: 30px;
@@ -32,10 +32,10 @@ export const ContentBlock = styled.div<{ width?: number; height?: number }>`
   border-radius: 4px;
   width: ${(props) => (props.width ? props.width + 'px;' : '750px;')};
   height: ${(props) => (props.height ? props.height + 'px;' : 'fit-content;')};
+  background-color: ${(props) => (props.isFocused ? theme.color.yellow.pale : theme.color.white.pale)};
 `;
 
 export const TitleWrapper = styled.div`
-  background-color: ${(props) => props.theme.color.white.light};
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -44,7 +44,6 @@ export const TitleWrapper = styled.div`
 
 export const InputWrapper = styled.div`
   display: flex;
-  background-color: ${(props) => props.theme.color.white.light};
   flex-direction: column;
   font-family: ${(props) => props.theme.font.regular};
   p {

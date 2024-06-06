@@ -92,7 +92,7 @@ const Detail = ({ setEditDetail }: IDetailProps) => {
   return (
     <Wrapper>
       <Form onSubmit={handleSubmit(onValid)}>
-        <ContentBlock>
+        <ContentBlock isFocused={true}>
           <TitleWrapper>
             {DATAEDIT_TITLES_COMPONENTS.Detail}
             <div style={{ display: 'flex', width: '290px', justifyContent: 'space-between' }}>

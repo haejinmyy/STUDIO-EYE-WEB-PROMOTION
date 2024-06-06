@@ -7,13 +7,16 @@ import SubTitle from '@/components/PromotionAdmin/DataEdit/StyleComponents/SubTi
 import Title from '@/components/PromotionAdmin/DataEdit/StyleComponents/Title';
 import ToggleSwitch from '@/components/PromotionAdmin/DataEdit/StyleComponents/ToggleSwitch';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
+import { MSG } from '@/constants/messages';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
+import { dataUpdateState } from '@/recoil/atoms';
 import { IClientData } from '@/types/PromotionAdmin/dataEdit';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
 import { useMatch, useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 interface IFormData {
@@ -22,6 +25,8 @@ interface IFormData {
 }
 
 function ClientEditPage() {
+  const [isEditing, setIsEditing] = useRecoilState(dataUpdateState);
+
   const { data, isLoading, error } = useQuery<IClientData[], Error>(['client', 'id'], getClientData);
   const navigator = useNavigate();
   const clientEditMatch = useMatch(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}/:clientId`);
@@ -91,7 +96,7 @@ function ClientEditPage() {
       ),
     );
 
-    if (window.confirm('수정하시겠습니까?')) {
+    if (window.confirm(MSG.CONFIRM_MSG.SAVE)) {
       if (imgChange) {
         const file = await urlToFile(putData.logoImg, 'ClientLogo.png');
         if (file) {
@@ -104,17 +109,18 @@ function ClientEditPage() {
           .put(`${PROMOTION_BASIC_PATH}/api/client`, formData)
           .then((response) => {
             console.log('Client updated:', response);
-            alert('수정되었습니다.');
+            alert(MSG.ALERT_MSG.SAVE);
+            setIsEditing(false);
             navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
           })
           .catch((error) => console.error('Error updating client:', error));
       } else {
-        console.log('put ', data.visibility);
         axios
           .put(`${PROMOTION_BASIC_PATH}/api/client/modify`, formData)
           .then((response) => {
             console.log('Client updated:', response);
-            alert('수정되었습니다.');
+            alert(MSG.ALERT_MSG.SAVE);
+            setIsEditing(false);
             navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
           })
           .catch((error) => console.error('Error updating client:', error));
@@ -150,13 +156,13 @@ function ClientEditPage() {
   }
 
   const handleDelete = (id: number) => {
-    if (window.confirm('삭제하시겠습니까?')) {
+    if (window.confirm(MSG.CONFIRM_MSG.DELETE)) {
       axios
         .delete(`${PROMOTION_BASIC_PATH}/api/client/${id}`)
         .then((response) => {})
         .catch((error) => console.log(error));
 
-      alert('삭제되었습니다.');
+      alert(MSG.ALERT_MSG.DELETE);
       navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
     }
   };
@@ -189,10 +195,10 @@ function ClientEditPage() {
                   <SubTitle description='Name' />
                   <input
                     {...register('name', {
-                      required: '이름을 입력해주세요',
-                      validate: (value) => value.trim().length > 0 || '공백만으로는 이름을 입력할 수 없습니다.',
+                      required: MSG.PLACEHOLDER_MSG.NAME,
+                      validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
                     })}
-                    placeholder='이름을 입력해주세요'
+                    placeholder={MSG.PLACEHOLDER_MSG.NAME}
                   />
                   {errors.name && <p>{errors.name.message}</p>}
                 </InputWrapper>
@@ -208,12 +214,12 @@ function ClientEditPage() {
                 </VisibilityWrapper>
               </RightContainer>
               <ButtonWrapper>
-                <Button description='저장하기' width={100} />
+                <Button description={MSG.BUTTON_MSG.SAVE} width={100} />
                 <Button
                   onClick={() => {
                     handleDelete(clickedClient.clientInfo.id);
                   }}
-                  description='삭제하기'
+                  description={MSG.BUTTON_MSG.DELETE}
                   width={100}
                   as={'div'}
                 />
@@ -229,7 +235,7 @@ function ClientEditPage() {
 export default ClientEditPage;
 
 const RightContainer = styled.div`
-  margin-left: 20px;
+  margin-left: 50px;
 `;
 const LeftContainer = styled.div``;
 const LogoContainer = styled.div`

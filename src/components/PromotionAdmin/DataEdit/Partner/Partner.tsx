@@ -17,9 +17,13 @@ import Button from '../StyleComponents/Button';
 import LogoItemList from '../StyleComponents/LogoListItem';
 import Pagination from '@/components/Pagination/Pagination';
 import { MSG } from '@/constants/messages';
+import { useRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
 
 const Partner = () => {
   const navigator = useNavigate();
+  const [isEditing, setIsEditing] = useRecoilState(dataUpdateState);
+
   const [currentPage, setCurrentPage] = useState<number>(0);
   const size = 6;
   const { data, isLoading, error } = useQuery<IPartnerPaginationData, Error>(['partner', currentPage, size], () =>
@@ -37,6 +41,7 @@ const Partner = () => {
             svgComponent={<AddedIcon width={14} height={14} />}
             onClick={() => {
               navigator(`write?page=${currentPage + 1}`);
+              setIsEditing(true);
             }}
           />
         </TitleWrapper>
@@ -53,11 +58,12 @@ const Partner = () => {
                   name={partner.name}
                   link={partner.link}
                   is_posted={partner.is_main}
-                  onClick={() =>
+                  onClick={() => {
+                    setIsEditing(true);
                     navigator(
                       `${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}/${partner.id}?page=${currentPage + 1}`,
-                    )
-                  }
+                    );
+                  }}
                   svgComponent={partner.is_main ? <PublicIcon /> : <PrivateIcon />}
                 />
               ))}

@@ -128,7 +128,7 @@ const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
   if (error) return <>{error.message}</>;
   return (
     <Wrapper>
-      <ContentBlock>
+      <ContentBlock isFocused={true}>
         <TitleWrapper>
           {DATAEDIT_TITLES_COMPONENTS.Introduction}
           <Button description={MSG.BUTTON_MSG.SAVE} onClick={handleSaveClick} width={100} />
