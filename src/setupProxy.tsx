@@ -2,7 +2,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 
 module.exports = function (app: any) {
   app.use(
-    createProxyMiddleware('/promotion', {
+    createProxyMiddleware('/api', {
       target: 'http://3.36.95.109:8080',
       changeOrigin: true,
     }),

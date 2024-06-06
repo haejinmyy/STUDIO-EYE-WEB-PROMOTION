@@ -1,1 +1,1 @@
-export const PROMOTION_BASIC_PATH = 'http://3.36.95.109:8080';
+export const PROMOTION_BASIC_PATH = process.env.REACT_APP_PROMOTION_URL;
