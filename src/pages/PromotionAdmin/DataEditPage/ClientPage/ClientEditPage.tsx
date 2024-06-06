@@ -161,8 +161,8 @@ function ClientEditPage() {
         .delete(`${PROMOTION_BASIC_PATH}/api/client/${id}`)
         .then((response) => {})
         .catch((error) => console.log(error));
-
       alert(MSG.ALERT_MSG.DELETE);
+      setIsEditing(false);
       navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
     }
   };

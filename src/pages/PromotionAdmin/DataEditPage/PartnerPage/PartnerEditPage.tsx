@@ -168,8 +168,8 @@ function PartnerEditPage() {
         .delete(`${PROMOTION_BASIC_PATH}/api/partners/${id}`)
         .then((response) => {})
         .catch((error) => console.log(error));
-
       alert(MSG.ALERT_MSG.DELETE);
+      setIsEditing(false);
       navigator(`${PA_ROUTES.DATA_EDIT}/partner`);
     }
   };

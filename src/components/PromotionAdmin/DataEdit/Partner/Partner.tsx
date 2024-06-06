@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -23,12 +23,19 @@ import { dataUpdateState } from '@/recoil/atoms';
 const Partner = () => {
   const navigator = useNavigate();
   const [isEditing, setIsEditing] = useRecoilState(dataUpdateState);
-
-  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const size = 6;
   const { data, isLoading, error } = useQuery<IPartnerPaginationData, Error>(['partner', currentPage, size], () =>
-    getPartnerPaginateData(currentPage, size),
+    getPartnerPaginateData(currentPage - 1, size),
   );
+
+  useEffect(() => {
+    if (data) {
+      setCurrentPage(data?.totalPages);
+      navigator(`?page=${data?.totalPages}`);
+    }
+  }, [data && data.totalPages]);
+
   if (isLoading) return <>is Loading..</>;
   if (error) return <div>Error: {error.message}</div>;
   return (
@@ -40,7 +47,7 @@ const Partner = () => {
             description={MSG.BUTTON_MSG.ADD.PARTNER}
             svgComponent={<AddedIcon width={14} height={14} />}
             onClick={() => {
-              navigator(`write?page=${currentPage + 1}`);
+              navigator(`write?page=${currentPage}`);
               setIsEditing(true);
             }}
           />
@@ -61,7 +68,7 @@ const Partner = () => {
                   onClick={() => {
                     setIsEditing(true);
                     navigator(
-                      `${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}/${partner.id}?page=${currentPage + 1}`,
+                      `${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}/${partner.id}?page=${currentPage}`,
                     );
                   }}
                   svgComponent={partner.is_main ? <PublicIcon /> : <PrivateIcon />}
