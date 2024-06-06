@@ -2,7 +2,7 @@ import { getCompanyData } from '@/apis/PromotionAdmin/dataEdit';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import { ICompanyData } from '@/types/PromotionAdmin/dataEdit';
 import axios from 'axios';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
 
@@ -32,7 +32,6 @@ interface IBasicProps {
 
 const Basic = ({ setEditBasic }: IBasicProps) => {
   const { data, isLoading, error } = useQuery<ICompanyData, Error>(['company', 'id'], getCompanyData);
-
   const {
     register,
     handleSubmit,
@@ -112,7 +111,7 @@ const Basic = ({ setEditBasic }: IBasicProps) => {
       {data && (
         <>
           <Form onSubmit={handleSubmit(onValid)}>
-            <ContentBlock>
+            <ContentBlock isFocused={true}>
               <TitleWrapper>
                 {DATAEDIT_TITLES_COMPONENTS.Basic}
                 <Button description={MSG.BUTTON_MSG.SAVE} width={100} />

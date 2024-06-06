@@ -12,11 +12,14 @@ import Button from '../../StyleComponents/Button';
 import styled from 'styled-components';
 import { MSG } from '@/constants/messages';
 
-const Image = () => {
+interface IImageProps {
+  setEditImage: (editMode: boolean) => void;
+}
+
+const Image = ({ setEditImage }: IImageProps) => {
   const { data, isLoading, error, refetch } = useQuery<ICompanyData, Error>(['company', 'id'], getCompanyData);
   const [logoChange, setLogoChange] = useState(false);
   const [sloganChange, setSloganChange] = useState(false);
-  const [editMode, setEditMode] = useState(false);
   const [putData, setPutData] = useState({
     logoImageUrl: '',
     sloganImageUrl: '',
@@ -65,7 +68,7 @@ const Image = () => {
         }
 
         alert(MSG.ALERT_MSG.SAVE);
-        setEditMode(false);
+        setEditImage(false);
         setLogoChange(false);
         setSloganChange(false);
         refetch(); // Refetch the data to get the updated image URLs
@@ -126,21 +129,19 @@ const Image = () => {
       <Wrapper>
         {data && (
           <>
-            <ContentBlock>
+            <ContentBlock isFocused={true}>
               <InputImgWrapper>
                 <Box>
                   {DATAEDIT_TITLES_COMPONENTS.Logo}
-                  {editMode && DATAEDIT_NOTICE_COMPONENTS.IMAGE.LOGO}
-                  {editMode && DATAEDIT_NOTICE_COMPONENTS.COLOR.LOGO}
+                  {DATAEDIT_NOTICE_COMPONENTS.IMAGE.LOGO}
+                  {DATAEDIT_NOTICE_COMPONENTS.COLOR.LOGO}
 
                   <LogoWrapper>
-                    {editMode && (
-                      <FileButton
-                        id='logoFile'
-                        description={MSG.BUTTON_MSG.UPLOAD.LOGO}
-                        onChange={handleLogoImageChange}
-                      />
-                    )}
+                    <FileButton
+                      id='logoFile'
+                      description={MSG.BUTTON_MSG.UPLOAD.LOGO}
+                      onChange={handleLogoImageChange}
+                    />
 
                     <ImgBox>
                       <img src={previewLogo || `${putData.logoImageUrl}?timestamp=${Date.now()}`} />
@@ -149,32 +150,22 @@ const Image = () => {
                 </Box>
                 <Box>
                   {DATAEDIT_TITLES_COMPONENTS.Slogan}
-                  {editMode && DATAEDIT_NOTICE_COMPONENTS.IMAGE.SLOGAN}
-                  {editMode && DATAEDIT_NOTICE_COMPONENTS.COLOR.SLOGAN}
+                  {DATAEDIT_NOTICE_COMPONENTS.IMAGE.SLOGAN}
+                  {DATAEDIT_NOTICE_COMPONENTS.COLOR.SLOGAN}
                   <LogoWrapper>
-                    {editMode && (
-                      <FileButton
-                        id='sloganFile'
-                        description={MSG.BUTTON_MSG.UPLOAD.SLOGAN}
-                        onChange={handleSloganImageChange}
-                      />
-                    )}
+                    <FileButton
+                      id='sloganFile'
+                      description={MSG.BUTTON_MSG.UPLOAD.SLOGAN}
+                      onChange={handleSloganImageChange}
+                    />
+
                     <ImgBox>
                       <img src={previewSlogan || `${putData.sloganImageUrl}?timestamp=${Date.now()}`} />
                     </ImgBox>
                   </LogoWrapper>
                 </Box>
                 <ButtonWrapper>
-                  {editMode ? (
-                    <Button fontSize={14} width={100} description={MSG.BUTTON_MSG.SAVE} onClick={handleSaveClick} />
-                  ) : (
-                    <Button
-                      fontSize={14}
-                      width={100}
-                      description={MSG.BUTTON_MSG.MODIFY}
-                      onClick={() => setEditMode(true)}
-                    />
-                  )}
+                  <Button fontSize={14} width={100} description={MSG.BUTTON_MSG.SAVE} onClick={handleSaveClick} />
                 </ButtonWrapper>
               </InputImgWrapper>
             </ContentBlock>
