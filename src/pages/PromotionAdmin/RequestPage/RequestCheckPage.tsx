@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useBlocker, useLocation, useMatch, useNavigate } from 'react-router-dom';
+import { useMatch, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { getRequestsData } from '@/apis/PromotionAdmin/request';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
-import TextEditor from '@/components/PromotionAdmin/Request/TextEditor';
-import { IEditorData, IRequestData } from '../../../types/PromotionAdmin/request';
+import { IRequestData } from '../../../types/PromotionAdmin/request';
 import draftToHtml from 'draftjs-to-html';
 import { ContentState, EditorState, convertToRaw } from 'draft-js';
 import Tooltip from '@/components/PromotionAdmin/DataEdit/StyleComponents/Tooltip';
@@ -19,15 +18,35 @@ const MAX_TEXT_LENGTH = 255;
 
 const RequestDetailPage = () => {
   // pagination 구현에 사용되는 변수
-  const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage, setPostsPerPage] = useState(10);
+  const { data, isLoading } = useQuery<IRequestData>(['request', 'id'], getRequestsData);
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [postsPerPage, setPostsPerPage] = useState<number>(10);
   const indexOfLast = currentPage * postsPerPage;
   const indexOfFirst = indexOfLast - postsPerPage;
+  const [requestData, setData] = useState<IRequestData | null>(null);
+
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const fetchData = async () => {
+    try {
+      const newData = await getRequestsData();
+      setData(newData); // 데이터 상태 업데이트
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [currentPage, postsPerPage]);
+
+  //
 
   const navigator = useNavigate();
   const requestDetailMatch = useMatch(`${PA_ROUTES.REQUEST}/:requestId`);
-
-  const { data, isLoading } = useQuery<IRequestData>(['request', 'id'], getRequestsData);
 
   const clickedRequest =
     requestDetailMatch?.params.requestId &&
@@ -132,6 +151,8 @@ const RequestDetailPage = () => {
       })
       : [];
 
+  const emailItemsSliced = emailItems.slice(indexOfFirst, indexOfLast);
+
   return (
     <PageWrapper>
       {requestDetailMatch && clickedRequest && (
@@ -150,6 +171,7 @@ const RequestDetailPage = () => {
                 <Answer className='article' dangerouslySetInnerHTML={{ __html: clickedRequest.description }} />
               </Wrapper>
             </Box>
+
             <Box>
               <Wrapper>
                 <Tooltip
@@ -187,10 +209,11 @@ const RequestDetailPage = () => {
           </LeftContainer>
           <RightContainer>
             <Box>
-              <EmailListComponent emailItems={emailItems} />
-              {/* <ButtonWrapper>
-                <Pagination postsPerPage={postsPerPage} totalPosts={data.length} paginate={setCurrentPage} />
-              </ButtonWrapper> */}
+              {/* <div>총 {emailItems.length}개</div> */}
+              <EmailListComponent emailItems={emailItemsSliced} />
+              <ButtonWrapper>
+                <Pagination postsPerPage={postsPerPage} totalPosts={emailItems.length} paginate={paginate} />
+              </ButtonWrapper>
             </Box>
           </RightContainer>
         </>
@@ -198,6 +221,8 @@ const RequestDetailPage = () => {
     </PageWrapper>
   );
 };
+
+export default RequestDetailPage;
 
 const PageWrapper = styled.div`
   display: flex;
@@ -215,7 +240,7 @@ const LeftContainer = styled.div`
 `;
 
 const RightContainer = styled.div`
-  height: 80vh;
+  height: auto;
   width: 50%;
   display: flex;
   flex-direction: column;
@@ -318,5 +343,3 @@ const TextCounter = styled.span`
   margin-top: 0.9rem;
   font-size: 0.9rem;
 `;
-
-export default RequestDetailPage;

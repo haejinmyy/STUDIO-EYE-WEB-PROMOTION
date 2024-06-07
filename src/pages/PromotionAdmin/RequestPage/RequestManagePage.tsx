@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import WaitingRequestsList from '@/components/PromotionAdmin/Home/RequestSummary/WaitingRequestsList';
 import { ContentBox } from '@/components/PromotionAdmin/Request/Components';
+import Pagination from '@/components/Pagination/Pagination';
 
 function RequestList() {
   const { data, isLoading, refetch } = useQuery<IRequest[]>('requests', getRequestsData, { refetchOnWindowFocus: false });
@@ -13,26 +14,8 @@ function RequestList() {
   // pagination 구현에 사용되는 변수
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [postsPerPage, setPostsPerPage] = useState<number>(10);
-
-  const [showWaitingApproval, setShowWaitingApproval] = useState<boolean>(false);
-  const [showCompletedRequest, setShowCompletedRequest] = useState<boolean>(false);
-
-  const handleWaitingToggle = () => {
-    setShowWaitingApproval(!showWaitingApproval);
-    if (!showWaitingApproval) {
-      setShowCompletedRequest(false);
-    }
-  };
-
-  const filterWaitingRequests = (requests: IRequest[]): IRequest[] => {
-    return requests.filter((request) => request.state === 'WAITING');
-  };
-
-  const filteredRequests = (showWaitingApproval ? filterWaitingRequests(data || []) : data) || [];
-
   const indexOfLast = currentPage * postsPerPage;
   const indexOfFirst = indexOfLast - postsPerPage;
-  const slicedRequests = filteredRequests?.slice(indexOfFirst, indexOfLast) || [];
 
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -43,22 +26,37 @@ function RequestList() {
     refetch();
   }, [currentPage, postsPerPage]);
 
+  //
+
+  const [filterState, setFilterState] = useState<string>('ALL');
+
+  const filterRequests = (requests: IRequest[], state: string): IRequest[] => {
+    if (state === 'ALL') {
+      return requests;
+    }
+    return requests.filter((request) => request.state === state);
+  };
+
+  const filteredRequests = filterRequests(data || [], filterState) || [];
+  const slicedRequests = filteredRequests?.slice(indexOfFirst, indexOfLast) || [];
+
   return (
     <Wrapper>
       <TitleWrapper>
         <Title>
           Request 관리
           <Info>총 {filteredRequests.length}건</Info>
-
         </Title>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <ToggleLabel>
-            {showWaitingApproval ? '대기 중인 문의' : '전체 문의'}
-          </ToggleLabel>
-          <ToggleButton onClick={handleWaitingToggle}>
-            <ToggleSlider active={showWaitingApproval} />
-          </ToggleButton>
-        </div>
+        <DropDown onChange={(e) => {
+          setFilterState(e.target.value);
+          setCurrentPage(1);
+        }}>
+          <option value="ALL">전체 문의</option>
+          <option value="WAITING">대기 중인 문의</option>
+          <option value="APPROVED">승인된 문의</option>
+          <option value="REJECTED">거절된 문의</option>
+          <option value="DISCUSSING">논의 중인 문의</option>
+        </DropDown>
       </TitleWrapper>
       <ContentBox>
         {!data || data.length === 0 ? (
@@ -96,6 +94,7 @@ function RequestList() {
               )}
             </TableWrapper>
             <PaginationWrapper>
+              <Pagination postsPerPage={postsPerPage} totalPosts={filteredRequests.length} paginate={paginate} />
             </PaginationWrapper>
           </>
         )}
@@ -134,40 +133,23 @@ const Info = styled.div`
   font-size: 0.9rem;
 `;
 
-const ToggleButton = styled.div`
-  position: relative;
-  width: 60px;
-  height: 34px;
-`;
-
-const ToggleSlider = styled.div<{ active: boolean }>`
-  position: absolute;
+const DropDown = styled.select`
   cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: ${(props) => (props.active ? '#4caf50' : '#ccc')};
-  transition: 0.4s;
-  border-radius: 34px;
+  border: none;
+  background-color: ${(props) => props.theme.color.white.bold};
+  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+  padding: 0.4rem 1.4rem;
+  margin: 1rem 0;
 
-  &:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: 0.4s;
-    border-radius: 50%;
-    transform: ${(props) => (props.active ? 'translateX(26px)' : 'translateX(0)')};
-  }
-`;
-
-const ToggleLabel = styled.span`
-  margin-right: 1rem;
+  border-radius: 0.2rem;
   font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+
+  option {
+    padding: 10px;
+  }
 `;
 
 const TableWrapper = styled.div`
