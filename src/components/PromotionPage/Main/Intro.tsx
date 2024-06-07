@@ -94,6 +94,7 @@ const IntroWrapper = styled.div`
   font-family: 'pretendard-bold';
   font-size: 48px;
   text-align: center;
+
   width: 40rem;
   max-height: 7rem;
   text-overflow: ellipsis;
@@ -107,10 +108,9 @@ const DesWrapper = styled.div`
   text-align: center;
 
   width: 50rem;
-  max-height: 20rem;
+  max-height: 50rem;
   text-overflow: ellipsis;
   overflow: hidden;
-  white-space: nowrap;
 `;
 
 const CircleWrapper = styled(motion.div)`
