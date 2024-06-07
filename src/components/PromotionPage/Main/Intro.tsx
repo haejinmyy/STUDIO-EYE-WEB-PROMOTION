@@ -23,8 +23,9 @@ const Intro = () => {
         const data = await getCompanyData();
         setCompanyMainOverview(data.mainOverview);
 
-        const commitmentText = data.commitment.replace(/<\/?[^>]+(>|$)/g, '');
-        setCompanyCommitment(commitmentText);
+        const commitmentText = data.commitment.replace(/(<([^>]+)>)/gi, '');
+        // const commitmentText = data.commitment;
+        setCompanyCommitment(data.commitment);
       } catch (error) {
         console.error('Error fetching company data: ', error);
       }
@@ -32,6 +33,15 @@ const Intro = () => {
 
     fetchData();
   }, []);
+
+  const parseAndTrimHTML = (html: string, maxLength: number): string => {
+    const tempElement = document.createElement('div');
+    tempElement.innerHTML = html;
+    let text = tempElement.textContent || tempElement.innerText || '';
+    text = text.trim();
+    return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+  };
+  const limitedCompanyMainOverview = parseAndTrimHTML(companyMainOverview, 10);
 
   return (
     <Container>
@@ -48,8 +58,8 @@ const Intro = () => {
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: desInView ? 1 : 0, y: desInView ? 0 : 100 }}
           transition={{ duration: 2, delay: 0.6 }}
+          dangerouslySetInnerHTML={{ __html: companyCommitment || '<p>데이터 없음</p>' }}
         >
-          {companyCommitment || '데이터 없음'}
         </motion.div>
       </DesWrapper>
       <CircleWrapper ref={circleRef}>
@@ -79,16 +89,30 @@ const Container = styled.div`
 
   line-height: normal;
 `;
+
 const IntroWrapper = styled.div`
   font-family: 'pretendard-bold';
   font-size: 48px;
   text-align: center;
+  width: 40rem;
+  max-height: 7rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
 `;
+
 const DesWrapper = styled.div`
   font-size: 20px;
   font-family: 'pretendard-bold';
   margin-top: 54px;
+  text-align: center;
+
+  width: 50rem;
+  max-height: 20rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 `;
+
 const CircleWrapper = styled(motion.div)`
   margin-top: 102px;
 `;
