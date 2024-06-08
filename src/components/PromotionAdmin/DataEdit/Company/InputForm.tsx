@@ -2,13 +2,10 @@ import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
-import { EditorState, convertToRaw } from 'draft-js';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import draftToHtml from 'draftjs-to-html';
 import { IEditorData } from '@/types/PromotionAdmin/faq';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import { useNavigate } from 'react-router-dom';
-import TextColorEditor from '../TextColorEditor';
 import { ReactComponent as DeleteIcon } from '@/assets/images/PA/minusIcon.svg';
 import { ReactComponent as AddedIcon } from '@/assets/images/PA/plusIcon.svg';
 import {
@@ -35,6 +32,7 @@ import { DATAEDIT_NOTICE_COMPONENTS, DATAEDIT_TITLES_COMPONENTS, INPUT_MAX_LENGT
 import { MSG } from '@/constants/messages';
 import { useRecoilState } from 'recoil';
 import { dataUpdateState } from '@/recoil/atoms';
+import TextColorEditor from '@/components/TextEditor/TextColorEditor';
 
 interface IFormData {
   mainOverview?: string;
@@ -140,28 +138,20 @@ const InputForm = () => {
     }
   };
 
-  const [mainOverviewState, setMainOverviewState] = useState(EditorState.createEmpty());
-  const [commitmentState, setCommitmentState] = useState(EditorState.createEmpty());
-  const [introductionState, setIntroductionState] = useState(EditorState.createEmpty());
+  const [mainOverviewState, setMainOverviewState] = useState('');
+  const [commitmentState, setCommitmentState] = useState('');
+  const [introductionState, setIntroductionState] = useState('');
 
   const [blocks, setBlocks] = useState<IEditorData[]>([]);
 
-  const updateMainOverview = async (state: any) => {
-    await setMainOverviewState(state);
-    setBlocks(convertToRaw(mainOverviewState.getCurrentContent()).blocks);
-    setIsEditing(true);
+  const updateMainOverview = (state: string) => {
+    setMainOverviewState(state);
   };
-
-  const updateCommitment = async (state: any) => {
-    await setCommitmentState(state);
-    setBlocks(convertToRaw(commitmentState.getCurrentContent()).blocks);
-    setIsEditing(true);
+  const updateCommitment = (state: string) => {
+    setCommitmentState(state);
   };
-
-  const updateIntroduction = async (state: any) => {
-    await setIntroductionState(state);
-    setBlocks(convertToRaw(introductionState.getCurrentContent()).blocks);
-    setIsEditing(true);
+  const updateIntroduction = (state: string) => {
+    setIntroductionState(state);
   };
 
   const onValid = (data: IFormData) => {
@@ -181,9 +171,8 @@ const InputForm = () => {
     handleSaveClick(data);
   };
 
-  const checkIsEmpty = (editorState: EditorState, attribute: string) => {
-    const isEmpty = !editorState.getCurrentContent().hasText();
-    if (isEmpty) {
+  const checkIsEmpty = (text: string, attribute: string) => {
+    if (!text.trim()) {
       alert(`${attribute}을(를) 작성해주세요.`);
       return true;
     }
@@ -210,9 +199,9 @@ const InputForm = () => {
             addressEnglish: data.addressEnglish,
             phone: data.phone,
             fax: data.fax,
-            mainOverview: draftToHtml(convertToRaw(mainOverviewState.getCurrentContent())),
-            commitment: draftToHtml(convertToRaw(commitmentState.getCurrentContent())),
-            introduction: draftToHtml(convertToRaw(introductionState.getCurrentContent())),
+            mainOverview: mainOverviewState,
+            commitment: commitmentState,
+            introduction: introductionState,
             detailInformation: transformedDetailInformation,
           }),
         ],
@@ -434,18 +423,21 @@ const InputForm = () => {
                   editorState={mainOverviewState}
                   onEditorStateChange={updateMainOverview}
                   attribute='Main Overview'
+                  charLimit={INPUT_MAX_LENGTH.INFOMATION_MAIN_OVERVIEW}
                 />
                 <InputTitle>Commitment</InputTitle>
                 <TextColorEditor
                   editorState={commitmentState}
                   onEditorStateChange={updateCommitment}
                   attribute='Commitment'
+                  charLimit={INPUT_MAX_LENGTH.INFOMATION_COMMITMENT}
                 />
                 <InputTitle>Introduction</InputTitle>
                 <TextColorEditor
                   editorState={introductionState}
                   onEditorStateChange={updateIntroduction}
                   attribute='Introduction'
+                  charLimit={INPUT_MAX_LENGTH.INFOMATION_INTRODUCTION}
                 />
               </InputWrapper>
             </ContentBlock>
