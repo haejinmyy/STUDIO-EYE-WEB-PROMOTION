@@ -75,6 +75,7 @@ function ClientEditPage() {
         },
         logoImg: clickedClient.logoImg,
       });
+      setIsVisibility(clickedClient.clientInfo.visibility);
     }
   }, [clickedClient, reset]);
 

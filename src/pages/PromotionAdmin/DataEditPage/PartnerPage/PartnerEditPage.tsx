@@ -109,6 +109,7 @@ function PartnerEditPage() {
         },
         logoImg: clickedPartner.logoImg,
       });
+      setIsVisibility(clickedPartner.partnerInfo.is_main);
     }
   }, [clickedPartner, reset]);
 
@@ -238,7 +239,7 @@ function PartnerEditPage() {
                     onChange={handleLinkChange}
                   />
                   <CharCountWrapper>
-                    {watchPartnerFields[partnerInputIndex.link] ? watchPartnerFields[partnerInputIndex.link].length : 0}{' '}
+                    {watchPartnerFields[partnerInputIndex.link] ? watchPartnerFields[partnerInputIndex.link].length : 0}
                     /{INPUT_MAX_LENGTH.PARTNER_LINK}자
                   </CharCountWrapper>
                 </div>
@@ -256,7 +257,7 @@ function PartnerEditPage() {
                     onChange={handleNameChange}
                   />
                   <CharCountWrapper>
-                    {watchPartnerFields[partnerInputIndex.name]?.length} /{INPUT_MAX_LENGTH.PARTNER_NAME}자
+                    {watchPartnerFields[partnerInputIndex.name]?.length}/{INPUT_MAX_LENGTH.PARTNER_NAME}자
                   </CharCountWrapper>
                 </div>
                 {errors.name && <p>{errors.name.message}</p>}
