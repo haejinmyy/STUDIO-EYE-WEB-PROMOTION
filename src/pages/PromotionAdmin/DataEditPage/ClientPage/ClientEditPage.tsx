@@ -260,7 +260,7 @@ export default ClientEditPage;
 const CharCountWrapper = styled.div`
   font-size: 12px;
   color: gray;
-  width: 50px;
+  width: 60px;
   font-family: ${(props) => props.theme.font.light};
   align-self: flex-end;
   margin-left: 5px;
@@ -332,7 +332,7 @@ const FormContainer = styled.form`
 `;
 
 const InputWrapper = styled.div`
-  width: 400px;
+  width: 460px;
   display: flex;
   flex-direction: column;
   input {
