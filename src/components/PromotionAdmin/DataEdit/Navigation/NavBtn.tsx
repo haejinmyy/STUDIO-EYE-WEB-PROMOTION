@@ -43,6 +43,7 @@ const NavBtn = ({ path, pathName }: Props) => {
 export default NavBtn;
 
 const LinkStyle = styled.div<{ isActive: boolean }>`
+  cursor: pointer;
   width: 127px;
   height: 55px;
   display: flex;

@@ -10,7 +10,10 @@ import Button from '@/components/PromotionAdmin/DataEdit/StyleComponents/Button'
 import FileButton from '@/components/PromotionAdmin/DataEdit/StyleComponents/FileButton';
 import SubTitle from '@/components/PromotionAdmin/DataEdit/StyleComponents/SubTitle';
 import ToggleSwitch from '@/components/PromotionAdmin/DataEdit/StyleComponents/ToggleSwitch';
-import { DATAEDIT_NOTICE_COMPONENTS } from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import {
+  DATAEDIT_NOTICE_COMPONENTS,
+  INPUT_MAX_LENGTH,
+} from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
 import { useSetRecoilState } from 'recoil';
 import { dataUpdateState } from '@/recoil/atoms';
 import { MSG } from '@/constants/messages';
@@ -58,6 +61,7 @@ function PartnerWritePage() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<IFormData>({
     defaultValues: {
@@ -65,6 +69,33 @@ function PartnerWritePage() {
       name: '',
     },
   });
+
+  // 글자수 확인
+  const watchPartnerFields = watch(['link', 'name']);
+  const partnerInputIndex = {
+    link: 0,
+    name: 1,
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, maxLength: number, field: keyof IFormData) => {
+    const inputLength = event.target.value.length;
+
+    if (inputLength <= maxLength) {
+      setValue(field, event.target.value, { shouldValidate: true });
+    } else {
+      const trimmedValue = event.target.value.slice(0, maxLength);
+      setValue(field, trimmedValue, { shouldValidate: true });
+    }
+    setIsEditing(true);
+  };
+
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange(event, INPUT_MAX_LENGTH.PARTNER_NAME, 'name');
+  };
+
+  const handleLinkChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange(event, INPUT_MAX_LENGTH.PARTNER_LINK, 'link');
+  };
 
   const onValid = (data: IFormData) => {
     if (postData.logoImg === '') {
@@ -153,25 +184,40 @@ function PartnerWritePage() {
 
         <RightContainer>
           <SubTitle description='Link' />
+
           <InputWrapper>
-            <input
-              {...register('link', {
-                required: MSG.PLACEHOLDER_MSG.LINK,
-                validate: validateUrl,
-              })}
-              placeholder={MSG.PLACEHOLDER_MSG.LINK}
-            />
+            <div style={{ display: 'flex' }}>
+              <input
+                style={{ paddingLeft: '10px' }}
+                {...register('link', {
+                  required: MSG.PLACEHOLDER_MSG.LINK,
+                  validate: validateUrl,
+                })}
+                placeholder={MSG.PLACEHOLDER_MSG.LINK}
+                onChange={handleLinkChange}
+              />
+              <CharCountWrapper>
+                {watchPartnerFields[partnerInputIndex.link] ? watchPartnerFields[partnerInputIndex.link].length : 0}/
+                {INPUT_MAX_LENGTH.PARTNER_LINK}자
+              </CharCountWrapper>
+            </div>
             {errors.link && <p>{errors.link.message}</p>}
 
             <SubTitle description='Name' />
-
-            <input
-              {...register('name', {
-                required: MSG.PLACEHOLDER_MSG.NAME,
-                validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
-              })}
-              placeholder={MSG.PLACEHOLDER_MSG.NAME}
-            />
+            <div style={{ display: 'flex' }}>
+              <input
+                style={{ paddingLeft: '10px' }}
+                {...register('name', {
+                  required: MSG.PLACEHOLDER_MSG.NAME,
+                  validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
+                })}
+                placeholder={MSG.PLACEHOLDER_MSG.NAME}
+                onChange={handleNameChange}
+              />
+              <CharCountWrapper>
+                {watchPartnerFields[partnerInputIndex.name]?.length}/{INPUT_MAX_LENGTH.PARTNER_NAME}자
+              </CharCountWrapper>
+            </div>
             {errors.name && <p>{errors.name.message}</p>}
           </InputWrapper>
           <VisibilityWrapper>
@@ -189,6 +235,16 @@ function PartnerWritePage() {
 }
 
 export default PartnerWritePage;
+
+const CharCountWrapper = styled.div`
+  font-size: 12px;
+  color: gray;
+  width: 60px;
+  font-family: ${(props) => props.theme.font.light};
+  align-self: flex-end;
+  margin-left: 5px;
+  padding-bottom: 20px;
+`;
 
 const RightContainer = styled.div`
   margin-left: 50px;
@@ -252,7 +308,7 @@ const FormContainer = styled.form`
 `;
 
 const InputWrapper = styled.div`
-  width: 400px;
+  width: 460px;
   display: flex;
   flex-direction: column;
   input {

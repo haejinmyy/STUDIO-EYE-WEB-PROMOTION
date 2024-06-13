@@ -1,6 +1,9 @@
 import { getClientData } from '@/apis/PromotionAdmin/dataEdit';
 import { ContentBlock } from '@/components/PromotionAdmin/DataEdit/Company/CompanyFormStyleComponents';
-import { DATAEDIT_NOTICE_COMPONENTS } from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import {
+  DATAEDIT_NOTICE_COMPONENTS,
+  INPUT_MAX_LENGTH,
+} from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
 import Button from '@/components/PromotionAdmin/DataEdit/StyleComponents/Button';
 import FileButton from '@/components/PromotionAdmin/DataEdit/StyleComponents/FileButton';
 import SubTitle from '@/components/PromotionAdmin/DataEdit/StyleComponents/SubTitle';
@@ -38,6 +41,8 @@ function ClientEditPage() {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<IFormData>({
     defaultValues: {
@@ -70,8 +75,23 @@ function ClientEditPage() {
         },
         logoImg: clickedClient.logoImg,
       });
+      setIsVisibility(clickedClient.clientInfo.visibility);
     }
   }, [clickedClient, reset]);
+
+  // 글자수 제한
+  const watchField = watch('name');
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputLength = event.target.value.length;
+
+    if (inputLength <= INPUT_MAX_LENGTH.CLIENT_NAME) {
+      setValue('name', event.target.value, { shouldValidate: true });
+    } else {
+      const trimmedValue = event.target.value.slice(0, INPUT_MAX_LENGTH.CLIENT_NAME);
+      setValue('name', trimmedValue, { shouldValidate: true });
+    }
+  };
 
   const onValid = (data: IFormData) => {
     handleSaveClick(data);
@@ -188,13 +208,22 @@ function ClientEditPage() {
               <RightContainer>
                 <InputWrapper>
                   <SubTitle description='Name' />
-                  <input
-                    {...register('name', {
-                      required: MSG.PLACEHOLDER_MSG.NAME,
-                      validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
-                    })}
-                    placeholder={MSG.PLACEHOLDER_MSG.NAME}
-                  />
+                  <div style={{ display: 'flex' }}>
+                    <input
+                      style={{ paddingLeft: '10px' }}
+                      {...register('name', {
+                        required: MSG.PLACEHOLDER_MSG.NAME,
+                        maxLength: INPUT_MAX_LENGTH.CLIENT_NAME,
+                        validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
+                      })}
+                      onChange={handleInputChange}
+                      placeholder={MSG.PLACEHOLDER_MSG.NAME}
+                    />
+
+                    <CharCountWrapper>
+                      {watchField?.length}/{INPUT_MAX_LENGTH.CLIENT_NAME}자
+                    </CharCountWrapper>
+                  </div>
                   {errors.name && <p>{errors.name.message}</p>}
                 </InputWrapper>
                 <VisibilityWrapper>
@@ -228,6 +257,16 @@ function ClientEditPage() {
 }
 
 export default ClientEditPage;
+
+const CharCountWrapper = styled.div`
+  font-size: 12px;
+  color: gray;
+  width: 60px;
+  font-family: ${(props) => props.theme.font.light};
+  align-self: flex-end;
+  margin-left: 5px;
+  padding-bottom: 20px;
+`;
 
 const RightContainer = styled.div`
   margin-left: 50px;
@@ -294,7 +333,7 @@ const FormContainer = styled.form`
 `;
 
 const InputWrapper = styled.div`
-  width: 400px;
+  width: 460px;
   display: flex;
   flex-direction: column;
   input {
