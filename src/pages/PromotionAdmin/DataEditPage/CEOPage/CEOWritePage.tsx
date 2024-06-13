@@ -190,7 +190,7 @@ export const Wrapper = styled.div`
     transition: 0.2s;
     border-bottom: 3px solid ${(props) => props.theme.color.symbol};
   }
-  ,
+
   textarea {
     outline: none;
     font-family: ${(props) => props.theme.font.regular};

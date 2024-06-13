@@ -6,14 +6,9 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
-import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import htmlToDraft from 'html-to-draftjs';
-import draftToHtml from 'draftjs-to-html';
-import { IEditorData } from '@/types/PromotionAdmin/faq';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import { useNavigate } from 'react-router-dom';
-import TextColorEditor from '@/components/PromotionAdmin/DataEdit/TextColorEditor';
 import FileButton from '@/components/PromotionAdmin/DataEdit/StyleComponents/FileButton';
 import {
   DATAEDIT_NOTICE_COMPONENTS,
@@ -22,6 +17,7 @@ import {
 
 interface IFormData {
   name: string;
+  introduction: string;
 }
 
 const CEOEditPage = () => {
@@ -37,44 +33,24 @@ const CEOEditPage = () => {
 
   const [imgChange, setImgChange] = useState(false);
 
-  const { register, handleSubmit } = useForm<IFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IFormData>({
     defaultValues: {
       name: data?.name,
+      introduction: data?.introduction,
     },
   });
-
-  const [editorState, setEditorState] = useState(() => {
-    const blocksFromHtml = data && htmlToDraft(data.introduction);
-    if (blocksFromHtml) {
-      const { contentBlocks, entityMap } = blocksFromHtml;
-      const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
-      return EditorState.createWithContent(contentState);
-    } else {
-      return EditorState.createEmpty();
-    }
-  });
-  const [blocks, setBlocks] = useState<IEditorData[]>([]);
 
   useEffect(() => {
     refetch();
   }, [data, refetch]);
 
-  const updateTextDescription = (state: any) => {
-    const contentState = state.getCurrentContent();
-    const plainText = contentState.getPlainText();
-    const lineBreaks = (plainText.match(/\n/g) || []).length;
-    if (plainText.length > 200 || lineBreaks >= 6) {
-      setEditorState(editorState);
-      return;
-    }
-    setEditorState(state);
-    setBlocks(convertToRaw(editorState.getCurrentContent()).blocks);
-  };
-
   const onValid = (data: IFormData) => {
     handleSaveClick(data);
   };
-  const [isInvalid, setInvalid] = useState(true);
 
   const handleSaveClick = async (data: IFormData) => {
     const formData = new FormData();
@@ -85,54 +61,40 @@ const CEOEditPage = () => {
         [
           JSON.stringify({
             name: data.name,
-            introduction: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+            introduction: data.introduction,
           }),
         ],
         { type: 'application/json' },
       ),
     );
 
-    if (putData.request.name === undefined) {
-      alert('이름을 입력해주세요');
-      setInvalid(true);
-    } else if (blocks === undefined || null || blocks.length === 0) {
-      alert('소개를 입력해주세요');
-      setInvalid(true);
-    } else if (putData.file === undefined) {
-      alert('파일을 업로드해주세요');
-      setInvalid(true);
-    } else {
-      setInvalid(false);
-    }
-    if (!isInvalid) {
-      if (window.confirm('수정하시겠습니까?')) {
-        if (imgChange) {
-          // 이미지를 변경한 경우
-          const file = await urlToFile(putData.file, 'CEOLogo.png');
-          if (file) {
-            formData.append('file', file);
-          } else {
-            console.error('로고 이미지 가져오기 실패');
-          }
-          axios
-            .put(`${PROMOTION_BASIC_PATH}/api/ceo`, formData)
-            .then((response) => {
-              console.log('CEO data updated:', response);
-              alert('수정되었습니다.');
-              navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
-            })
-            .catch((error) => console.error('Error updating CEO:', error));
+    if (window.confirm('수정하시겠습니까?')) {
+      if (imgChange) {
+        // 이미지를 변경한 경우
+        const file = await urlToFile(putData.file, 'CEOLogo.png');
+        if (file) {
+          formData.append('file', file);
         } else {
-          // 이미지를 변경하지 않은 경우
-          axios
-            .put(`${PROMOTION_BASIC_PATH}/api/ceo/modify`, formData)
-            .then((response) => {
-              console.log('CEO updated:', response);
-              alert('수정되었습니다.');
-              navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
-            })
-            .catch((error) => console.error('Error updating CEO:', error));
+          console.error('로고 이미지 가져오기 실패');
         }
+        axios
+          .put(`${PROMOTION_BASIC_PATH}/api/ceo`, formData)
+          .then((response) => {
+            console.log('CEO data updated:', response);
+            alert('수정되었습니다.');
+            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
+          })
+          .catch((error) => console.error('Error updating CEO:', error));
+      } else {
+        // 이미지를 변경하지 않은 경우
+        axios
+          .put(`${PROMOTION_BASIC_PATH}/api/ceo/modify`, formData)
+          .then((response) => {
+            console.log('CEO updated:', response);
+            alert('수정되었습니다.');
+            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
+          })
+          .catch((error) => console.error('Error updating CEO:', error));
       }
     }
   };
@@ -192,18 +154,27 @@ const CEOEditPage = () => {
               </InputTitle>
               <input
                 {...register('name', {
-                  required: '이름 입력해주세요',
+                  required: 'CEO 이름을 입력해주세요',
                 })}
-                placeholder='이름 입력해주세요'
+                placeholder='CEO 이름을 입력해주세요'
+                onChange={(e) => {
+                  if (e.target.value.length > 15) {
+                    e.target.value = e.target.value.slice(0, 15);
+                    console.log(e.target.value);
+                  }
+                }}
               />
+              {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
               <InputTitle>
                 <p>Introduction</p>
               </InputTitle>
-              <TextColorEditor
-                editorState={editorState}
-                onEditorStateChange={updateTextDescription}
-                attribute='CEO Introduction'
+              <textarea
+                {...register('introduction', {
+                  required: 'CEO 소개 (5줄, 200자 내로 작성해 주세요.)',
+                })}
+                placeholder='CEO 소개 (5줄, 200자 내로 작성해 주세요.)'
               />
+              {errors.introduction && <ErrorMessage>{errors.introduction.message}</ErrorMessage>}
               <InputImgWrapper>
                 <Box>
                   <InputTitle>{DATAEDIT_TITLES_COMPONENTS.CEOIMG}</InputTitle>
@@ -277,6 +248,17 @@ export const InputWrapper = styled.div`
     border: none;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   }
+  textarea {
+    outline: none;
+    font-family: ${(props) => props.theme.font.regular};
+    font-size: 14px;
+    padding: 10px;
+    width: 70%;
+    min-height: 200px;
+    border: none;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    resize: none;
+  }
 
   input:focus,
   textarea:focus {
@@ -347,4 +329,10 @@ const Button = styled.button`
   &:hover {
     background-color: ${(props) => props.theme.color.yellow.light}; /* 버튼 호버 시 색상 조정 */
   }
+`;
+const ErrorMessage = styled.div`
+  font-family: ${(props) => props.theme.font.light};
+  margin-top: 10px;
+  margin-left: 10px;
+  font-size: 13px;
 `;

@@ -388,7 +388,7 @@ const InputForm = () => {
                       onChange={handleLogoImageChange}
                     />
                     <ImgBox>
-                      <img src={putData.logoImageUrl} />
+                      <img src={putData.logoImageUrl} alt='' />
                     </ImgBox>
                   </LogoWrapper>
                 </Box>
@@ -404,7 +404,7 @@ const InputForm = () => {
                       onChange={handleSloganImageChange}
                     />
                     <ImgBox>
-                      <img src={putData.sloganImageUrl} />
+                      <img src={putData.sloganImageUrl} alt='' />
                     </ImgBox>
                   </LogoWrapper>
                 </Box>
