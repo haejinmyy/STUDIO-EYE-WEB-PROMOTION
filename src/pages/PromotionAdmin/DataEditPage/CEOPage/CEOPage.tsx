@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import CEOWritePage from './CEOWritePage';
 import { DATAEDIT_TITLES_COMPONENTS } from '../../../../components/PromotionAdmin/DataEdit/Company/StyleComponents';
 
-function CEOPage2() {
+function CEOPage() {
   const { data, isLoading } = useQuery<ICEOData>(['ceo', 'id'], getCEOData);
   const navigator = useNavigate();
 
@@ -29,7 +29,7 @@ function CEOPage2() {
           <InputTitle>
             <p>Introduction</p>
           </InputTitle>
-          <Content dangerouslySetInnerHTML={{ __html: data?.introduction ?? '' }} />
+          <Content>{data?.introduction}</Content>
           <InputImgWrapper>
             <Box>
               <InputTitle>{DATAEDIT_TITLES_COMPONENTS.CEOIMG}</InputTitle>
@@ -46,7 +46,7 @@ function CEOPage2() {
   );
 }
 
-export default CEOPage2;
+export default CEOPage;
 
 export const Wrapper = styled.div`
   display: flex;

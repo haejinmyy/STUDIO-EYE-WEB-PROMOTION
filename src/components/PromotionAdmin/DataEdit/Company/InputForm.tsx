@@ -120,10 +120,10 @@ const InputForm = () => {
       return;
     }
 
-    if (putData.logoImageUrl == '') {
+    if (putData.logoImageUrl === '') {
       alert('Logo 파일을 업로드해주세요');
       return;
-    } else if (putData.sloganImageUrl == '') {
+    } else if (putData.sloganImageUrl === '') {
       alert('Slogan 파일을 업로드해주세요');
       return;
     }
@@ -312,7 +312,7 @@ const InputForm = () => {
                   <LogoWrapper>
                     <FileButton id='logoFile' description='Logo Upload' onChange={handleLogoImageChange} />
                     <ImgBox>
-                      <img src={putData.logoImageUrl} />
+                      <img src={putData.logoImageUrl} alt='' />
                     </ImgBox>
                   </LogoWrapper>
                 </Box>
@@ -324,7 +324,7 @@ const InputForm = () => {
                   <LogoWrapper>
                     <FileButton id='sloganFile' description='Slogan Upload' onChange={handleSloganImageChange} />
                     <ImgBox>
-                      <img src={putData.sloganImageUrl} />
+                      <img src={putData.sloganImageUrl} alt='' />
                     </ImgBox>
                   </LogoWrapper>
                 </Box>
