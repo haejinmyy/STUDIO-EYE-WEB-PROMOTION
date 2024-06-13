@@ -1,9 +1,7 @@
 import styled from 'styled-components';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import { ContentBlock } from '@/components/PromotionAdmin/DataEdit/Company/CompanyFormStyleComponents';
@@ -12,7 +10,15 @@ import SubTitle from '@/components/PromotionAdmin/DataEdit/StyleComponents/SubTi
 import FileButton from '@/components/PromotionAdmin/DataEdit/StyleComponents/FileButton';
 import ToggleSwitch from '@/components/PromotionAdmin/DataEdit/StyleComponents/ToggleSwitch';
 import Button from '@/components/PromotionAdmin/DataEdit/StyleComponents/Button';
-import { DATAEDIT_NOTICE_COMPONENTS } from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import {
+  DATAEDIT_NOTICE_COMPONENTS,
+  INPUT_MAX_LENGTH,
+} from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import { useSetRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
+import { MSG } from '@/constants/messages';
+import { useNavigate } from 'react-router-dom';
+import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 
 interface IFormData {
   name: string;
@@ -20,7 +26,8 @@ interface IFormData {
 }
 
 function ClientWritePage() {
-  const navigator = useNavigate();
+  const setIsEditing = useSetRecoilState(dataUpdateState);
+  const navigate = useNavigate();
   const [postData, setPostData] = useState({
     clientInfo: {
       name: '',
@@ -32,12 +39,30 @@ function ClientWritePage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<IFormData>();
 
-  const [isInvalid, setInvalid] = useState(true);
+  // 글자수 제한
+  const [charLength, setCharLength] = useState(0);
+  const handleCharChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputLength = e.target.value.length;
+    if (inputLength <= INPUT_MAX_LENGTH.CLIENT_NAME) {
+      setCharLength(inputLength);
+      setValue('name', e.target.value, { shouldValidate: true });
+    } else {
+      const trimmedValue = e.target.value.slice(0, INPUT_MAX_LENGTH.CLIENT_NAME);
+      setCharLength(INPUT_MAX_LENGTH.CLIENT_NAME);
+      setValue('name', trimmedValue, { shouldValidate: true });
+    }
+  };
 
   const onValid = (data: IFormData) => {
+    if (postData.logoImg === '') {
+      alert(MSG.INVALID_MSG.FILE);
+      return;
+    }
+
     handleSaveClick(data);
   };
 
@@ -57,28 +82,19 @@ function ClientWritePage() {
       ),
     );
 
-    // 이미지를 변경했는지 확인하고 추가
     const file = await urlToFile(postData.logoImg, 'ClientLogo.png');
     formData.append('logoImg', file);
 
-    if (postData.logoImg === '') {
-      alert('파일을 업로드해주세요');
-      setInvalid(true);
-    } else {
-      setInvalid(false);
-    }
-
-    if (!isInvalid) {
-      if (window.confirm('등록하시겠습니까?')) {
-        axios
-          .post(`${PROMOTION_BASIC_PATH}/api/client`, formData)
-          .then((response) => {
-            console.log('Client posted:', response);
-            alert('등록되었습니다.');
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
-          })
-          .catch((error) => console.error('Error updating client:', error));
-      }
+    if (window.confirm(MSG.CONFIRM_MSG.POST)) {
+      axios
+        .post(`${PROMOTION_BASIC_PATH}/api/client`, formData)
+        .then((response) => {
+          console.log('Client posted:', response);
+          alert(MSG.ALERT_MSG.POST);
+          setIsEditing(false);
+          navigate(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
+        })
+        .catch((error) => console.error('Error updating client:', error));
     }
   };
 
@@ -100,7 +116,7 @@ function ClientWritePage() {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
-      console.log(blob);
+      // console.log(blob);
       return new File([blob], fileName);
     } catch (error) {
       console.error('Error URL to file:', error);
@@ -129,12 +145,22 @@ function ClientWritePage() {
         <RightContainer>
           <InputWrapper>
             <SubTitle description='Name' />
-            <input
-              {...register('name', {
-                required: '이름을 입력해주세요',
-              })}
-              placeholder='이름을 입력해주세요'
-            />
+            <div style={{ display: 'flex' }}>
+              <input
+                style={{ paddingLeft: '10px' }}
+                {...register('name', {
+                  required: MSG.PLACEHOLDER_MSG.NAME,
+                  maxLength: INPUT_MAX_LENGTH.CLIENT_NAME,
+                  validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
+                  onChange: handleCharChange,
+                })}
+                placeholder={MSG.PLACEHOLDER_MSG.NAME}
+              />
+
+              <CharCountWrapper>
+                {charLength}/{INPUT_MAX_LENGTH.CLIENT_NAME}자
+              </CharCountWrapper>
+            </div>
             {errors.name && <p>{errors.name.message}</p>}
           </InputWrapper>
           <VisibilityWrapper>
@@ -145,7 +171,7 @@ function ClientWritePage() {
         </RightContainer>
       </FormContainer>
       <ButtonWrapper>
-        <Button onClick={handleSubmit(onValid)} description='등록하기' width={100} />
+        <Button onClick={handleSubmit(onValid)} description={MSG.BUTTON_MSG.POST} width={100} />
       </ButtonWrapper>
     </ContentBlock>
   );
@@ -153,8 +179,18 @@ function ClientWritePage() {
 
 export default ClientWritePage;
 
+const CharCountWrapper = styled.div`
+  font-size: 12px;
+  color: gray;
+  width: 60px;
+  font-family: ${(props) => props.theme.font.light};
+  align-self: flex-end;
+  margin-left: 5px;
+  padding-bottom: 20px;
+`;
+
 const RightContainer = styled.div`
-  margin-left: 20px;
+  margin-left: 50px;
 `;
 const LeftContainer = styled.div``;
 const LogoContainer = styled.div`
@@ -215,7 +251,7 @@ const FormContainer = styled.form`
 `;
 
 const InputWrapper = styled.div`
-  width: 400px;
+  width: 460px;
   display: flex;
   flex-direction: column;
   input {
@@ -235,6 +271,7 @@ const InputWrapper = styled.div`
   }
 
   p {
+    font-size: 14px;
     color: ${(props) => props.theme.color.symbol};
   }
 `;

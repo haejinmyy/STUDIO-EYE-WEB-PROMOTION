@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { EditorState, convertToRaw, ContentState } from 'draft-js';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import htmlToDraft from 'html-to-draftjs';
-import { IEditorData } from '@/types/PromotionAdmin/faq';
-import TextColorEditor from '../../TextColorEditor';
 import { useQuery } from 'react-query';
 import { getCompanyData } from '@/apis/PromotionAdmin/dataEdit';
 import { ICompanyData } from '@/types/PromotionAdmin/dataEdit';
-
 import { Wrapper, ContentBlock, InputWrapper, InputTitle } from '../CompanyFormStyleComponents';
 import axios from 'axios';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
-import draftToHtml from 'draftjs-to-html';
-import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
+import { DATAEDIT_NOTICE_COMPONENTS, DATAEDIT_TITLES_COMPONENTS, INPUT_MAX_LENGTH } from '../StyleComponents';
 import Button from '../../StyleComponents/Button';
 import styled from 'styled-components';
+import { MSG } from '@/constants/messages';
+import TextColorEditor from '@/components/TextEditor/TextColorEditor';
 
 interface IIntrodutionProps {
   setEditIntroduction: (editMode: boolean) => void;
@@ -23,9 +18,9 @@ interface IIntrodutionProps {
 const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
   const { data, isLoading, error } = useQuery<ICompanyData, Error>(['company', 'id'], getCompanyData);
   const [putData, setPutData] = useState({
-    mainOverview: data?.mainOverview,
-    commitment: data?.commitment,
-    introduction: data?.introduction,
+    mainOverview: data?.mainOverview || '',
+    commitment: data?.commitment || '',
+    introduction: data?.introduction || '',
   });
 
   useEffect(() => {
@@ -35,62 +30,25 @@ const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
         commitment: data.commitment,
         introduction: data.introduction,
       });
-
-      setMainOverviewState(() => {
-        const blocksFromHtml = htmlToDraft(data.mainOverview);
-        if (blocksFromHtml) {
-          const { contentBlocks, entityMap } = blocksFromHtml;
-          const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
-          return EditorState.createWithContent(contentState);
-        } else {
-          return EditorState.createEmpty();
-        }
-      });
-
-      setCommitmentState(() => {
-        const blocksFromHtml = htmlToDraft(data.commitment);
-        if (blocksFromHtml) {
-          const { contentBlocks, entityMap } = blocksFromHtml;
-          const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
-          return EditorState.createWithContent(contentState);
-        } else {
-          return EditorState.createEmpty();
-        }
-      });
-
-      setIntroductionState(() => {
-        const blocksFromHtml = htmlToDraft(data.introduction);
-        if (blocksFromHtml) {
-          const { contentBlocks, entityMap } = blocksFromHtml;
-          const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
-          return EditorState.createWithContent(contentState);
-        } else {
-          return EditorState.createEmpty();
-        }
-      });
     }
   }, [data]);
 
-  const [mainOverviewState, setMainOverviewState] = useState(EditorState.createEmpty());
-  const [commitmentState, setCommitmentState] = useState(EditorState.createEmpty());
-  const [introductionState, setIntroductionState] = useState(EditorState.createEmpty());
-  const [blocks, setBlocks] = useState<IEditorData[]>([]);
-  const updateMainOverview = async (state: any) => {
-    await setMainOverviewState(state);
-    setBlocks(convertToRaw(mainOverviewState.getCurrentContent()).blocks);
+  const [mainOverviewState, setMainOverviewState] = useState(data?.mainOverview || '');
+  const [commitmentState, setCommitmentState] = useState(data?.commitment || '');
+  const [introductionState, setIntroductionState] = useState(data?.introduction || '');
+
+  const updateMainOverview = (state: string) => {
+    setMainOverviewState(state);
   };
-  const updateCommitment = async (state: any) => {
-    await setCommitmentState(state);
-    setBlocks(convertToRaw(commitmentState.getCurrentContent()).blocks);
+  const updateCommitment = (state: string) => {
+    setCommitmentState(state);
   };
-  const updateIntroduction = async (state: any) => {
-    await setIntroductionState(state);
-    setBlocks(convertToRaw(introductionState.getCurrentContent()).blocks);
+  const updateIntroduction = (state: string) => {
+    setIntroductionState(state);
   };
 
-  const checkIsEmpty = (editorState: EditorState, attribute: string) => {
-    const isEmpty = !editorState.getCurrentContent().hasText();
-    if (isEmpty) {
+  const checkIsEmpty = (text: string, attribute: string) => {
+    if (!text.trim()) {
       alert(`${attribute}을(를) 작성해주세요.`);
       return true;
     }
@@ -99,9 +57,9 @@ const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
 
   const handleSaveClick = async () => {
     const updateData = {
-      mainOverview: draftToHtml(convertToRaw(mainOverviewState.getCurrentContent())),
-      commitment: draftToHtml(convertToRaw(commitmentState.getCurrentContent())),
-      introduction: draftToHtml(convertToRaw(introductionState.getCurrentContent())),
+      mainOverview: mainOverviewState,
+      commitment: commitmentState,
+      introduction: introductionState,
     };
 
     const isEmpty =
@@ -109,15 +67,17 @@ const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
       checkIsEmpty(commitmentState, 'Commitment') ||
       checkIsEmpty(introductionState, 'Introduction');
 
-    if (!isEmpty && window.confirm('수정하시겠습니까?')) {
+    if (!isEmpty && window.confirm(MSG.CONFIRM_MSG.SAVE)) {
       axios
         .put(`${PROMOTION_BASIC_PATH}/api/company/introduction`, updateData)
         .then((response) => {
           console.log('Company Introduction updated:', response);
-          alert('수정되었습니다.');
+          alert(MSG.ALERT_MSG.SAVE);
           setEditIntroduction(false);
         })
-        .catch((error) => console.error('Error updating company:', error));
+        .catch((error) => {
+          console.error('Error updating company:', error);
+        });
     }
   };
 
@@ -125,29 +85,34 @@ const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
   if (error) return <>{error.message}</>;
   return (
     <Wrapper>
-      <ContentBlock>
+      <ContentBlock isFocused={true}>
         <TitleWrapper>
           {DATAEDIT_TITLES_COMPONENTS.Introduction}
-          <Button description='저장하기' onClick={handleSaveClick} width={100} />
+          <Button description={MSG.BUTTON_MSG.SAVE} onClick={handleSaveClick} width={100} />
         </TitleWrapper>
+        {DATAEDIT_NOTICE_COMPONENTS.TEXT.INTRODUCTION}
+
         <InputWrapper>
           <InputTitle>Main Overview</InputTitle>
           <TextColorEditor
             editorState={mainOverviewState}
             onEditorStateChange={updateMainOverview}
             attribute='Main Overview'
+            charLimit={INPUT_MAX_LENGTH.INFOMATION_MAIN_OVERVIEW}
           />
           <InputTitle>Commitment</InputTitle>
           <TextColorEditor
             editorState={commitmentState}
             onEditorStateChange={updateCommitment}
             attribute='Commitment'
+            charLimit={INPUT_MAX_LENGTH.INFOMATION_COMMITMENT}
           />
           <InputTitle>Introduction</InputTitle>
           <TextColorEditor
             editorState={introductionState}
             onEditorStateChange={updateIntroduction}
             attribute='Introduction'
+            charLimit={INPUT_MAX_LENGTH.INFOMATION_INTRODUCTION}
           />
         </InputWrapper>
       </ContentBlock>

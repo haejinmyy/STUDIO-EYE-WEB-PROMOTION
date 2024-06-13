@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 
 import { ReactComponent as PrevArrowIcon } from '@/assets/images/PP/leftArrow.svg';
 import { ReactComponent as NextArrowIcon } from '@/assets/images/PP/rightArrow.svg';
+import { artwork_categories } from '@/components/PromotionPage/Artwork/Navigation';
 
 function ArtworkDetailPage() {
   const navigator = useNavigate();
@@ -169,7 +170,12 @@ function ArtworkDetailPage() {
 
                     <List
                       onClick={() => {
-                        navigator(`/${PP_ROUTES_CHILD.ARTWORK}`);
+                        if(category==="all"){
+                          navigator(`/${PP_ROUTES_CHILD.ARTWORK}`);
+                        }else{
+                          const key=artwork_categories.find((c) => c.label + '' === category);
+                          navigator(`/${PP_ROUTES_CHILD.ARTWORK}?category=${key?.key}`)
+                        }
                       }}
                     >
                       LIST

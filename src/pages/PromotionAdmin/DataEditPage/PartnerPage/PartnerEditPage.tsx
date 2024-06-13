@@ -6,16 +6,22 @@ import SubTitle from '@/components/PromotionAdmin/DataEdit/StyleComponents/SubTi
 import Title from '@/components/PromotionAdmin/DataEdit/StyleComponents/Title';
 import ToggleSwitch from '@/components/PromotionAdmin/DataEdit/StyleComponents/ToggleSwitch';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
-import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
+import { PA_ROUTES } from '@/constants/routerConstants';
 import { IPartnersData } from '@/types/PromotionAdmin/dataEdit';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
-import { useMatch, useNavigate } from 'react-router-dom';
+import { useMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { validateUrl } from './PartnerWritePage';
-import { DATAEDIT_NOTICE_COMPONENTS } from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import {
+  DATAEDIT_NOTICE_COMPONENTS,
+  INPUT_MAX_LENGTH,
+} from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import { MSG } from '@/constants/messages';
+import { useSetRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
 
 interface IFormData {
   is_main: boolean;
@@ -24,8 +30,8 @@ interface IFormData {
 }
 
 function PartnerEditPage() {
+  const setIsEditing = useSetRecoilState(dataUpdateState);
   const { data, isLoading, error } = useQuery<IPartnersData[], Error>(['partners', 'id'], getPartnersData);
-  const navigator = useNavigate();
   const partnerEditMatch = useMatch(`${PA_ROUTES.DATA_EDIT}/partner/:partnerId`);
   const clickedPartner =
     partnerEditMatch?.params.partnerId &&
@@ -37,6 +43,8 @@ function PartnerEditPage() {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<IFormData>({
     defaultValues: {
@@ -45,6 +53,33 @@ function PartnerEditPage() {
       name: clickedPartner ? clickedPartner.partnerInfo.name : '',
     },
   });
+
+  // 글자수 확인
+  const watchPartnerFields = watch(['link', 'name']);
+  const partnerInputIndex = {
+    link: 0,
+    name: 1,
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, maxLength: number, field: keyof IFormData) => {
+    const inputLength = event.target.value.length;
+
+    if (inputLength <= maxLength) {
+      setValue(field, event.target.value, { shouldValidate: true });
+    } else {
+      const trimmedValue = event.target.value.slice(0, maxLength);
+      setValue(field, trimmedValue, { shouldValidate: true });
+    }
+    setIsEditing(true);
+  };
+
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange(event, INPUT_MAX_LENGTH.PARTNER_NAME, 'name');
+  };
+
+  const handleLinkChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange(event, INPUT_MAX_LENGTH.PARTNER_LINK, 'link');
+  };
 
   const [putData, setPutData] = useState({
     partnerInfo: {
@@ -74,8 +109,9 @@ function PartnerEditPage() {
         },
         logoImg: clickedPartner.logoImg,
       });
+      setIsVisibility(clickedPartner.partnerInfo.is_main);
     }
-  }, [partnerEditMatch?.params.partnerId, reset]);
+  }, [clickedPartner, reset]);
 
   const onValid = (data: IFormData) => {
     handleSaveClick(data);
@@ -99,7 +135,7 @@ function PartnerEditPage() {
       ),
     );
 
-    if (window.confirm('수정하시겠습니까?')) {
+    if (window.confirm(MSG.CONFIRM_MSG.SAVE)) {
       if (imgChange) {
         const file = await urlToFile(putData.logoImg, 'Logo.png');
         if (file) {
@@ -112,8 +148,8 @@ function PartnerEditPage() {
           .put(`${PROMOTION_BASIC_PATH}/api/partners`, formData)
           .then((response) => {
             console.log('Partner updated:', response);
-            alert('수정되었습니다.');
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}`);
+            alert(MSG.ALERT_MSG.SAVE);
+            setIsEditing(false);
           })
           .catch((error) => console.error('Error updating partner:', error));
       } else {
@@ -121,8 +157,8 @@ function PartnerEditPage() {
           .put(`${PROMOTION_BASIC_PATH}/api/partners/modify`, formData)
           .then((response) => {
             console.log('Partners updated:', response);
-            alert('수정되었습니다.');
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}`);
+            alert(MSG.ALERT_MSG.SAVE);
+            setIsEditing(false);
           })
           .catch((error) => console.error('Error updating partner:', error));
       }
@@ -157,88 +193,119 @@ function PartnerEditPage() {
   }
 
   const handleDelete = (id: number) => {
-    if (window.confirm('삭제하시겠습니까?')) {
+    if (window.confirm(MSG.CONFIRM_MSG.DELETE)) {
       axios
         .delete(`${PROMOTION_BASIC_PATH}/api/partners/${id}`)
         .then((response) => {})
         .catch((error) => console.log(error));
-
-      alert('삭제되었습니다.');
-      navigator(`${PA_ROUTES.DATA_EDIT}/partner`);
+      alert(MSG.ALERT_MSG.DELETE);
+      setIsEditing(false);
     }
   };
 
   if (isLoading) return <>is Loading..</>;
   if (error) return <>{error.message}</>;
   return (
-    <ContentBlock height={380}>
-      <TitleWrapper>
-        <Title description='Partner 수정' />
-      </TitleWrapper>
+    <>
       {clickedPartner && (
-        <FormContainer onSubmit={handleSubmit(onValid)}>
-          <LeftContainer>
-            <LogoContainer>
-              <SubTitle description='Logo' />
-              {DATAEDIT_NOTICE_COMPONENTS.IMAGE.LOGO}
-              {DATAEDIT_NOTICE_COMPONENTS.COLOR.LOGO}
+        <ContentBlock height={380}>
+          <TitleWrapper>
+            <Title description='Partner 수정' />
+          </TitleWrapper>
 
-              <ImgBox>{putData.logoImg && <img src={putData.logoImg} />}</ImgBox>
-              <FileButton description='Logo Upload' id='file' width={230} onChange={handleImageChange} />
-            </LogoContainer>
-          </LeftContainer>
+          <FormContainer onSubmit={handleSubmit(onValid)}>
+            <LeftContainer>
+              <LogoContainer>
+                <SubTitle description='Logo' />
+                {DATAEDIT_NOTICE_COMPONENTS.IMAGE.LOGO}
+                {DATAEDIT_NOTICE_COMPONENTS.COLOR.LOGO}
 
-          <RightContainer>
-            <SubTitle description='Link' />
-            <InputWrapper>
-              <input
-                {...register('link', {
-                  required: '링크를 입력해주세요',
-                  validate: validateUrl,
-                })}
+                <ImgBox>{putData.logoImg && <img src={putData.logoImg} />}</ImgBox>
+                <FileButton description='Logo Upload' id='file' width={230} onChange={handleImageChange} />
+              </LogoContainer>
+            </LeftContainer>
+
+            <RightContainer>
+              <SubTitle description='Link' />
+              <InputWrapper>
+                <div style={{ display: 'flex' }}>
+                  <input
+                    style={{ paddingLeft: '10px' }}
+                    {...register('link', {
+                      required: MSG.PLACEHOLDER_MSG.LINK,
+                      validate: validateUrl,
+                    })}
+                    placeholder={MSG.PLACEHOLDER_MSG.LINK}
+                    onChange={handleLinkChange}
+                  />
+                  <CharCountWrapper>
+                    {watchPartnerFields[partnerInputIndex.link] ? watchPartnerFields[partnerInputIndex.link].length : 0}
+                    /{INPUT_MAX_LENGTH.PARTNER_LINK}자
+                  </CharCountWrapper>
+                </div>
+                {errors.link && <p>{errors.link.message}</p>}
+
+                <SubTitle description='Name' />
+                <div style={{ display: 'flex' }}>
+                  <input
+                    style={{ paddingLeft: '10px' }}
+                    {...register('name', {
+                      required: MSG.PLACEHOLDER_MSG.NAME,
+                      validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
+                    })}
+                    placeholder={MSG.PLACEHOLDER_MSG.NAME}
+                    onChange={handleNameChange}
+                  />
+                  <CharCountWrapper>
+                    {watchPartnerFields[partnerInputIndex.name]?.length}/{INPUT_MAX_LENGTH.PARTNER_NAME}자
+                  </CharCountWrapper>
+                </div>
+                {errors.name && <p>{errors.name.message}</p>}
+              </InputWrapper>
+              <VisibilityWrapper>
+                공개여부
+                <input type='checkbox' id='switch' defaultChecked {...register('is_main')} />
+                <ToggleSwitch
+                  option1='공개'
+                  option2='비공개'
+                  selected={clickedPartner.partnerInfo.is_main}
+                  onToggle={setIsVisibility}
+                />
+              </VisibilityWrapper>
+            </RightContainer>
+
+            <ButtonWrapper>
+              <Button description={MSG.BUTTON_MSG.SAVE} width={100} />
+              <Button
+                onClick={() => {
+                  handleDelete(clickedPartner.partnerInfo.id);
+                }}
+                description={MSG.BUTTON_MSG.DELETE}
+                width={100}
+                as={'div'}
               />
-              {errors.link && <p>{errors.link.message}</p>}
-
-              <SubTitle description='Name' />
-              <input
-                {...register('name', {
-                  required: '이름을 입력해주세요',
-                })}
-              />
-              {errors.name && <p>{errors.name.message}</p>}
-            </InputWrapper>
-            <VisibilityWrapper>
-              공개여부
-              <input type='checkbox' id='switch' defaultChecked {...register('is_main')} />
-              <ToggleSwitch
-                option1='공개'
-                option2='비공개'
-                selected={clickedPartner.partnerInfo.is_main}
-                onToggle={setIsVisibility}
-              />
-            </VisibilityWrapper>
-          </RightContainer>
-
-          <ButtonWrapper>
-            <Button description='저장하기' width={100} />
-            <Button
-              onClick={() => {
-                handleDelete(clickedPartner.partnerInfo.id);
-              }}
-              description='삭제하기'
-              width={100}
-            />
-          </ButtonWrapper>
-        </FormContainer>
+            </ButtonWrapper>
+          </FormContainer>
+        </ContentBlock>
       )}
-    </ContentBlock>
+    </>
   );
 }
 
 export default PartnerEditPage;
 
+const CharCountWrapper = styled.div`
+  font-size: 12px;
+  color: gray;
+  width: 60px;
+  font-family: ${(props) => props.theme.font.light};
+  align-self: flex-end;
+  margin-left: 5px;
+  padding-bottom: 20px;
+`;
+
 const RightContainer = styled.div`
-  margin-left: 20px;
+  margin-left: 50px;
 `;
 const LeftContainer = styled.div``;
 const LogoContainer = styled.div`
@@ -301,7 +368,7 @@ const FormContainer = styled.form`
 `;
 
 const InputWrapper = styled.div`
-  width: 400px;
+  width: 460px;
   display: flex;
   flex-direction: column;
   input {
@@ -321,6 +388,7 @@ const InputWrapper = styled.div`
   }
 
   p {
+    font-size: 14px;
     color: ${(props) => props.theme.color.symbol};
   }
 `;

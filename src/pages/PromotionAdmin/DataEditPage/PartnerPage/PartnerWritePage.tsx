@@ -1,9 +1,7 @@
 import styled from 'styled-components';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import { ContentBlock } from '@/components/PromotionAdmin/DataEdit/Company/CompanyFormStyleComponents';
@@ -12,7 +10,15 @@ import Button from '@/components/PromotionAdmin/DataEdit/StyleComponents/Button'
 import FileButton from '@/components/PromotionAdmin/DataEdit/StyleComponents/FileButton';
 import SubTitle from '@/components/PromotionAdmin/DataEdit/StyleComponents/SubTitle';
 import ToggleSwitch from '@/components/PromotionAdmin/DataEdit/StyleComponents/ToggleSwitch';
-import { DATAEDIT_NOTICE_COMPONENTS } from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import {
+  DATAEDIT_NOTICE_COMPONENTS,
+  INPUT_MAX_LENGTH,
+} from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import { useSetRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
+import { MSG } from '@/constants/messages';
+import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
+import { useNavigate } from 'react-router-dom';
 
 interface IFormData {
   is_main: boolean;
@@ -23,15 +29,25 @@ interface IFormData {
 // URL 유효성 검사 함수
 export const validateUrl = (value: string) => {
   try {
-    new URL(value);
+    const url = new URL(value);
+    // 허용된 프로토콜 확인
+    const allowedProtocols = ['http:', 'https:'];
+    if (!allowedProtocols.includes(url.protocol)) {
+      return MSG.INVALID_MSG.LINK.PROTOCOLS;
+    }
+    // 호스트 존재 확인
+    if (!url.hostname) {
+      return MSG.INVALID_MSG.LINK.HOSTNAME;
+    }
     return true; // 유효한 URL일 경우
   } catch (e) {
-    return '유효한 URL을 입력해주세요.'; // 잘못된 URL일 경우
+    return MSG.INVALID_MSG.LINK.OTHER;
   }
 };
 
 function PartnerWritePage() {
-  const navigator = useNavigate();
+  const setIsEditing = useSetRecoilState(dataUpdateState);
+  const navigate = useNavigate();
   const [postData, setPostData] = useState({
     partnerInfo: {
       is_main: true,
@@ -45,6 +61,7 @@ function PartnerWritePage() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<IFormData>({
     defaultValues: {
@@ -53,9 +70,38 @@ function PartnerWritePage() {
     },
   });
 
-  const [isInvalid, setInvalid] = useState(true);
+  // 글자수 확인
+  const watchPartnerFields = watch(['link', 'name']);
+  const partnerInputIndex = {
+    link: 0,
+    name: 1,
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, maxLength: number, field: keyof IFormData) => {
+    const inputLength = event.target.value.length;
+
+    if (inputLength <= maxLength) {
+      setValue(field, event.target.value, { shouldValidate: true });
+    } else {
+      const trimmedValue = event.target.value.slice(0, maxLength);
+      setValue(field, trimmedValue, { shouldValidate: true });
+    }
+    setIsEditing(true);
+  };
+
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange(event, INPUT_MAX_LENGTH.PARTNER_NAME, 'name');
+  };
+
+  const handleLinkChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange(event, INPUT_MAX_LENGTH.PARTNER_LINK, 'link');
+  };
 
   const onValid = (data: IFormData) => {
+    if (postData.logoImg === '') {
+      alert(MSG.INVALID_MSG.FILE);
+      return;
+    }
     handleSaveClick(data);
   };
 
@@ -76,28 +122,19 @@ function PartnerWritePage() {
       ),
     );
 
-    // 이미지를 변경했는지 확인하고 추가
     const file = await urlToFile(postData.logoImg, 'PartnerLogo.png');
     formData.append('logoImg', file);
 
-    if (postData.logoImg === '') {
-      alert('파일을 업로드해주세요');
-      setInvalid(true);
-    } else {
-      setInvalid(false);
-    }
-
-    if (!isInvalid) {
-      if (window.confirm('등록하시겠습니까?')) {
-        axios
-          .post(`${PROMOTION_BASIC_PATH}/api/partners`, formData)
-          .then((response) => {
-            console.log('Partenr posted:', response);
-            alert('등록되었습니다.');
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}`);
-          })
-          .catch((error) => console.error('Error updating partner:', error));
-      }
+    if (window.confirm(MSG.CONFIRM_MSG.POST)) {
+      axios
+        .post(`${PROMOTION_BASIC_PATH}/api/partners`, formData)
+        .then((response) => {
+          console.log('Partenr posted:', response);
+          alert(MSG.ALERT_MSG.POST);
+          setIsEditing(false);
+          navigate(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_PARTNER}`);
+        })
+        .catch((error) => console.error('Error updating partner:', error));
     }
   };
 
@@ -119,7 +156,7 @@ function PartnerWritePage() {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
-      console.log(blob);
+      // console.log(blob);
       return new File([blob], fileName);
     } catch (error) {
       console.error('Error URL to file:', error);
@@ -147,22 +184,40 @@ function PartnerWritePage() {
 
         <RightContainer>
           <SubTitle description='Link' />
+
           <InputWrapper>
-            <input
-              {...register('link', {
-                required: '링크를 입력해주세요',
-                validate: validateUrl,
-              })}
-            />
+            <div style={{ display: 'flex' }}>
+              <input
+                style={{ paddingLeft: '10px' }}
+                {...register('link', {
+                  required: MSG.PLACEHOLDER_MSG.LINK,
+                  validate: validateUrl,
+                })}
+                placeholder={MSG.PLACEHOLDER_MSG.LINK}
+                onChange={handleLinkChange}
+              />
+              <CharCountWrapper>
+                {watchPartnerFields[partnerInputIndex.link] ? watchPartnerFields[partnerInputIndex.link].length : 0}/
+                {INPUT_MAX_LENGTH.PARTNER_LINK}자
+              </CharCountWrapper>
+            </div>
             {errors.link && <p>{errors.link.message}</p>}
 
             <SubTitle description='Name' />
-
-            <input
-              {...register('name', {
-                required: '이름을 입력해주세요',
-              })}
-            />
+            <div style={{ display: 'flex' }}>
+              <input
+                style={{ paddingLeft: '10px' }}
+                {...register('name', {
+                  required: MSG.PLACEHOLDER_MSG.NAME,
+                  validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
+                })}
+                placeholder={MSG.PLACEHOLDER_MSG.NAME}
+                onChange={handleNameChange}
+              />
+              <CharCountWrapper>
+                {watchPartnerFields[partnerInputIndex.name]?.length}/{INPUT_MAX_LENGTH.PARTNER_NAME}자
+              </CharCountWrapper>
+            </div>
             {errors.name && <p>{errors.name.message}</p>}
           </InputWrapper>
           <VisibilityWrapper>
@@ -173,7 +228,7 @@ function PartnerWritePage() {
         </RightContainer>
       </FormContainer>
       <ButtonWrapper>
-        <Button onClick={handleSubmit(onValid)} description='등록하기' width={100} />
+        <Button onClick={handleSubmit(onValid)} description={MSG.BUTTON_MSG.POST} width={100} />
       </ButtonWrapper>
     </ContentBlock>
   );
@@ -181,8 +236,18 @@ function PartnerWritePage() {
 
 export default PartnerWritePage;
 
+const CharCountWrapper = styled.div`
+  font-size: 12px;
+  color: gray;
+  width: 60px;
+  font-family: ${(props) => props.theme.font.light};
+  align-self: flex-end;
+  margin-left: 5px;
+  padding-bottom: 20px;
+`;
+
 const RightContainer = styled.div`
-  margin-left: 20px;
+  margin-left: 50px;
 `;
 const LeftContainer = styled.div``;
 const LogoContainer = styled.div`
@@ -243,7 +308,7 @@ const FormContainer = styled.form`
 `;
 
 const InputWrapper = styled.div`
-  width: 400px;
+  width: 460px;
   display: flex;
   flex-direction: column;
   input {
@@ -263,6 +328,7 @@ const InputWrapper = styled.div`
   }
 
   p {
+    font-size: 14px;
     color: ${(props) => props.theme.color.symbol};
   }
 `;

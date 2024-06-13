@@ -18,6 +18,7 @@ declare module 'styled-components' {
       yellow: {
         bold: string;
         light: string;
+        pale: string;
       };
     };
     font: {

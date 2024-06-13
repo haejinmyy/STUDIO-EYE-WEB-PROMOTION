@@ -1,3 +1,4 @@
+import { theme } from '@/styles/theme';
 import styled from 'styled-components';
 
 export const Wrapper = styled.div`
@@ -21,21 +22,20 @@ export const Form = styled.form`
 export const LeftContentWrapper = styled.div``;
 export const RightContentWrapper = styled.div``;
 
-export const ContentBlock = styled.div<{ width?: number; height?: number }>`
+export const ContentBlock = styled.div<{ width?: number; height?: number; isFocused?: boolean }>`
   padding: 25px;
-  background-color: ${(props) => props.theme.color.white.pale};
   position: relative;
   box-shadow: 2px 2px 5px 0.3px ${(props) => props.theme.color.black.pale};
   margin-bottom: 30px;
   margin-right: 30px;
 
   border-radius: 4px;
-  width: ${(props) => (props.width ? props.width + 'px;' : '700px;')};
+  width: ${(props) => (props.width ? props.width + 'px;' : '750px;')};
   height: ${(props) => (props.height ? props.height + 'px;' : 'fit-content;')};
+  background-color: ${(props) => (props.isFocused ? theme.color.yellow.pale : theme.color.white.pale)};
 `;
 
 export const TitleWrapper = styled.div`
-  background-color: ${(props) => props.theme.color.white.light};
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -44,7 +44,6 @@ export const TitleWrapper = styled.div`
 
 export const InputWrapper = styled.div`
   display: flex;
-  background-color: ${(props) => props.theme.color.white.light};
   flex-direction: column;
   font-family: ${(props) => props.theme.font.regular};
   p {
@@ -177,10 +176,11 @@ export const DetailItem = styled.div`
     font-family: ${(props) => props.theme.font.regular};
     max-height: 130px;
     min-height: 30px;
-    min-width: 400px;
-    max-width: 400px;
+    min-width: 360px;
+    max-width: 360px;
     border: none;
     box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+    padding-right: 70px;
   }
 
   .detail_title {
@@ -193,6 +193,38 @@ export const DetailItem = styled.div`
 export const DetailTitleInputWrapper = styled.div`
   display: flex;
   position: relative;
+  span {
+    position: absolute;
+    font-size: 12px;
+    right: 10px;
+    top: 10px;
+    color: ${(props) => props.theme.color.black.light};
+    font-family: ${(props) => props.theme.font.light};
+  }
+`;
+
+export const BasicInputWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  position: relative;
+  input {
+    width: 100%;
+    padding-right: 100px;
+  }
+  span {
+    position: absolute;
+    font-size: 12px;
+    right: 10px;
+    top: 10px;
+    color: ${(props) => props.theme.color.black.light};
+    font-family: ${(props) => props.theme.font.light};
+  }
+`;
+
+export const DetailContentWrapper = styled.div`
+  display: flex;
+  position: relative;
+
   span {
     position: absolute;
     font-size: 12px;

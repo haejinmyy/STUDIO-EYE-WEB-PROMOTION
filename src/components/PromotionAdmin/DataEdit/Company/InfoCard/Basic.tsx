@@ -8,6 +8,7 @@ import { Wrapper, ContentBlock, InputWrapper, InputTitle } from '../CompanyFormS
 import styled from 'styled-components';
 import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
 import Button from '../../StyleComponents/Button';
+import { MSG } from '@/constants/messages';
 
 interface IBasicProps {
   setEditBasic: (editMode: boolean) => void;
@@ -25,7 +26,7 @@ const Basic = ({ setEditBasic }: IBasicProps) => {
           <ContentBlock>
             <TitleWrapper>
               {DATAEDIT_TITLES_COMPONENTS.Basic}
-              <Button description='수정하기' onClick={() => setEditBasic(true)} width={100} />
+              <Button description={MSG.BUTTON_MSG.MODIFY} onClick={() => setEditBasic(true)} width={100} />
             </TitleWrapper>
 
             <InputWrapper>

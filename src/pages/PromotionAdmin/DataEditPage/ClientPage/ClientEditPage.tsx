@@ -1,19 +1,25 @@
 import { getClientData } from '@/apis/PromotionAdmin/dataEdit';
 import { ContentBlock } from '@/components/PromotionAdmin/DataEdit/Company/CompanyFormStyleComponents';
-import { DATAEDIT_NOTICE_COMPONENTS } from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import {
+  DATAEDIT_NOTICE_COMPONENTS,
+  INPUT_MAX_LENGTH,
+} from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
 import Button from '@/components/PromotionAdmin/DataEdit/StyleComponents/Button';
 import FileButton from '@/components/PromotionAdmin/DataEdit/StyleComponents/FileButton';
 import SubTitle from '@/components/PromotionAdmin/DataEdit/StyleComponents/SubTitle';
 import Title from '@/components/PromotionAdmin/DataEdit/StyleComponents/Title';
 import ToggleSwitch from '@/components/PromotionAdmin/DataEdit/StyleComponents/ToggleSwitch';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
+import { MSG } from '@/constants/messages';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
+import { dataUpdateState } from '@/recoil/atoms';
 import { IClientData } from '@/types/PromotionAdmin/dataEdit';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
-import { useMatch, useNavigate } from 'react-router-dom';
+import { useMatch } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 interface IFormData {
@@ -22,16 +28,23 @@ interface IFormData {
 }
 
 function ClientEditPage() {
+  const setIsEditing = useSetRecoilState(dataUpdateState);
   const { data, isLoading, error } = useQuery<IClientData[], Error>(['client', 'id'], getClientData);
-  const navigator = useNavigate();
   const clientEditMatch = useMatch(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}/:clientId`);
   const clickedClient =
     clientEditMatch?.params.clientId &&
-    data &&
+    Array.isArray(data) &&
     data.find((c) => String(c.clientInfo.id) === clientEditMatch.params.clientId);
   const [imgChange, setImgChange] = useState(false);
 
-  const { register, handleSubmit, reset } = useForm<IFormData>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<IFormData>({
     defaultValues: {
       name: clickedClient ? clickedClient.clientInfo.name : '',
       visibility: true,
@@ -62,8 +75,23 @@ function ClientEditPage() {
         },
         logoImg: clickedClient.logoImg,
       });
+      setIsVisibility(clickedClient.clientInfo.visibility);
     }
-  }, [clientEditMatch?.params.clientId, reset]);
+  }, [clickedClient, reset]);
+
+  // 글자수 제한
+  const watchField = watch('name');
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputLength = event.target.value.length;
+
+    if (inputLength <= INPUT_MAX_LENGTH.CLIENT_NAME) {
+      setValue('name', event.target.value, { shouldValidate: true });
+    } else {
+      const trimmedValue = event.target.value.slice(0, INPUT_MAX_LENGTH.CLIENT_NAME);
+      setValue('name', trimmedValue, { shouldValidate: true });
+    }
+  };
 
   const onValid = (data: IFormData) => {
     handleSaveClick(data);
@@ -86,7 +114,7 @@ function ClientEditPage() {
       ),
     );
 
-    if (window.confirm('수정하시겠습니까?')) {
+    if (window.confirm(MSG.CONFIRM_MSG.SAVE)) {
       if (imgChange) {
         const file = await urlToFile(putData.logoImg, 'ClientLogo.png');
         if (file) {
@@ -99,18 +127,17 @@ function ClientEditPage() {
           .put(`${PROMOTION_BASIC_PATH}/api/client`, formData)
           .then((response) => {
             console.log('Client updated:', response);
-            alert('수정되었습니다.');
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
+            alert(MSG.ALERT_MSG.SAVE);
+            setIsEditing(false);
           })
           .catch((error) => console.error('Error updating client:', error));
       } else {
-        console.log('put ', data.visibility);
         axios
           .put(`${PROMOTION_BASIC_PATH}/api/client/modify`, formData)
           .then((response) => {
             console.log('Client updated:', response);
-            alert('수정되었습니다.');
-            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
+            alert(MSG.ALERT_MSG.SAVE);
+            setIsEditing(false);
           })
           .catch((error) => console.error('Error updating client:', error));
       }
@@ -145,14 +172,13 @@ function ClientEditPage() {
   }
 
   const handleDelete = (id: number) => {
-    if (window.confirm('삭제하시겠습니까?')) {
+    if (window.confirm(MSG.CONFIRM_MSG.DELETE)) {
       axios
         .delete(`${PROMOTION_BASIC_PATH}/api/client/${id}`)
         .then((response) => {})
         .catch((error) => console.log(error));
-
-      alert('삭제되었습니다.');
-      navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}`);
+      alert(MSG.ALERT_MSG.DELETE);
+      setIsEditing(false);
     }
   };
 
@@ -182,12 +208,23 @@ function ClientEditPage() {
               <RightContainer>
                 <InputWrapper>
                   <SubTitle description='Name' />
-                  <input
-                    {...register('name', {
-                      required: '이름을 입력해주세요',
-                    })}
-                    placeholder='이름을 입력해주세요'
-                  />
+                  <div style={{ display: 'flex' }}>
+                    <input
+                      style={{ paddingLeft: '10px' }}
+                      {...register('name', {
+                        required: MSG.PLACEHOLDER_MSG.NAME,
+                        maxLength: INPUT_MAX_LENGTH.CLIENT_NAME,
+                        validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
+                      })}
+                      onChange={handleInputChange}
+                      placeholder={MSG.PLACEHOLDER_MSG.NAME}
+                    />
+
+                    <CharCountWrapper>
+                      {watchField?.length}/{INPUT_MAX_LENGTH.CLIENT_NAME}자
+                    </CharCountWrapper>
+                  </div>
+                  {errors.name && <p>{errors.name.message}</p>}
                 </InputWrapper>
                 <VisibilityWrapper>
                   공개여부
@@ -201,12 +238,12 @@ function ClientEditPage() {
                 </VisibilityWrapper>
               </RightContainer>
               <ButtonWrapper>
-                <Button description='저장하기' width={100} />
+                <Button description={MSG.BUTTON_MSG.SAVE} width={100} />
                 <Button
                   onClick={() => {
                     handleDelete(clickedClient.clientInfo.id);
                   }}
-                  description='삭제하기'
+                  description={MSG.BUTTON_MSG.DELETE}
                   width={100}
                   as={'div'}
                 />
@@ -221,8 +258,18 @@ function ClientEditPage() {
 
 export default ClientEditPage;
 
+const CharCountWrapper = styled.div`
+  font-size: 12px;
+  color: gray;
+  width: 60px;
+  font-family: ${(props) => props.theme.font.light};
+  align-self: flex-end;
+  margin-left: 5px;
+  padding-bottom: 20px;
+`;
+
 const RightContainer = styled.div`
-  margin-left: 20px;
+  margin-left: 50px;
 `;
 const LeftContainer = styled.div``;
 const LogoContainer = styled.div`
@@ -286,7 +333,7 @@ const FormContainer = styled.form`
 `;
 
 const InputWrapper = styled.div`
-  width: 400px;
+  width: 460px;
   display: flex;
   flex-direction: column;
   input {
@@ -306,6 +353,7 @@ const InputWrapper = styled.div`
   }
 
   p {
+    font-size: 14px;
     color: ${(props) => props.theme.color.symbol};
   }
 `;

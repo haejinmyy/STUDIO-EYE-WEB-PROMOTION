@@ -78,8 +78,12 @@ function Navigation() {
 export default Navigation;
 
 const CategoryBar = styled.div`
-  position: fixed;
+  position: -webkit-sticky;
+  position: sticky;
+  align-self: flex-start;
+  top: 80px;
   left: 30px;
+  margin-bottom: 80px;
   width: 300px;
   height: max-content;
   padding-left: 40px;
