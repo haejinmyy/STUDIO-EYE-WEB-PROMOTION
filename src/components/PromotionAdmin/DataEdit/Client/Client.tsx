@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { dataUpdateState } from '@/recoil/atoms';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { ReactComponent as AddedIcon } from '@/assets/images/PA/plusIcon.svg';
 import { ReactComponent as PublicIcon } from '@/assets/images/PA/public.svg';
@@ -19,7 +19,7 @@ import { MSG } from '@/constants/messages';
 
 const Client = () => {
   const navigator = useNavigate();
-  const setIsEditing = useSetRecoilState(dataUpdateState);
+  const [isEditing, setIsEditing] = useRecoilState(dataUpdateState);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const size = 6;
   const { data, isLoading, error } = useQuery<IClientPaginationData, Error>(['client', currentPage, size], () =>
@@ -50,7 +50,6 @@ const Client = () => {
             svgComponent={<AddedIcon width={14} height={14} />}
             onClick={() => {
               navigator(`write?page=${currentPage}`);
-              setIsEditing(true);
             }}
           />
         </TitleWrapper>
@@ -67,7 +66,11 @@ const Client = () => {
                     name={client.name}
                     is_posted={client.visibility}
                     onClick={() => {
-                      setIsEditing(true);
+                      if (isEditing && !window.confirm(MSG.CONFIRM_MSG.DATA_EDIT.EXIT)) {
+                        return;
+                      } else {
+                        setIsEditing(false);
+                      }
                       navigator(
                         `${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CLIENT}/${client.id}?page=${currentPage}`,
                       );

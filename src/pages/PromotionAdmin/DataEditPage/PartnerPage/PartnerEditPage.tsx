@@ -177,6 +177,7 @@ function PartnerEditPage() {
       };
       reader.readAsDataURL(logoImg);
       setImgChange(true);
+      setIsEditing(true);
     }
   };
 

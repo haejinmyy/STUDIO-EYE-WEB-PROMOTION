@@ -10,6 +10,8 @@ import Button from '../../StyleComponents/Button';
 import styled from 'styled-components';
 import { MSG } from '@/constants/messages';
 import TextColorEditor from '@/components/TextEditor/TextColorEditor';
+import { useSetRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
 
 interface IIntrodutionProps {
   setEditIntroduction: (editMode: boolean) => void;
@@ -22,6 +24,7 @@ const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
     commitment: data?.commitment || '',
     introduction: data?.introduction || '',
   });
+  const setIsEditing = useSetRecoilState(dataUpdateState);
 
   useEffect(() => {
     if (data) {
@@ -39,12 +42,15 @@ const Introduction = ({ setEditIntroduction }: IIntrodutionProps) => {
 
   const updateMainOverview = (state: string) => {
     setMainOverviewState(state);
+    setIsEditing(true);
   };
   const updateCommitment = (state: string) => {
     setCommitmentState(state);
+    setIsEditing(true);
   };
   const updateIntroduction = (state: string) => {
     setIntroductionState(state);
+    setIsEditing(true);
   };
 
   const checkIsEmpty = (text: string, attribute: string) => {

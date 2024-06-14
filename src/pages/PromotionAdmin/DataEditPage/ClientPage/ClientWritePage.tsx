@@ -50,6 +50,7 @@ function ClientWritePage() {
     if (inputLength <= INPUT_MAX_LENGTH.CLIENT_NAME) {
       setCharLength(inputLength);
       setValue('name', e.target.value, { shouldValidate: true });
+      setIsEditing(true);
     } else {
       const trimmedValue = e.target.value.slice(0, INPUT_MAX_LENGTH.CLIENT_NAME);
       setCharLength(INPUT_MAX_LENGTH.CLIENT_NAME);
@@ -109,6 +110,7 @@ function ClientWritePage() {
         }));
       };
       reader.readAsDataURL(logoImg);
+      setIsEditing(true);
     }
   };
 

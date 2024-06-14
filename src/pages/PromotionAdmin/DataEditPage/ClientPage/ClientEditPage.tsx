@@ -91,6 +91,7 @@ function ClientEditPage() {
       const trimmedValue = event.target.value.slice(0, INPUT_MAX_LENGTH.CLIENT_NAME);
       setValue('name', trimmedValue, { shouldValidate: true });
     }
+    setIsEditing(true);
   };
 
   const onValid = (data: IFormData) => {
@@ -156,6 +157,7 @@ function ClientEditPage() {
       };
       reader.readAsDataURL(logoImg);
       setImgChange(true);
+      setIsEditing(true);
     }
   };
 

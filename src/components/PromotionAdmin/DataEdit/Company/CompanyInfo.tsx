@@ -53,8 +53,6 @@ const CompanyInfo = () => {
       default:
         break;
     }
-
-    setIsEditing(true);
   };
 
   useEffect(() => {

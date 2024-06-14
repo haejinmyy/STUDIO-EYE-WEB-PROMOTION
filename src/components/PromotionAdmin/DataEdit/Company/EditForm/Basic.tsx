@@ -18,6 +18,8 @@ import { DATAEDIT_TITLES_COMPONENTS, INPUT_MAX_LENGTH } from '../StyleComponents
 import Button from '../../StyleComponents/Button';
 import styled from 'styled-components';
 import { MSG } from '@/constants/messages';
+import { useSetRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
 
 interface IBasicFormData {
   address: string;
@@ -40,6 +42,8 @@ const Basic = ({ setEditBasic }: IBasicProps) => {
     setValue,
     formState: { errors },
   } = useForm<IBasicFormData>();
+
+  const setIsEditing = useSetRecoilState(dataUpdateState);
 
   // 글자수 확인
   const watchFields = watch(['address', 'addressEnglish', 'phone', 'fax']);
@@ -67,18 +71,22 @@ const Basic = ({ setEditBasic }: IBasicProps) => {
 
   const handleAddressChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     handleInputChange(event, INPUT_MAX_LENGTH.BASIC_ADDRESS, 'address');
+    setIsEditing(true);
   };
 
   const handleEnglishAddressChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     handleInputChange(event, INPUT_MAX_LENGTH.BASIC_ENGLISH_ADDRESS, 'addressEnglish');
+    setIsEditing(true);
   };
 
   const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     handleInputChange(event, INPUT_MAX_LENGTH.BASIC_PHONE, 'phone');
+    setIsEditing(true);
   };
 
   const handleFaxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     handleInputChange(event, INPUT_MAX_LENGTH.BASIC_FAX, 'fax');
+    setIsEditing(true);
   };
 
   useEffect(() => {
