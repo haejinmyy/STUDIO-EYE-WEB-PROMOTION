@@ -11,6 +11,8 @@ import FileButton from '../../StyleComponents/FileButton';
 import Button from '../../StyleComponents/Button';
 import styled from 'styled-components';
 import { MSG } from '@/constants/messages';
+import { useSetRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
 
 interface IImageProps {
   setEditImage: (editMode: boolean) => void;
@@ -26,6 +28,7 @@ const Image = ({ setEditImage }: IImageProps) => {
   });
   const [previewLogo, setPreviewLogo] = useState<string | null>(null);
   const [previewSlogan, setPreviewSlogan] = useState<string | null>(null);
+  const setIsEditing = useSetRecoilState(dataUpdateState);
 
   useEffect(() => {
     if (data) {
@@ -91,6 +94,7 @@ const Image = ({ setEditImage }: IImageProps) => {
         logoImageUrl: URL.createObjectURL(logoImageUrl),
       }));
       setLogoChange(true);
+      setIsEditing(true);
     }
   };
 
@@ -107,6 +111,7 @@ const Image = ({ setEditImage }: IImageProps) => {
         sloganImageUrl: URL.createObjectURL(sloganImageUrl),
       }));
       setSloganChange(true);
+      setIsEditing(true);
     }
   };
 

@@ -519,7 +519,9 @@ const InputForm = () => {
                 </div>
               </InputWrapper>
             </ContentBlock>
-            <Button description={MSG.BUTTON_MSG.POST} fontSize={14} width={100} />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '29px' }}>
+              <Button description={MSG.BUTTON_MSG.POST} fontSize={14} width={100} />
+            </div>
           </RightContentWrapper>
         </Form>
       </Wrapper>

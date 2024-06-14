@@ -149,6 +149,7 @@ function PartnerWritePage() {
         }));
       };
       reader.readAsDataURL(logoImg);
+      setIsEditing(true);
     }
   };
 
