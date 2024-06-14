@@ -22,7 +22,10 @@ function ArtworkCard({ id, name, client, mainImg, category }: IArtworkCardProps)
       initial='initial'
       whileHover='hover'
     >
-      <ArtworkImg key={mainImg} variants={imgVariants(mainImg)} ArtworkPhoto={mainImg} />
+      <ArtworkImg key={mainImg} variants={imgVariants(mainImg)} ArtworkPhoto={mainImg}>
+        <img src={mainImg}/>
+        <div className='overlay'/>
+      </ArtworkImg>
       <Info>
         <motion.span variants={spanVariants} className='info_client'>
           {client}
@@ -62,22 +65,48 @@ const imgVariants = (ArtworkPhoto: string) => ({
 });
 
 const ArtworkItem = styled(motion.div)`
+  position: relative;
   cursor: pointer;
   height: fit-content;
+
+  img{
+    width: 100%;
+    height: 100%;
+    object-fit:cover;
+    transition: 0.3s;
+    background: linear-gradient(rgba(255, 169, 2, 0.4), rgba(255, 169, 2, 0.4)));
+    }
+    &:hover{
+      img{transform: scale(1.05, 1.05);
+    }
+  }
+  &:hover .overlay{
+    top:0;
+    left:0;
+    position: absolute;
+    width:350px;
+    height:350px;
+    transition: 0.3s;
+    background-color:rgba(255, 169, 2, 0.4);
+    border-radius: 0 150px 0 0;
+    pointer-events: none;
+  }
 `;
 
 const ArtworkImg = styled(motion.div)<{ ArtworkPhoto: string }>`
   width: 250px;
-  min-width: 250px;
-  max-width: 250px;
-  height: 250px;
+  min-width: 350px;
+  max-width: 350px;
+  height: 350px;
   background-size: cover;
   background-position: center;
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(${(props) => props.ArtworkPhoto});
+  overflow:hidden;
+  margin:0 auto;
 `;
 
 const Info = styled(motion.div)`
-  max-width:250px;
+  max-width:350px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow : hidden;

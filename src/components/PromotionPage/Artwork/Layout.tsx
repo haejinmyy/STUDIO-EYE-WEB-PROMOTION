@@ -27,7 +27,7 @@ const Wrapper = styled.div`
 `;
 
 const Container = styled.div`
-  padding-left: 370px;
+  // padding-left: 370px;
   padding-bottom: 200px;
   width: 80vw;
 `;

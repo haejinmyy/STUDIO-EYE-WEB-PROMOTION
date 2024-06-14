@@ -15,7 +15,10 @@ import { useQuery } from 'react-query';
 import { useMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { validateUrl } from './PartnerWritePage';
-import { DATAEDIT_NOTICE_COMPONENTS } from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import {
+  DATAEDIT_NOTICE_COMPONENTS,
+  INPUT_MAX_LENGTH,
+} from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
 import { MSG } from '@/constants/messages';
 import { useSetRecoilState } from 'recoil';
 import { dataUpdateState } from '@/recoil/atoms';
@@ -40,6 +43,8 @@ function PartnerEditPage() {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<IFormData>({
     defaultValues: {
@@ -48,6 +53,33 @@ function PartnerEditPage() {
       name: clickedPartner ? clickedPartner.partnerInfo.name : '',
     },
   });
+
+  // 글자수 확인
+  const watchPartnerFields = watch(['link', 'name']);
+  const partnerInputIndex = {
+    link: 0,
+    name: 1,
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, maxLength: number, field: keyof IFormData) => {
+    const inputLength = event.target.value.length;
+
+    if (inputLength <= maxLength) {
+      setValue(field, event.target.value, { shouldValidate: true });
+    } else {
+      const trimmedValue = event.target.value.slice(0, maxLength);
+      setValue(field, trimmedValue, { shouldValidate: true });
+    }
+    setIsEditing(true);
+  };
+
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange(event, INPUT_MAX_LENGTH.PARTNER_NAME, 'name');
+  };
+
+  const handleLinkChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange(event, INPUT_MAX_LENGTH.PARTNER_LINK, 'link');
+  };
 
   const [putData, setPutData] = useState({
     partnerInfo: {
@@ -77,6 +109,7 @@ function PartnerEditPage() {
         },
         logoImg: clickedPartner.logoImg,
       });
+      setIsVisibility(clickedPartner.partnerInfo.is_main);
     }
   }, [clickedPartner, reset]);
 
@@ -195,23 +228,38 @@ function PartnerEditPage() {
             <RightContainer>
               <SubTitle description='Link' />
               <InputWrapper>
-                <input
-                  {...register('link', {
-                    required: MSG.PLACEHOLDER_MSG.LINK,
-                    validate: validateUrl,
-                  })}
-                  placeholder={MSG.PLACEHOLDER_MSG.LINK}
-                />
+                <div style={{ display: 'flex' }}>
+                  <input
+                    style={{ paddingLeft: '10px' }}
+                    {...register('link', {
+                      required: MSG.PLACEHOLDER_MSG.LINK,
+                      validate: validateUrl,
+                    })}
+                    placeholder={MSG.PLACEHOLDER_MSG.LINK}
+                    onChange={handleLinkChange}
+                  />
+                  <CharCountWrapper>
+                    {watchPartnerFields[partnerInputIndex.link] ? watchPartnerFields[partnerInputIndex.link].length : 0}
+                    /{INPUT_MAX_LENGTH.PARTNER_LINK}자
+                  </CharCountWrapper>
+                </div>
                 {errors.link && <p>{errors.link.message}</p>}
 
                 <SubTitle description='Name' />
-                <input
-                  {...register('name', {
-                    required: MSG.PLACEHOLDER_MSG.NAME,
-                    validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
-                  })}
-                  placeholder={MSG.PLACEHOLDER_MSG.NAME}
-                />
+                <div style={{ display: 'flex' }}>
+                  <input
+                    style={{ paddingLeft: '10px' }}
+                    {...register('name', {
+                      required: MSG.PLACEHOLDER_MSG.NAME,
+                      validate: (value) => value.trim().length > 0 || MSG.INVALID_MSG.NAME,
+                    })}
+                    placeholder={MSG.PLACEHOLDER_MSG.NAME}
+                    onChange={handleNameChange}
+                  />
+                  <CharCountWrapper>
+                    {watchPartnerFields[partnerInputIndex.name]?.length}/{INPUT_MAX_LENGTH.PARTNER_NAME}자
+                  </CharCountWrapper>
+                </div>
                 {errors.name && <p>{errors.name.message}</p>}
               </InputWrapper>
               <VisibilityWrapper>
@@ -245,6 +293,16 @@ function PartnerEditPage() {
 }
 
 export default PartnerEditPage;
+
+const CharCountWrapper = styled.div`
+  font-size: 12px;
+  color: gray;
+  width: 60px;
+  font-family: ${(props) => props.theme.font.light};
+  align-self: flex-end;
+  margin-left: 5px;
+  padding-bottom: 20px;
+`;
 
 const RightContainer = styled.div`
   margin-left: 50px;
@@ -310,7 +368,7 @@ const FormContainer = styled.form`
 `;
 
 const InputWrapper = styled.div`
-  width: 400px;
+  width: 460px;
   display: flex;
   flex-direction: column;
   input {

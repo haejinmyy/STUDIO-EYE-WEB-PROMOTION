@@ -59,9 +59,11 @@ const Content = styled.div`
   box-shadow: 1px 1px 4px 0.1px #c6c6c6;
   max-height: 350px;
   overflow-y: scroll;
+  background-color: ${(props) => props.theme.color.background};
 
   & p,
   span {
+    color: white;
     font-size: 14px;
   }
 `;

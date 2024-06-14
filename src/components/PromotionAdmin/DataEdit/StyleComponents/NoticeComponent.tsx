@@ -20,4 +20,6 @@ export default NoticeComponent;
 const NoticeComponentStyle = styled.div<NoticeComponentType>`
   font-size: ${(props) => (props.fontSize ? props.fontSize + 'px;' : '13px;')};
   font-family: ${(props) => props.theme.font.light};
+  white-space: pre-wrap;
+  line-height: 15px;
 `;

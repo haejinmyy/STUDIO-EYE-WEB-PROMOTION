@@ -14,12 +14,15 @@ export const INPUT_MAX_LENGTH = {
   BASIC_ENGLISH_ADDRESS: 150,
   BASIC_PHONE: 20,
   BASIC_FAX: 20,
-  INFOMATION_MAIN_OVERVIEW: 200,
-  INFOMATION_COMMITMENT: 200,
-  INFOMATION_INTRODUCTION: 200,
+  INFOMATION_MAIN_OVERVIEW: 30,
+  INFOMATION_COMMITMENT: 250,
+  INFOMATION_INTRODUCTION: 250,
   DETAIL_TITLE: 15,
   DETAIL_CONTENT: 200,
   FAQ_QUESTION: 50,
+  CLIENT_NAME: 30,
+  PARTNER_NAME: 30,
+  PARTNER_LINK: 50,
 };
 
 const IMAGE_PIXEL = {
@@ -69,7 +72,7 @@ const DATAEDIT_COLUMNS = {
     title: 'Introduction',
     description:
       'Main Overview: Main 화면에 반영됩니다. \nCommitment: Main 화면에 반영됩니다. \nIntroduction: About 화면 반영됩니다. ',
-    recommand: '각 항목에 대해 최대 5줄의 설명을 작성하는 것을 권장합니다.',
+    recommand: '공식 홈페이지 배경색은 검정색입니다.\n글자색은 밝은 색상을 사용하는 것을 권장합니다.',
   },
 
   Partner: {
