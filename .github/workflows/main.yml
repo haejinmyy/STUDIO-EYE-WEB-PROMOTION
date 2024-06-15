@@ -3,7 +3,7 @@ name: Deploy to Server
 on:
   push:
     branches:
-      - main  # main 브랜치에 푸시될 때 트리거
+      - main
 
 jobs:
   build:
@@ -32,7 +32,7 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         source: "build/*"
-        target: "/home/ubuntu/STUDIO-EYE-WEB-PROMOTION/build"  # Nginx의 루트 디렉토리
+        target: "/home/ubuntu/STUDIO-EYE-WEB-PROMOTION/build"
 
     - name: Restart Nginx
       run: |
