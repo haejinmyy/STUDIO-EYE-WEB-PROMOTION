@@ -10,6 +10,8 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import ScrollToTop from '@/hooks/useScrollToTop';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { linkCheck } from '@/components/ValidationRegEx/ValidationRegEx';
+import { useUnsavedChangesWarning } from '@/hooks/useUnsavedChangesWarning';
+import { MSG } from '@/constants/messages';
 
 const ArtworkDetail = () => {
   const [getModeMainImg, setGetModeMainImg] = useState('');
@@ -32,7 +34,7 @@ const ArtworkDetail = () => {
   const navigate = useNavigate();
   const [linkRegexMessage, setLinkRegexMessage] = useState('');
   const [isTopMainArtwork, setIsTopMainArtwork] = useState(false);
-
+  useUnsavedChangesWarning(MSG.CONFIRM_MSG.EXIT, !isGetMode);
   const [putData, setPutData] = useState<UpdateArtwork>({
     request: {
       projectId: 0,
@@ -77,8 +79,6 @@ const ArtworkDetail = () => {
   useEffect(() => {
     fetchArtworkDetails();
     setIsGetMode(true);
-    console.log('읭', mainImage);
-    console.log('초기에 넣은 putData', putData);
   }, [artworkId]);
   useEffect(() => {
     setErrorMessage('');
@@ -242,7 +242,7 @@ const ArtworkDetail = () => {
         setErrorMessage(response.message);
         return;
       }
-      alert('아트워크 수정 성공'); // * TODO alert component 변경
+      alert(MSG.ALERT_MSG.SAVE);
       await fetchArtworkDetails();
       setIsGetMode(true);
       setErrorMessage('');
@@ -254,14 +254,15 @@ const ArtworkDetail = () => {
   };
 
   const handleArtworkDelete = async () => {
-    const confirmDelete = window.confirm('정말 삭제하시겠습니까?');
+    const confirmDelete = window.confirm(MSG.CONFIRM_MSG.DELETE);
     if (confirmDelete) {
       try {
         // 삭제 API 호출
         await deleteArtwork(Number(artworkId));
-        alert('아트워크가 성공적으로 삭제되었습니다.');
+        alert(MSG.ALERT_MSG.DELETE);
         navigate(`${PA_ROUTES.ARTWORK}`);
       } catch (error) {
+        alert(MSG.CONFIRM_MSG.FAILED);
         console.error('Error deleting artwork:', error);
         // 삭제 실패 시 처리
       }
