@@ -145,7 +145,7 @@ function ArtworkDetailPage() {
                         }}
                       >
                         <PrevArrowIcon width={70} height={70} />
-                        <Nav>
+                        <Nav location={"left"}>
                           PREV PROJECT
                           <div className='nav_title' style={{whiteSpace:"nowrap",textOverflow:"ellipsis",overflow : "hidden"}}>
                             {filteredData[currentIndex - 1]?.name}</div>
@@ -159,7 +159,7 @@ function ArtworkDetailPage() {
                           navigator(`/${PP_ROUTES_CHILD.ARTWORK}/${nextIndex}`,{state:{category}});
                         }}
                       >
-                        <Nav>
+                        <Nav location={"right"}>
                           NEXT PROJECT
                           <div className='nav_title' style={{whiteSpace:"nowrap",textOverflow:"ellipsis",overflow : "hidden"}}>
                             {filteredData[currentIndex + 1]?.name}</div>
@@ -310,8 +310,9 @@ const CircleWrapper = styled.div`
   justify-content: center;
 `;
 
-const Nav = styled.div`
+const Nav = styled.div<{location:string}>`
   width: 70%;
+  text-align: ${(props)=>props.location==="left"?"right":"left"};
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow : hidden;
