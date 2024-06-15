@@ -117,7 +117,7 @@ const ScrollBar = styled.div`
   position: absolute;
   top: 0%;
   left: 50%;
-  translatex: -50%;
+  translate: -50%;
   width: 5px;
   height: 100%;
   background-color: #1a1a1a;
@@ -126,7 +126,7 @@ const ScrollBarBox = styled(motion.div)`
   position: sticky;
   top: 50%;
   left: 50%;
-  translatex: -50%;
+  translate: -50%;
   width: 5px;
   height: 350px;
   background-color: #ffffff;

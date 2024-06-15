@@ -11,6 +11,11 @@ export interface IFAQData {
   answer: string;
   visibility: boolean;
 }
+export interface IFAQ {
+  question: string;
+  answer: string;
+  visibility: boolean;
+}
 
 export interface IEditorData {
   key: string;
