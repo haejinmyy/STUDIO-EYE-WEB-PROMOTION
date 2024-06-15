@@ -42,6 +42,9 @@ jobs:
     - name: List files in build directory
       run: ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} ls -la /home/ubuntu/STUDIO-EYE-WEB-PROMOTION/build
 
+    - name: Check index.html content
+      run: ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} cat /home/ubuntu/STUDIO-EYE-WEB-PROMOTION/build/index.html
+
     - name: Restart Nginx
       run: |
         ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
