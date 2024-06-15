@@ -56,8 +56,7 @@ const MainPage = () => {
 
   return (
     <>
-      괴랄한 테스트
-      {/* <style>{`
+      <style>{`
         body, html {
           overflow: hidden;
         }
@@ -128,7 +127,7 @@ const MainPage = () => {
             <Footer />
           </OutroSection>
         </ChakraProvider>
-      </div> */}
+      </div>
     </>
   );
 };
