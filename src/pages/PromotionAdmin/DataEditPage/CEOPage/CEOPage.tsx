@@ -29,7 +29,7 @@ function CEOPage() {
           <InputTitle>
             <p>Introduction</p>
           </InputTitle>
-          <Content>{data?.introduction}</Content>
+          <Content dangerouslySetInnerHTML={{ __html: data?.introduction || '<p>데이터 없음</p>' }}></Content>
           <InputImgWrapper>
             <Box>
               <InputTitle>{DATAEDIT_TITLES_COMPONENTS.CEOIMG}</InputTitle>

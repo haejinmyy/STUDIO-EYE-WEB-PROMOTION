@@ -4,43 +4,68 @@ import { ICEOData } from '@/types/PromotionAdmin/dataEdit';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
+import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import FileButton from '@/components/PromotionAdmin/DataEdit/StyleComponents/FileButton';
 import {
   DATAEDIT_NOTICE_COMPONENTS,
   DATAEDIT_TITLES_COMPONENTS,
 } from '../../../../components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import { useSetRecoilState, useRecoilValue } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
+import { MSG } from '@/constants/messages';
 
 function CEOWritePage() {
+  const setIsEditing = useSetRecoilState(dataUpdateState);
+  const isEditing = useRecoilValue(dataUpdateState);
   const { data, isLoading, refetch } = useQuery<ICEOData>(['ceo', 'id'], getCEOData);
   const [putData, setPutData] = useState({
     request: {
-      name: data?.name,
-      introduction: data?.introduction,
+      name: '',
+      introduction: '',
     },
-    file: data?.imageUrl,
+    file: '',
   });
 
   useEffect(() => {
     refetch();
   }, [data, refetch]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    let processedValue = value;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ICEOData>();
 
-    if (name === 'name' && value.length > 30) {
-      processedValue = value.slice(0, 30);
+  useEffect(() => {
+    if (isEditing) {
+      const handleBeforeUnload = (event: any) => {
+        const message = MSG.CONFIRM_MSG.EXIT;
+        event.returnValue = message;
+        return message;
+      };
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
     }
+  }, [isEditing]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
+    setIsEditing(true);
+    const { name, value } = e.target;
+
+    if (/^\s|[~!@#$%^&*(),.?":{}|<>]/.test(value.charAt(0))) {
+      return;
+    }
+
+    let processedValue = value;
 
     if (name === 'introduction') {
       const lines = value.split('\n').length;
       if (lines > 5) {
         const linesArray = value.split('\n');
         processedValue = linesArray.slice(0, 5).join('\n');
-      }
-      if (value.length > 200) {
-        processedValue = value.slice(0, 200);
       }
     }
     setPutData((prevData) => ({
@@ -69,7 +94,6 @@ function CEOWritePage() {
         { type: 'application/json' },
       ),
     );
-    console.log('넣는 request', putData.request);
 
     // 이미지를 변경했는지 확인하고 추가
     if (putData.file && putData.file !== data?.imageUrl) {
@@ -85,14 +109,12 @@ function CEOWritePage() {
       }
     }
 
-    if (putData.request.name === undefined) {
-      alert('이름을 입력해주세요');
+    if (putData.request.name === undefined || putData.request.name === '') {
       setInvalid(true);
-    } else if (putData.request.introduction === undefined) {
-      alert('소개를 입력해주세요');
+    } else if (putData.request.introduction === undefined || putData.request.introduction === '') {
       setInvalid(true);
-    } else if (putData.file === undefined) {
-      alert('파일을 업로드해주세요');
+    } else if (putData.file === undefined || putData.file === '') {
+      alert('이미지를 업로드해주세요');
       setInvalid(true);
     } else {
       setInvalid(false);
@@ -105,6 +127,7 @@ function CEOWritePage() {
           .then((response) => {
             console.log('CEO posted:', response);
             alert('등록되었습니다.');
+            setIsEditing(false);
           })
           .catch((error) => console.error('Error updating ceo:', error));
       }
@@ -122,6 +145,7 @@ function CEOWritePage() {
         }));
       };
       reader.readAsDataURL(file);
+      setIsEditing(true);
     }
   };
 
@@ -136,51 +160,78 @@ function CEOWritePage() {
       throw error;
     }
   }
+  const currentLength = putData.request.introduction?.length || 0;
+  const maxLimit = 200; // 최대 글자 수
 
   if (isLoading) return <div>is Loading...</div>;
   return (
     <Wrapper>
-      <ContentBlock>
-        {DATAEDIT_TITLES_COMPONENTS.CEO}
-        <InputWrapper>
-          <InputTitle>
-            <p>Name</p>
-          </InputTitle>
-          <input name='name' value={putData.request.name} onChange={handleChange} placeholder='이름' />
-          <InputTitle>
-            <p>Introduction</p>
-          </InputTitle>
-          <textarea
-            name='introduction'
-            value={putData.request.introduction}
-            onChange={handleChange}
-            placeholder='CEO 소개 (5줄, 200자 내로 작성해 주세요.)'
-          />
-          <InputImgWrapper>
-            <Box>
-              <InputTitle>{DATAEDIT_TITLES_COMPONENTS.CEOIMG}</InputTitle>
-              {DATAEDIT_NOTICE_COMPONENTS.IMAGE.CEOIMG}
-              {DATAEDIT_NOTICE_COMPONENTS.COLOR.CEOIMG}
-              <LogoWrapper>
-                <FileButton id='CEOImgFile' description='CEO Image Upload' onChange={handleImageChange} />
-                <ImgBox>
-                  <img src={putData.file} alt='' />
-                </ImgBox>
-              </LogoWrapper>
-            </Box>
-          </InputImgWrapper>
-          <ButtonWrapper>
-            <Button onClick={handleSaveClick}>등록하기</Button>
-          </ButtonWrapper>
-        </InputWrapper>
-      </ContentBlock>
+      <form onSubmit={handleSubmit(handleSaveClick)}>
+        <ContentBlock>
+          {DATAEDIT_TITLES_COMPONENTS.CEO}
+          <InputWrapper>
+            <InputTitle>
+              <p>Name</p>
+            </InputTitle>
+            <input
+              {...register('name', {
+                required: 'CEO 이름을 입력해주세요',
+              })}
+              name='name'
+              value={putData.request.name}
+              onChange={handleChange}
+              maxLength={30}
+              placeholder='이름'
+            />
+            {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
+            <InputTitle style={{ justifyContent: 'space-between' }}>
+              <p>Introduction</p>
+              <div
+                style={{
+                  fontSize: 12,
+                  paddingTop: 10,
+                }}
+              >
+                {currentLength}/{maxLimit}
+              </div>
+            </InputTitle>
+            <textarea
+              {...register('introduction', {
+                required: 'CEO 소개 (5줄, 200자 내로 작성해 주세요.)',
+              })}
+              name='introduction'
+              value={putData.request.introduction}
+              onChange={handleChange}
+              maxLength={200}
+              placeholder='CEO 소개 (5줄, 200자 내로 작성해 주세요.)'
+            />
+            {errors.introduction && <ErrorMessage>{errors.introduction.message}</ErrorMessage>}
+            <InputImgWrapper>
+              <Box>
+                <InputTitle>{DATAEDIT_TITLES_COMPONENTS.CEOIMG}</InputTitle>
+                {DATAEDIT_NOTICE_COMPONENTS.IMAGE.CEOIMG}
+                {DATAEDIT_NOTICE_COMPONENTS.COLOR.CEOIMG}
+                <LogoWrapper>
+                  <FileButton id='CEOImgFile' description='CEO Image Upload' onChange={handleImageChange} />
+                  <ImgBox>
+                    <img src={putData.file} alt='' />
+                  </ImgBox>
+                </LogoWrapper>
+              </Box>
+            </InputImgWrapper>
+            <ButtonWrapper>
+              <Button>등록하기</Button>
+            </ButtonWrapper>
+          </InputWrapper>
+        </ContentBlock>
+      </form>
     </Wrapper>
   );
 }
 
 export default CEOWritePage;
 
-export const Wrapper = styled.div`
+const Wrapper = styled.div`
   display: flex;
   input,
   textarea {
@@ -208,7 +259,7 @@ export const Wrapper = styled.div`
   }
 `;
 
-export const ContentBlock = styled.div<{ width?: number; height?: number }>`
+const ContentBlock = styled.div<{ width?: number; height?: number }>`
   padding: 25px;
   background-color: ${(props) => props.theme.color.white.pale};
   position: relative;
@@ -221,7 +272,7 @@ export const ContentBlock = styled.div<{ width?: number; height?: number }>`
   height: ${(props) => (props.height ? props.height + 'px;' : 'fit-content;')};
 `;
 
-export const InputWrapper = styled.div`
+const InputWrapper = styled.div`
   display: flex;
   background-color: ${(props) => props.theme.color.white.light};
   flex-direction: column;
@@ -248,27 +299,28 @@ export const InputWrapper = styled.div`
   }
 `;
 
-export const InputImgWrapper = styled.div`
+const InputImgWrapper = styled.div`
   display: flex;
   width: 100%;
   justify-content: space-between;
 `;
 
-export const InputTitle = styled.div`
+const InputTitle = styled.div`
   display: flex;
   padding-top: 20px;
   align-items: center;
   height: 40px;
+  width: 70%;
   svg {
     cursor: pointer;
     margin-right: 10px;
   }
 `;
-export const Box = styled.div`
+const Box = styled.div`
   width: 100%;
 `;
 
-export const ImgBox = styled.div`
+const ImgBox = styled.div`
   display: flex;
   height: 200px;
   width: 80%;
@@ -278,7 +330,7 @@ export const ImgBox = styled.div`
   border-radius: 5px;
   margin-top: 15px;
 `;
-export const LogoWrapper = styled.div`
+const LogoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 30px;
@@ -310,4 +362,11 @@ const Button = styled.button`
   &:hover {
     background-color: ${(props) => props.theme.color.yellow.light}; /* 버튼 호버 시 색상 조정 */
   }
+`;
+
+const ErrorMessage = styled.div`
+  font-family: ${(props) => props.theme.font.light};
+  margin-top: 10px;
+  margin-left: 10px;
+  font-size: 13px;
 `;

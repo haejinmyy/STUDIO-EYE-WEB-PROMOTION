@@ -12,7 +12,6 @@ import { PA_ROUTES, PA_ROUTES_CHILD, PP_ROUTES_CHILD } from '@/constants/routerC
 import FAQWritePage from './pages/PromotionAdmin/FaqPage/FAQWritePage';
 import FAQManagePage from './pages/PromotionAdmin/FaqPage/FAQManagePage';
 import PARequestDetailPage from '@/pages/PromotionAdmin/RequestPage/RequestCheckPage';
-import FAQEditPage from './pages/PromotionAdmin/FaqPage/FAQEditPage';
 import FAQCheckPage from './pages/PromotionAdmin/FaqPage/FAQCheckPage';
 import RequestManagePage from './pages/PromotionAdmin/RequestPage/RequestManagePage';
 import RequestCheckPage from './pages/PromotionAdmin/RequestPage/RequestCheckPage';
@@ -184,10 +183,6 @@ const router = createBrowserRouter([
                   {
                     path: `${PA_ROUTES.FAQ}/:faqId`,
                     element: <FAQCheckPage />,
-                  },
-                  {
-                    path: `${PA_ROUTES.FAQ}/write/:faqId`,
-                    element: <FAQEditPage />,
                   },
                 ],
               },

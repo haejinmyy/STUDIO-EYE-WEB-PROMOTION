@@ -153,7 +153,7 @@ const FaqPage = () => {
                 </FaqBrief>
                 {expandedItems.has(i) && (
                   <FaqDetailBox>
-                    <FaqDetailAnswer dangerouslySetInnerHTML={{ __html: item.answer }} />
+                    <FaqDetailAnswer>{item.answer}</FaqDetailAnswer>
                   </FaqDetailBox>
                 )}
               </FaqDetailButton>
@@ -302,6 +302,9 @@ const FaqDetailAnswer = styled.p`
   font-weight: 400;
   text-align: justify;
   color: white;
+  white-space: pre-line;
+  word-wrap: break-word;
+  word-break: break-word;
   a {
     color: #ffa900;
   }

@@ -1,10 +1,13 @@
 import styled from 'styled-components';
 
 export const ContentBox = styled.div`
+  padding: 25px;
   position: relative;
-  border-radius: 0.5rem;
+  box-shadow: 2px 2px 5px 0.3px ${(props) => props.theme.color.black.pale};
+  margin-bottom: 30px;
+  margin-right: 30px;
+  border-radius: 4px;
   background-color: ${(props) => props.theme.color.white.bold};
-  box-shadow: 1px 1px 4px 0.1px ${(props) => props.theme.color.black.pale};
   width: 40vw;
-  height: 74vh;
+  height: 800px;
 `;
