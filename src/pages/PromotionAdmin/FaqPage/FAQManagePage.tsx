@@ -1,37 +1,92 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useQuery } from 'react-query';
-import { getFAQPaginateData } from '../../../apis/PromotionAdmin/faq';
-import { useState } from 'react';
-import axios from 'axios';
-import { motion } from 'framer-motion';
-import { PA_ROUTES } from '@/constants/routerConstants';
+import { IFAQ, getFAQData } from '../../../apis/PromotionAdmin/faq';
+import { useState, useEffect } from 'react';
 import { theme } from '@/styles/theme';
+import axios from 'axios';
+import { useForm } from 'react-hook-form';
+import { PA_ROUTES } from '@/constants/routerConstants';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import Pagination from '@/components/Pagination/Pagination';
-import { IFAQPaginationData } from '@/types/PromotionAdmin/faq';
 import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
+import { useSetRecoilState, useRecoilValue } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
 import { ReactComponent as AddedIcon } from '@/assets/images/PA/plusIcon.svg';
-import { ReactComponent as DeleteIcon } from '@/assets/images/PA/delete.svg';
+import { ReactComponent as DeleteIcon } from '@/assets/images/PA/minusIcon.svg';
+import { DATAEDIT_TITLES_COMPONENTS } from '../../../components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import { ReactComponent as PublicIcon } from '@/assets/images/PA/public.svg';
+import { ReactComponent as PrivateIcon } from '@/assets/images/PA/private.svg';
+import { MSG } from '@/constants/messages';
 
 function FAQManagePage() {
+  const setIsEditing = useSetRecoilState(dataUpdateState);
+  const isEditing = useRecoilValue(dataUpdateState);
   const navigator = useNavigate();
-  const [currentPage, setCurrentPage] = useState<number>(0);
-  const size = 10;
-  const { data, isLoading, refetch, error } = useQuery<IFAQPaginationData, Error>(['faq', currentPage, size], () =>
-    getFAQPaginateData(currentPage, size),
-  );
-  const [editMode, setEditMode] = useState(false);
-  const [id, setId] = useState<null | number>(null);
+  const { data, isLoading, refetch, error } = useQuery<IFAQ[], Error>(['faq', 'id'], getFAQData);
+  const [slicedFAQ, setSlicedFAQ] = useState<IFAQ[]>([]);
+  const [currentFAQ, setCurrentFAQ] = useState<IFAQ | null>();
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [FAQsPerPage] = useState(10);
+  const [isSelected, setIsSelected] = useState(false);
+  const [questionLength, setQuestionLength] = useState<number>(0);
+  const [answerLength, setAnswerLength] = useState<number>(0);
+  const maxQuestionLength = 200;
+  const maxAnswerLength = 1500;
 
-  const [deleteItems, setDeleteItems] = useState<number[]>([]);
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
-  const handleDelete = () => {
+  useEffect(() => {
+    if (data) {
+      const indexOfLast = currentPage * FAQsPerPage;
+      const indexOfFirst = indexOfLast - FAQsPerPage;
+      const sliced = data.slice(indexOfFirst, indexOfLast);
+      setSlicedFAQ(sliced);
+
+      if (sliced.length === 0 && currentPage > 1) {
+        setCurrentPage((prevPage) => prevPage - 1);
+        navigator(`?page=${currentPage - 1}`);
+      }
+
+      if (currentPage >= 1 && sliced.length > 0) {
+        setCurrentFAQ(sliced[0]);
+        setIsSelected(true);
+        setQuestionLength(sliced[0].question.length);
+        setAnswerLength(sliced[0].answer.length);
+      }
+    }
+  }, [data, currentPage, FAQsPerPage, navigator]);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<IFAQ>({
+    defaultValues: {
+      question: currentFAQ?.question,
+      answer: currentFAQ?.answer,
+    },
+  });
+
+  useEffect(() => {
+    if (currentFAQ) {
+      setValue('question', currentFAQ.question);
+      setValue('answer', currentFAQ.answer);
+      setQuestionLength(currentFAQ.question.length);
+      setAnswerLength(currentFAQ.answer.length);
+    }
+  }, [currentFAQ, setValue]);
+
+  const handleDelete = (id: number) => {
     if (window.confirm('삭제하시겠습니까?')) {
       axios
-        .delete(`${PROMOTION_BASIC_PATH}/api/faq`, { data: deleteItems })
+        .delete(`${PROMOTION_BASIC_PATH}/api/faq/${id}`)
         .then((response) => {
           alert('FAQ가 삭제되었습니다.');
+          console.log(response);
           refetch();
         })
         .catch((error) => {
@@ -41,281 +96,434 @@ function FAQManagePage() {
     }
   };
 
+  const onValid = (data: IFAQ) => {
+    const formData = {
+      id: currentFAQ?.id,
+      question: currentFAQ?.question,
+      answer: currentFAQ?.answer,
+      visibility: currentFAQ?.visibility,
+    };
+    if (!(data.question === '' || data.answer === '') && window.confirm('수정하시겠습니까?')) {
+      axios
+        .put(`${PROMOTION_BASIC_PATH}/api/faq`, formData)
+        .then((response) => {
+          alert('FAQ가 수정되었습니다.');
+          console.log(response);
+          setIsEditing(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          alert('FAQ 수정 중 오류가 발생했습니다.');
+        });
+    }
+  };
+
+  useEffect(() => {
+    if (isEditing) {
+      const handleBeforeUnload = (event: any) => {
+        const message = MSG.CONFIRM_MSG.EXIT;
+        event.returnValue = message;
+        return message;
+      };
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
+    }
+  }, [isEditing]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setIsEditing(true);
+    const { name, value } = e.target;
+    if (/^\s/.test(value.charAt(0))) {
+      return;
+    }
+    if (name === 'question') {
+      setQuestionLength(value.length);
+    }
+    if (name === 'answer') {
+      setAnswerLength(value.length);
+    }
+    setCurrentFAQ((prevFAQ) => (prevFAQ ? { ...prevFAQ, [name]: value } : null));
+  };
+
+  const handleSelectFAQ = (faq: IFAQ) => {
+    if (isEditing && !(currentFAQ?.id === faq.id)) {
+      handleConfirmNavigation(faq);
+    } else if (isEditing && currentFAQ?.id === faq.id) {
+      return;
+    } else {
+      setCurrentFAQ(faq);
+      setIsSelected(true);
+      setQuestionLength(faq.question.length);
+      setAnswerLength(faq.answer.length);
+    }
+  };
+
+  const handleConfirmNavigation = (faq: IFAQ) => {
+    if (window.confirm('현재 페이지를 나가면 변경 사항이 저장되지 않습니다.\n나가시겠습니까?')) {
+      setIsEditing(false);
+      setCurrentFAQ(faq);
+      setIsSelected(true);
+      setQuestionLength(faq.question.length);
+      setAnswerLength(faq.answer.length);
+    } else {
+      setIsEditing(true);
+    }
+  };
+
+  const handleAddNewFAQ = () => {
+    if (isEditing) {
+      if (window.confirm('현재 페이지를 나가면 변경 사항이 저장되지 않습니다.\n나가시겠습니까?')) {
+        setIsEditing(false);
+        navigator(`${PA_ROUTES.FAQ}/write`);
+      }
+    } else {
+      navigator(`${PA_ROUTES.FAQ}/write`);
+    }
+  };
+
   if (isLoading) return <>is Loading..</>;
   if (error) return <>{error.message}</>;
   return (
     <Wrapper>
-      <ContentBox>
-        <TitleWrapper>
-          <Title>
-            <Icon>
-              <svg width='20' height='20' viewBox='0 0 22 22' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                <path
-                  d='M11.7692 1H4.07692C3.66889 1 3.27758 1.16209 2.98906 1.4506C2.70055 1.73912 2.53846 2.13043 2.53846 2.53846V16.3846L1 21L7.15385 19.4615H19.4615C19.8695 19.4615 20.2609 19.2994 20.5494 19.0109C20.8378 18.7225 21 18.3311 21 17.9231V10.2308'
-                  stroke='#FFA900'
-                  strokeWidth='1.5'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-                <path
-                  d='M13.0973 12.7486L8.48193 13.5793L9.25116 8.9024L16.5281 1.65625C16.6711 1.51205 16.8412 1.39759 17.0288 1.31949C17.2161 1.24138 17.4172 1.20117 17.6205 1.20117C17.8235 1.20117 18.0246 1.24138 18.212 1.31949C18.3995 1.39759 18.5697 1.51205 18.7128 1.65625L20.3435 3.28701C20.4877 3.43003 20.6021 3.6002 20.6803 3.78767C20.7583 3.97514 20.7986 4.17623 20.7986 4.37932C20.7986 4.58241 20.7583 4.7835 20.6803 4.97098C20.6021 5.15846 20.4877 5.32861 20.3435 5.47163L13.0973 12.7486Z'
-                  stroke='#FFA900'
-                  strokeWidth='1.5'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-              </svg>
-            </Icon>
-            FAQ 게시글 관리
-            <Info>등록된 게시글 {data?.totalElements}건 </Info>
-          </Title>
-          <ButtonsWrapper>
-            {editMode && (
-              <ButtonWrapper>
-                <Button onClick={handleDelete}>
-                  <div>
-                    <DeleteIcon />
-                  </div>
-                  Delete
-                </Button>
-              </ButtonWrapper>
-            )}
-            <ButtonWrapper>
-              <Button
-                onClick={() => {
-                  navigator(`${PA_ROUTES.FAQ}/write`);
-                }}
-              >
-                <div>
-                  <AddedIcon />
-                </div>
-                Add New FAQ
-              </Button>
-            </ButtonWrapper>
-
-            <ButtonWrapper>
-              <Button>
-                Edit
-                <div>
-                  <input
-                    type='checkbox'
-                    id='switch'
-                    onClick={() => {
-                      setEditMode((prev) => !prev);
-                    }}
-                  />
-                  <label htmlFor='switch' className='switch_label'>
-                    <span className='onf_btn'></span>
-                  </label>
-                </div>
-              </Button>
-            </ButtonWrapper>
-          </ButtonsWrapper>
-        </TitleWrapper>
-
-        <ListWrapper>
-          {data &&
-            data.content.length > 0 &&
-            data.content.map((faq) => (
-              <ListItemWrapper
-                key={faq.id}
-                onClick={() => {
-                  navigator(`${PA_ROUTES.FAQ}/${faq.id}?page=${currentPage + 1}`);
-                  setId(faq.id);
-                }}
-                selected={faq.id === id ? true : false}
-              >
-                {editMode && (
-                  <input
-                    type='checkbox'
-                    onClick={() => {
-                      setDeleteItems((prev) => [...prev, faq.id]);
-                    }}
-                  />
-                )}
-                <QuestionTitleWrapper layoutId={faq.id + ''} key={faq.id}>
-                  <QuestionTitle>
-                    <QAIcon>Q</QAIcon>
-                    {faq.question}
-                  </QuestionTitle>
-                  <VisibilityWrapper>{faq.visibility ? '공개' : '비공개'}</VisibilityWrapper>
-                </QuestionTitleWrapper>
-              </ListItemWrapper>
+      <LeftContentWrapper>
+        <ContentBox>
+          <TitleWrapper>
+            <Title>
+              {DATAEDIT_TITLES_COMPONENTS.FAQ}
+              FAQ 게시글 관리
+              <Info>등록된 게시글 {data?.length}건 </Info>
+            </Title>
+            <Button onClick={handleAddNewFAQ}>
+              <div style={{ paddingRight: 10 }}>
+                <AddedIcon />
+              </div>
+              Add New FAQ
+            </Button>
+          </TitleWrapper>
+          <ListWrapper>
+            {slicedFAQ?.map((faq) => (
+              <FAQList key={faq.id}>
+                <DeleteIcon width={15} height={15} onClick={() => handleDelete(faq.id)} />
+                <FAQItem
+                  key={faq.id}
+                  isSelected={currentFAQ?.id === faq.id && isSelected}
+                  onClick={() => {
+                    handleSelectFAQ(faq);
+                  }}
+                >
+                  <FAQQuestion>{faq.question}</FAQQuestion>
+                  {faq.visibility ? <PublicIcon /> : <PrivateIcon />}
+                </FAQItem>
+              </FAQList>
             ))}
-        </ListWrapper>
+          </ListWrapper>
+          {data && (
+            <PaginationWrapper>
+              <Pagination postsPerPage={FAQsPerPage} totalPosts={data.length} paginate={paginate} />
+            </PaginationWrapper>
+          )}
+        </ContentBox>
+      </LeftContentWrapper>
 
-        {data && (
-          <PaginationWrapper>
-            <Pagination postsPerPage={data.size} totalPosts={data.totalElements} paginate={setCurrentPage} />
-          </PaginationWrapper>
-        )}
-      </ContentBox>
-      <Outlet />
+      <RightContentWrapper>
+        <form onSubmit={handleSubmit(onValid)}>
+          <ContentBox>
+            <TitleWrapper>
+              <Title>FAQ 게시글 수정</Title>
+            </TitleWrapper>
+            <InputWrapper>
+              <InputTitle style={{ justifyContent: 'space-between' }}>
+                <p>Question</p>
+                <div
+                  style={{
+                    fontSize: 12,
+                    paddingTop: 10,
+                  }}
+                >
+                  {questionLength}/{maxQuestionLength}
+                </div>
+              </InputTitle>
+              <input
+                {...register('question', {
+                  required: 'Question을 입력해주세요. (200자 내로 작성해 주세요.)',
+                })}
+                name='question'
+                value={currentFAQ?.question || ''}
+                onChange={handleChange}
+                maxLength={200}
+                placeholder='Question을 입력해주세요. (200자 내로 작성해 주세요.)'
+              />
+              {errors.question && <ErrorMessage>{errors.question.message}</ErrorMessage>}
+              <InputTitle style={{ justifyContent: 'space-between' }}>
+                <p>Answer</p>
+                <div
+                  style={{
+                    fontSize: 12,
+                    paddingTop: 10,
+                  }}
+                >
+                  {answerLength}/{maxAnswerLength}
+                </div>
+              </InputTitle>
+              <textarea
+                {...register('answer', {
+                  required: 'Answer를 입력해주세요. (1500자 내로 작성해 주세요.)',
+                })}
+                name='answer'
+                value={currentFAQ?.answer || ''}
+                onChange={handleChange}
+                maxLength={1500}
+                placeholder='Answer를 입력해주세요. (1500자 내로 작성해 주세요.)'
+              />
+              {errors.answer && <ErrorMessage>{errors.answer.message}</ErrorMessage>}
+            </InputWrapper>
+            <RowWrapper>
+              {currentFAQ && (
+                <VisibilityWrapper>
+                  <CheckBox
+                    onClick={() => {
+                      setCurrentFAQ((prevFAQ) => (prevFAQ ? { ...prevFAQ, visibility: true } : null));
+                    }}
+                    className='public'
+                    selected={currentFAQ?.visibility}
+                  >
+                    공개
+                  </CheckBox>
+                  <CheckBox
+                    onClick={() => {
+                      setCurrentFAQ((prevFAQ) => (prevFAQ ? { ...prevFAQ, visibility: false } : null));
+                    }}
+                    className='private'
+                    selected={!currentFAQ?.visibility}
+                  >
+                    비공개
+                  </CheckBox>
+                </VisibilityWrapper>
+              )}
+              <ButtonWrapper>
+                <ModifyButton>수정하기</ModifyButton>
+              </ButtonWrapper>
+            </RowWrapper>
+          </ContentBox>
+        </form>
+      </RightContentWrapper>
     </Wrapper>
   );
 }
 export default FAQManagePage;
 
-const VisibilityWrapper = styled.div`
-  font-size: 12px;
-  padding-right: 15px;
-`;
-
-const PaginationWrapper = styled.div`
-  width: 100%;
-  justify-content: center;
-  align-items: end;
+const Wrapper = styled.div`
   display: flex;
 `;
-const Wrapper = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 0fr);
-  grid-gap: 15px;
-`;
+
+const LeftContentWrapper = styled.div``;
+const RightContentWrapper = styled.div``;
 
 const TitleWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid #f1f1f1;
   align-items: center;
-  padding: 0px 20px;
-`;
-
-const Icon = styled.div`
-  padding-right: 0.8rem;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
 `;
 
 const Title = styled.div`
   display: flex;
   align-items: center;
-  height: 4rem;
-  font-size: 1.3rem;
+  align-content: center;
+
+  svg {
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  font-family: ${(props) => props.theme.font.bold};
+  font-size: 25px;
 `;
 
 const Info = styled.div`
-  height: 20px;
   display: flex;
   align-items: end;
-  padding-left: 8px;
-  font-size: 10px;
+  padding-left: 14px;
+  font-size: 14px;
+  font-family: ${(props) => props.theme.font.medium};
   color: gray;
 `;
 
-const QAIcon = styled.div`
-  background-color: ${(props) => props.theme.color.yellow.light};
+const Button = styled.button`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 100%;
-  font-size: 0.8rem;
-  margin-right: 0.5rem;
-`;
-
-const QuestionTitleWrapper = styled(motion.div)`
   cursor: pointer;
-  margin-left: 1rem;
-  height: 3rem;
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const QuestionTitle = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 0.9rem;
-`;
-
-const ButtonsWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
-const ButtonWrapper = styled.div`
-  font-size: 15px;
-  color: ${(props) => props.theme.color.black.bold};
-  cursor: pointer;
-  display: flex;
+  border: none;
   background-color: ${(props) => props.theme.color.white.bold};
-  border-radius: 5px;
-  align-items: center;
-  height: 30px;
-  min-width: 90px;
-  border: 0.5px solid ${(props) => props.theme.color.black.light};
-  padding: 5px;
-`;
-const Button = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  justify-content: space-around;
+  box-shadow: 1px 1px 4px 0.5px #c6c6c6;
+  padding: 10px;
+  /* margin-bottom: 10px; */
+  border-radius: 0.2rem;
+  transition: 0.2s;
+  font-family: ${(props) => props.theme.font.medium};
+  font-size: 15px;
 
-  #switch {
-    position: absolute;
-    /* hidden */
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-  }
-
-  .switch_label {
-    position: relative;
-    cursor: pointer;
-    display: inline-block;
-    width: 35px;
-    height: 14px;
-    background: #fff;
-    border: 1px solid ${(props) => props.theme.color.yellow.bold};
-    border-radius: 20px;
-    transition: 0.2s;
-  }
-
-  .onf_btn {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 100%;
-    background: ${(props) => props.theme.color.yellow.bold};
-    transition: 0.2s;
-  }
-
-  /* checking style */
-  #switch:checked + .switch_label {
-    background: ${(props) => props.theme.color.yellow.bold};
-    border: 1px solid ${(props) => props.theme.color.yellow.bold};
-  }
-
-  #switch:checked + .switch_label:hover {
-    background: ${(props) => props.theme.color.yellow.bold};
-  }
-
-  /* move */
-  #switch:checked + .switch_label .onf_btn {
-    left: 21px;
-    background: #fff;
-    box-shadow: 1px 2px 3px #00000020;
+  &:hover {
+    background-color: ${(props) => props.theme.color.yellow.light}; /* 버튼 호버 시 색상 조정 */
   }
 `;
 
 const ListWrapper = styled.div`
-  height: 60vh;
+  margin-top: 20px;
 `;
 
-const ListItemWrapper = styled.div<{ selected: boolean }>`
+const FAQList = styled.div`
   display: flex;
   width: 100%;
-  border-bottom: 1px solid #f1f1f1;
-  background-color: ${({ selected }) => (selected ? theme.color.yellow.light : 'none')};
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0px;
+  margin-bottom: 10px;
+
+  svg {
+    cursor: pointer;
+  }
 `;
 
-const DeleteButton = styled.button`
+const FAQItem = styled.div<{ isSelected: boolean }>`
+  display: flex;
+  position: relative;
   border: none;
-  box-shadow: 1px 2px 3px #00000020;
+  box-shadow: 1px 1px 4px 0.1px ${(props) => props.theme.color.black.pale};
+  border-radius: 4px;
+  background-color: ${(props) => (props.isSelected ? props.theme.color.yellow.light : props.theme.color.white.bold)};
+  width: 90%;
+  padding: 15px 10px;
+  justify-content: space-between;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${(props) => props.theme.color.yellow.light};
+  }
+`;
+
+const FAQQuestion = styled.div`
+  font-family: ${(props) => props.theme.font.semiBold};
+  font-size: 16px;
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+`;
+const PaginationWrapper = styled.div`
+  margin-top: 30px;
+`;
+
+const InputWrapper = styled.div`
+  display: flex;
   background-color: ${(props) => props.theme.color.white.light};
+  flex-direction: column;
+  font-family: ${(props) => props.theme.font.semiBold};
+  p {
+    font-size: 18px;
+    padding-top: 7px;
+    padding-bottom: 3px;
+    margin-bottom: 10px;
+  }
+  input {
+    outline: none;
+    font-family: ${(props) => props.theme.font.regular};
+    font-size: 14px;
+    padding: 10px;
+    width: 95%;
+    height: 30px;
+    border: none;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  }
+  input:focus {
+    transition: 0.2s;
+    border-bottom: 3px solid ${(props) => props.theme.color.symbol};
+  }
+  textarea {
+    outline: none;
+    font-family: ${(props) => props.theme.font.regular};
+    font-size: 14px;
+    padding: 10px;
+    width: 95%;
+    min-height: 450px;
+    border: none;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    resize: none;
+  }
+  textarea:focus {
+    transition: 0.2s;
+    border-bottom: 3px solid ${(props) => props.theme.color.symbol};
+  }
+`;
+
+const InputTitle = styled.div`
+  display: flex;
+  padding-top: 20px;
+  align-items: center;
+  height: 40px;
+  width: 95%;
+  svg {
+    cursor: pointer;
+    margin-right: 10px;
+  }
+`;
+
+const RowWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+`;
+
+const VisibilityWrapper = styled.div`
+  display: flex;
+  margin-top: 20px;
+`;
+
+const CheckBox = styled.div<{ selected: boolean }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+  width: 6vw;
+  height: 40px;
+  font-size: 15px;
+  font-family: ${(props) => props.theme.font.medium};
+  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+  background-color: ${(props) => (props.selected ? theme.color.yellow.light : 'none')};
+  cursor: pointer;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  margin-top: 20px;
+`;
+
+const ModifyButton = styled.button`
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 6vw;
+  height: 40px;
+  margin-right: 20px;
+  font-size: 15px;
+  font-family: ${(props) => props.theme.font.medium};
+  box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+  background-color: ${(props) => props.theme.color.white.bold};
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background-color: ${(props) => props.theme.color.yellow.light};
+  }
+`;
+
+const ErrorMessage = styled.div`
+  font-family: ${(props) => props.theme.font.light};
+  margin-top: 10px;
+  margin-left: 10px;
+  font-size: 13px;
 `;

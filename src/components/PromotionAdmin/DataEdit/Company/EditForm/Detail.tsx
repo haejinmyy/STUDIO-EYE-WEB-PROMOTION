@@ -19,8 +19,13 @@ import { ReactComponent as AddedIcon } from '@/assets/images/PA/plusIcon.svg';
 import Button from '../../StyleComponents/Button';
 import { DATAEDIT_TITLES_COMPONENTS, INPUT_MAX_LENGTH } from '../StyleComponents';
 import { MSG } from '@/constants/messages';
+import { useSetRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
+import { useNavigate } from 'react-router-dom';
+import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 
 interface IDetailFormData {
+  [x: string]: any;
   detailInformation: { key: string; value: string }[];
 }
 
@@ -31,8 +36,9 @@ interface IDetailProps {
 const Detail = ({ setEditDetail }: IDetailProps) => {
   const { data, isLoading, error } = useQuery<IDetailFormData, Error>(['company'], getCompanyDetailData);
   const { register, handleSubmit, watch, reset, control } = useForm<IDetailFormData>();
+  const setIsEditing = useSetRecoilState(dataUpdateState); // 수정 여부 확인
+  const navigator = useNavigate();
 
-  console.log('first detail', data);
   // detail 요소 추가 삭제
   const { fields, append, remove } = useFieldArray({
     control,
@@ -41,13 +47,13 @@ const Detail = ({ setEditDetail }: IDetailProps) => {
 
   useEffect(() => {
     if (data) {
-      const detailInformationArray = Object.entries(data).map(([key, value]) => ({
-        key,
-        value: value.toString(),
+      const detailInformationArray = data.map((item: { key: string; value: { toString: () => string; }; }) => ({
+        key: item.key,
+        value: item.value.toString(),
       }));
       reset({ detailInformation: detailInformationArray });
     }
-  }, [data, reset]);
+  }, [data, reset]);  
 
   // 글자수 확인
   const watchFields = watch('detailInformation');
@@ -62,30 +68,24 @@ const Detail = ({ setEditDetail }: IDetailProps) => {
   };
 
   const onValid = (data: IDetailFormData) => {
-    const transformedDetailInformation = data.detailInformation.reduce(
-      (acc, item) => {
-        acc[item.key] = item.value;
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-    console.log('test: ', transformedDetailInformation);
-
     const requestBody = {
-      detailInformation: transformedDetailInformation,
+      detailInformation: data?.detailInformation,
     };
-
+  
+    console.log('test: ', requestBody);
+  
     if (window.confirm(MSG.CONFIRM_MSG.SAVE)) {
       axios
         .put(`${PROMOTION_BASIC_PATH}/api/company/detail`, requestBody)
         .then(() => {
           alert(MSG.ALERT_MSG.SAVE);
           setEditDetail(false);
+          window.location.reload();
         })
         .catch((error) => console.error('Error updating company detail:', error));
     }
   };
-
+  
   if (isLoading) return <>is Loading..</>;
   if (error) return <>{error.message}</>;
 
@@ -99,7 +99,10 @@ const Detail = ({ setEditDetail }: IDetailProps) => {
               <Button
                 description='Add New Detail'
                 svgComponent={<AddedIcon width={14} height={14} />}
-                onClick={() => append({ key: '', value: '' })}
+                onClick={() => {
+                  setIsEditing(true);
+                  append({ key: '', value: '' });
+                }}
               />
               <Button description={MSG.BUTTON_MSG.SAVE} fontSize={14} width={100} />
             </div>
@@ -125,6 +128,7 @@ const Detail = ({ setEditDetail }: IDetailProps) => {
                           {...field}
                           placeholder={MSG.PLACEHOLDER_MSG.DETAIL.TITLE}
                           onChange={(e) => {
+                            setIsEditing(true);
                             if (e.target.value.length <= INPUT_MAX_LENGTH.DETAIL_TITLE) {
                               field.onChange(e);
                             }
@@ -151,6 +155,7 @@ const Detail = ({ setEditDetail }: IDetailProps) => {
                           {...field}
                           placeholder={MSG.PLACEHOLDER_MSG.DETAIL.CONTENT}
                           onChange={(e) => {
+                            setIsEditing(true);
                             if (e.target.value.length <= INPUT_MAX_LENGTH.DETAIL_CONTENT) {
                               field.onChange(e);
                             }

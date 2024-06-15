@@ -388,7 +388,7 @@ const InputForm = () => {
                       onChange={handleLogoImageChange}
                     />
                     <ImgBox>
-                      <img src={putData.logoImageUrl} />
+                      <img src={putData.logoImageUrl} alt='' />
                     </ImgBox>
                   </LogoWrapper>
                 </Box>
@@ -404,7 +404,7 @@ const InputForm = () => {
                       onChange={handleSloganImageChange}
                     />
                     <ImgBox>
-                      <img src={putData.sloganImageUrl} />
+                      <img src={putData.sloganImageUrl} alt='' />
                     </ImgBox>
                   </LogoWrapper>
                 </Box>
@@ -519,7 +519,9 @@ const InputForm = () => {
                 </div>
               </InputWrapper>
             </ContentBlock>
-            <Button description={MSG.BUTTON_MSG.POST} fontSize={14} width={100} />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '29px' }}>
+              <Button description={MSG.BUTTON_MSG.POST} fontSize={14} width={100} />
+            </div>
           </RightContentWrapper>
         </Form>
       </Wrapper>

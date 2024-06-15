@@ -6,25 +6,26 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
-import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import htmlToDraft from 'html-to-draftjs';
-import draftToHtml from 'draftjs-to-html';
-import { IEditorData } from '@/types/PromotionAdmin/faq';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import { useNavigate } from 'react-router-dom';
-import TextColorEditor from '@/components/PromotionAdmin/DataEdit/TextColorEditor';
 import FileButton from '@/components/PromotionAdmin/DataEdit/StyleComponents/FileButton';
 import {
   DATAEDIT_NOTICE_COMPONENTS,
   DATAEDIT_TITLES_COMPONENTS,
 } from '../../../../components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import { useSetRecoilState, useRecoilValue } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
+import { MSG } from '@/constants/messages';
 
 interface IFormData {
   name: string;
+  introduction: string;
 }
 
 const CEOEditPage = () => {
+  const setIsEditing = useSetRecoilState(dataUpdateState);
+  const isEditing = useRecoilValue(dataUpdateState);
   const navigator = useNavigate();
   const { data, isLoading, error, refetch } = useQuery<ICEOData, Error>(['ceo', 'id'], getCEOData);
   const [putData, setPutData] = useState({
@@ -37,44 +38,38 @@ const CEOEditPage = () => {
 
   const [imgChange, setImgChange] = useState(false);
 
-  const { register, handleSubmit } = useForm<IFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IFormData>({
     defaultValues: {
       name: data?.name,
+      introduction: data?.introduction,
     },
   });
-
-  const [editorState, setEditorState] = useState(() => {
-    const blocksFromHtml = data && htmlToDraft(data.introduction);
-    if (blocksFromHtml) {
-      const { contentBlocks, entityMap } = blocksFromHtml;
-      const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
-      return EditorState.createWithContent(contentState);
-    } else {
-      return EditorState.createEmpty();
-    }
-  });
-  const [blocks, setBlocks] = useState<IEditorData[]>([]);
 
   useEffect(() => {
     refetch();
   }, [data, refetch]);
 
-  const updateTextDescription = (state: any) => {
-    const contentState = state.getCurrentContent();
-    const plainText = contentState.getPlainText();
-    const lineBreaks = (plainText.match(/\n/g) || []).length;
-    if (plainText.length > 200 || lineBreaks >= 6) {
-      setEditorState(editorState);
-      return;
+  useEffect(() => {
+    if (isEditing) {
+      const handleBeforeUnload = (event: any) => {
+        const message = MSG.CONFIRM_MSG.EXIT;
+        event.returnValue = message;
+        return message;
+      };
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
     }
-    setEditorState(state);
-    setBlocks(convertToRaw(editorState.getCurrentContent()).blocks);
-  };
+  }, [isEditing]);
 
   const onValid = (data: IFormData) => {
     handleSaveClick(data);
   };
-  const [isInvalid, setInvalid] = useState(true);
 
   const handleSaveClick = async (data: IFormData) => {
     const formData = new FormData();
@@ -85,54 +80,42 @@ const CEOEditPage = () => {
         [
           JSON.stringify({
             name: data.name,
-            introduction: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+            introduction: data.introduction,
           }),
         ],
         { type: 'application/json' },
       ),
     );
 
-    if (putData.request.name === undefined) {
-      alert('이름을 입력해주세요');
-      setInvalid(true);
-    } else if (blocks === undefined || null || blocks.length === 0) {
-      alert('소개를 입력해주세요');
-      setInvalid(true);
-    } else if (putData.file === undefined) {
-      alert('파일을 업로드해주세요');
-      setInvalid(true);
-    } else {
-      setInvalid(false);
-    }
-    if (!isInvalid) {
-      if (window.confirm('수정하시겠습니까?')) {
-        if (imgChange) {
-          // 이미지를 변경한 경우
-          const file = await urlToFile(putData.file, 'CEOLogo.png');
-          if (file) {
-            formData.append('file', file);
-          } else {
-            console.error('로고 이미지 가져오기 실패');
-          }
-          axios
-            .put(`${PROMOTION_BASIC_PATH}/api/ceo`, formData)
-            .then((response) => {
-              console.log('CEO data updated:', response);
-              alert('수정되었습니다.');
-              navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
-            })
-            .catch((error) => console.error('Error updating CEO:', error));
+    if (window.confirm('수정하시겠습니까?')) {
+      if (imgChange) {
+        // 이미지를 변경한 경우
+        const file = await urlToFile(putData.file, 'CEOLogo.png');
+        if (file) {
+          formData.append('file', file);
         } else {
-          // 이미지를 변경하지 않은 경우
-          axios
-            .put(`${PROMOTION_BASIC_PATH}/api/ceo/modify`, formData)
-            .then((response) => {
-              console.log('CEO updated:', response);
-              alert('수정되었습니다.');
-              navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
-            })
-            .catch((error) => console.error('Error updating CEO:', error));
+          console.error('로고 이미지 가져오기 실패');
         }
+        axios
+          .put(`${PROMOTION_BASIC_PATH}/api/ceo`, formData)
+          .then((response) => {
+            console.log('CEO data updated:', response);
+            alert('수정되었습니다.');
+            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
+          })
+          .catch((error) => console.error('Error updating CEO:', error));
+        setIsEditing(false);
+      } else {
+        // 이미지를 변경하지 않은 경우
+        axios
+          .put(`${PROMOTION_BASIC_PATH}/api/ceo/modify`, formData)
+          .then((response) => {
+            console.log('CEO updated:', response);
+            alert('수정되었습니다.');
+            navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
+          })
+          .catch((error) => console.error('Error updating CEO:', error));
+        setIsEditing(false);
       }
     }
   };
@@ -149,6 +132,7 @@ const CEOEditPage = () => {
       };
       reader.readAsDataURL(file);
       setImgChange(true);
+      setIsEditing(true);
     }
   };
 
@@ -174,6 +158,35 @@ const CEOEditPage = () => {
       navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
     }
   };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
+    setIsEditing(true);
+    const { name, value } = e.target;
+
+    if (/^\s|[~!@#$%^&*(),.?":{}|<>]/.test(value.charAt(0))) {
+      return;
+    }
+
+    let processedValue = value;
+
+    if (name === 'introduction') {
+      const lines = value.split('\n').length;
+      if (lines > 5) {
+        const linesArray = value.split('\n');
+        processedValue = linesArray.slice(0, 5).join('\n');
+      }
+    }
+
+    setPutData((prevData) => ({
+      ...prevData,
+      request: {
+        ...prevData.request,
+        [name]: processedValue,
+      },
+    }));
+  };
+
+  const currentLength = putData.request.introduction?.length || 0;
+  const maxLimit = 200; // 최대 글자 수
 
   if (isLoading) return <>is Loading..</>;
   if (error) return <>{error.message}</>;
@@ -192,18 +205,35 @@ const CEOEditPage = () => {
               </InputTitle>
               <input
                 {...register('name', {
-                  required: '이름 입력해주세요',
+                  required: 'CEO 이름을 입력해주세요',
                 })}
-                placeholder='이름 입력해주세요'
+                placeholder='CEO 이름을 입력해주세요'
+                maxLength={30}
+                onChange={handleChange}
+                value={putData.request.name}
               />
-              <InputTitle>
+              {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
+              <InputTitle style={{ justifyContent: 'space-between' }}>
                 <p>Introduction</p>
+                <div
+                  style={{
+                    fontSize: 12,
+                    paddingTop: 10,
+                  }}
+                >
+                  {currentLength}/{maxLimit}
+                </div>
               </InputTitle>
-              <TextColorEditor
-                editorState={editorState}
-                onEditorStateChange={updateTextDescription}
-                attribute='CEO Introduction'
+              <textarea
+                {...register('introduction', {
+                  required: 'CEO 소개 (5줄, 200자 내로 작성해 주세요.)',
+                })}
+                placeholder='CEO 소개 (5줄, 200자 내로 작성해 주세요.)'
+                onChange={handleChange}
+                maxLength={200}
+                value={putData.request.introduction}
               />
+              {errors.introduction && <ErrorMessage>{errors.introduction.message}</ErrorMessage>}
               <InputImgWrapper>
                 <Box>
                   <InputTitle>{DATAEDIT_TITLES_COMPONENTS.CEOIMG}</InputTitle>
@@ -230,7 +260,7 @@ const CEOEditPage = () => {
 
 export default CEOEditPage;
 
-export const Wrapper = styled.div`
+const Wrapper = styled.div`
   display: flex;
   input,
   textarea {
@@ -244,7 +274,7 @@ export const Wrapper = styled.div`
   }
 `;
 
-export const ContentBlock = styled.div<{ width?: number; height?: number }>`
+const ContentBlock = styled.div<{ width?: number; height?: number }>`
   padding: 25px;
   background-color: ${(props) => props.theme.color.white.pale};
   position: relative;
@@ -257,7 +287,7 @@ export const ContentBlock = styled.div<{ width?: number; height?: number }>`
   height: ${(props) => (props.height ? props.height + 'px;' : 'fit-content;')};
 `;
 
-export const InputWrapper = styled.div`
+const InputWrapper = styled.div`
   display: flex;
   background-color: ${(props) => props.theme.color.white.light};
   flex-direction: column;
@@ -277,6 +307,17 @@ export const InputWrapper = styled.div`
     border: none;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   }
+  textarea {
+    outline: none;
+    font-family: ${(props) => props.theme.font.regular};
+    font-size: 14px;
+    padding: 10px;
+    width: 70%;
+    min-height: 200px;
+    border: none;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    resize: none;
+  }
 
   input:focus,
   textarea:focus {
@@ -285,27 +326,28 @@ export const InputWrapper = styled.div`
   }
 `;
 
-export const InputImgWrapper = styled.div`
+const InputImgWrapper = styled.div`
   display: flex;
   width: 100%;
   justify-content: space-between;
 `;
 
-export const InputTitle = styled.div`
+const InputTitle = styled.div`
   display: flex;
   padding-top: 20px;
   align-items: center;
   height: 40px;
+  width: 70%;
   svg {
     cursor: pointer;
     margin-right: 10px;
   }
 `;
-export const Box = styled.div`
+const Box = styled.div`
   width: 100%;
 `;
 
-export const ImgBox = styled.div`
+const ImgBox = styled.div`
   display: flex;
   height: 200px;
   width: 80%;
@@ -315,7 +357,7 @@ export const ImgBox = styled.div`
   border-radius: 5px;
   margin-top: 15px;
 `;
-export const LogoWrapper = styled.div`
+const LogoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 30px;
@@ -347,4 +389,10 @@ const Button = styled.button`
   &:hover {
     background-color: ${(props) => props.theme.color.yellow.light}; /* 버튼 호버 시 색상 조정 */
   }
+`;
+const ErrorMessage = styled.div`
+  font-family: ${(props) => props.theme.font.light};
+  margin-top: 10px;
+  margin-left: 10px;
+  font-size: 13px;
 `;

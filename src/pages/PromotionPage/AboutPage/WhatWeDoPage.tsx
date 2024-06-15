@@ -6,13 +6,21 @@ import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 interface IWhatWeDoProps {
   isHighlighted: boolean;
 }
+
 interface IWhatWeDoInputProps {
   leftInput: boolean;
+}
+
+interface CompanyDetail {
+  id: number;
+  key: string;
+  value: string;
 }
 
 const WhatWeDoPage = () => {
   const [companyDetailDataTitle, setCompanyDetailDataTitle] = useState<string[]>([]);
   const [companyDetailData, setCompanyDetailData] = useState<string[]>([]);
+  const [highlighted, setHighlighted] = useState<number | null>(null);
 
   useEffect(() => {
     axios
@@ -20,20 +28,23 @@ const WhatWeDoPage = () => {
       .then((response) => {
         const responseData = response.data.data;
         if (responseData) {
-          const dataKeys: string[] = Object.keys(responseData);
-          const dataValues: string[] = Object.values(responseData);
+          const details: CompanyDetail[] = Array.isArray(responseData) ? responseData : [responseData];
+          
+          // Extract keys and values from response data
+          const dataKeys: string[] = details.map(detail => detail.key);
+          const dataValues: string[] = details.map(detail => detail.value);
+
           setCompanyDetailDataTitle(dataKeys);
           setCompanyDetailData(dataValues);
-          console.log('dataValues', dataValues);
         }
       })
       .catch((error) => {
         console.error('데이터 수신 오류:', error);
       });
   }, []);
+  
 
   const { scrollY } = useScroll(); // 스크롤 위치 감지
-  const [highlighted, setHighlighted] = useState<number | null>(null);
 
   useMotionValueEvent(scrollY, 'change', (scrollValue) => {
     const sections = document.querySelectorAll('.WhatWeDo');
@@ -51,8 +62,9 @@ const WhatWeDoPage = () => {
 
     setHighlighted(closestSection);
   });
+  
   if (companyDetailData.length === 0) {
-    return <></>;
+    return null; // 데이터 로딩 중이면 아무것도 렌더링하지 않음
   }
 
   return (
@@ -105,7 +117,7 @@ const ScrollBar = styled.div`
   position: absolute;
   top: 0%;
   left: 50%;
-  translatex: -50%;
+  translate: -50%;
   width: 5px;
   height: 100%;
   background-color: #1a1a1a;
@@ -114,7 +126,7 @@ const ScrollBarBox = styled(motion.div)`
   position: sticky;
   top: 50%;
   left: 50%;
-  translatex: -50%;
+  translate: -50%;
   width: 5px;
   height: 350px;
   background-color: #ffffff;

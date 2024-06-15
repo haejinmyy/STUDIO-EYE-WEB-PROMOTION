@@ -72,7 +72,7 @@ function IntroPage() {
             initial={{ opacity: 0, y: 100 }}
             whileInView={{ opacity: 1, y: 0 }}
             animate={{ opacity: aboutInView ? 1 : 0, y: aboutInView ? 0 : 100 }}
-            transition={{ duration: 1, delay: 0.3 }}
+            transition={{ duration: 1, delay: 0.2 }}
           >
             <BackgroundText>ABOUT</BackgroundText>
             <AboutText dangerouslySetInnerHTML={{ __html: companyIntroData }} />
@@ -125,7 +125,7 @@ const InitContainer = styled.div`
 `;
 const InitTitleWrapper = styled.div`
   display: flex;
-  flex-directrion: 'row';
+  flex-direction: row;
   gap: 20px;
   margin-bottom: 70px;
 `;
@@ -141,7 +141,7 @@ const IntroContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 50px;
+  padding: 40px;
 `;
 const BackgroundText = styled.div`
   font-family: 'pretendard-bold';
@@ -154,17 +154,19 @@ const BackgroundText = styled.div`
 `;
 const AboutWrapper = styled.div`
   text-align: left;
-  margin-bottom: 100px;
+  margin-bottom: 50px;
 `;
 const AboutText = styled.div<IFontStyleProps>`
   font-family: 'pretendard-medium';
-  font-size: 42px;
+  font-size: 2vw;
   color: ${(props) => props.color || '#ffffff'};
   margin-bottom: 15px;
   padding: 10px;
   max-width: 80%;
   word-wrap: break-word;
+  line-height: 1.5;
 `;
 const MissionWrapper = styled.div`
   text-align: right;
+  margin-bottom: 70px;
 `;

@@ -31,6 +31,7 @@ const CheckBoxStyle = styled.div<{ selected: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-right: 10px;
   width: 120px;
   height: 40px;
   font-size: 14px;

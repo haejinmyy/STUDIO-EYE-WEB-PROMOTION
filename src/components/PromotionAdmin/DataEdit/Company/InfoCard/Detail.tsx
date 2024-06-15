@@ -7,21 +7,22 @@ import { DATAEDIT_TITLES_COMPONENTS } from '../StyleComponents';
 import Button from '../../StyleComponents/Button';
 import { ContentBlock } from '../CompanyFormStyleComponents';
 import { MSG } from '@/constants/messages';
-
 interface IDetailProps {
   setEditDetail: (editMode: boolean) => void;
 }
 
 const Detail = ({ setEditDetail }: IDetailProps) => {
   const { data, isLoading, error } = useQuery<ICompanyData, Error>(['company', 'id'], getCompanyDetailData);
-  const detailInformationKeys = data?.detailInformation ? Object.keys(data?.detailInformation) : ['what we do'];
-  const detailInformationValues = data?.detailInformation ? Object.values(data?.detailInformation) : ['hello'];
-  const combinedArray = detailInformationKeys.map((key, index) => {
-    return { key, value: detailInformationValues[index] };
-  });
+  const detailInformation = data?.detailInformation || [{ key: 'what we do', value: 'hello' }];
+
+  const combinedArray = detailInformation.map((item) => ({
+    key: item.key,
+    value: item.value,
+  }));
 
   if (isLoading) return <>is Loading..</>;
   if (error) return <>{error.message}</>;
+
   return (
     <Wrapper>
       {data && (
@@ -40,7 +41,7 @@ const Detail = ({ setEditDetail }: IDetailProps) => {
           <InputWrapper>
             <div>
               {combinedArray.map((data) => (
-                <DetailItem>
+                <DetailItem key={data.key}>
                   <div className='detail_title'>{data.key}</div>
                   <div className='detail_content'>{String(data.value)}</div>
                 </DetailItem>

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import logo from '../../../assets/logo/Logo.png';
 import BackgroundYellowCircle from '@/components/BackgroundYellowCircle/BackgroundYellowCircle';
@@ -7,6 +7,7 @@ import { PP_ROUTES } from '@/constants/routerConstants';
 import { useNavigate } from 'react-router-dom';
 import { getCompanyBasicData } from '../../../apis/PromotionAdmin/dataEdit';
 import { emailCheck, phoneFaxCheck } from '@/components/ValidationRegEx/ValidationRegEx';
+// import useWindowSize from '@/hooks/useWindowSize';
 
 interface ICircleProps {
   filled: boolean;
@@ -77,7 +78,7 @@ const ContactUsPage = () => {
     };
     fetchData();
   }, []);
-  const [selectedCategory, setSelectedCategory] = useState('');
+
   // wheel event 관리
   const containerRef = useRef<HTMLDivElement | null>(null);
   const handleWheel = () => (e: WheelEvent) => {
@@ -115,6 +116,40 @@ const ContactUsPage = () => {
       };
     }
   }, [requestStep]);
+
+  ///////////////////////////////////////////////////////////////////////////////////////
+  // mainpage와 같은 fullpage scroll
+  // const [elementHeight, setElementHeight] = useState(window.innerHeight);
+  // const [activeIndex, setActiveIndex] = useState(0);
+
+  // const sectionsRef = useRef<HTMLElement[]>([]);
+  // const { height } = useWindowSize();
+
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     const currentScroll = window.scrollY;
+  //     const index = sectionsRef.current.findIndex(
+  //       (section) =>
+  //         section.offsetTop <= currentScroll + window.innerHeight / 2 &&
+  //         section.offsetTop + section.offsetHeight > currentScroll + window.innerHeight / 2,
+  //     );
+  //     setActiveIndex(index !== -1 ? index : 0);
+  //   };
+
+  //   window.addEventListener('scroll', handleScroll);
+  //   return () => {
+  //     window.removeEventListener('scroll', handleScroll);
+  //   };
+  // }, [sectionsRef]);
+
+  // useEffect(() => {
+  //   if (sectionsRef.current && sectionsRef.current[0]) {
+  //     setElementHeight(sectionsRef.current[0].offsetHeight);
+  //   }
+  // }, [height]);
+  //////////////////////////////////////////////////////////////////////////////////
+
+  const [selectedCategory, setSelectedCategory] = useState('');
   // 새로고침 경고
   useEffect(() => {
     const handleBeforeUnload = (e: any) => {
@@ -201,6 +236,11 @@ const ContactUsPage = () => {
     // });
 
     //////////////////////////////////////////////////////////// 2번
+    if (/^\s|[~!@#$%^&*(),.?":{}|<>]/.test(value.charAt(0))) {
+      return;
+    }
+    const truncatedValue = value.slice(0, 200);
+
     if (name === 'contact') {
       let fixedValue = value.replace(/[^0-9]/g, '');
       if (fixedValue.length <= 3) {
@@ -243,7 +283,7 @@ const ContactUsPage = () => {
     } else {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        [name]: value,
+        [name]: truncatedValue,
       }));
     }
     //////////////////////////////////////////////////////////// 2번
@@ -276,6 +316,13 @@ const ContactUsPage = () => {
           email: '',
         }));
       }
+    }
+
+    if (name === 'description') {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        [name]: value.slice(0, 1500),
+      }));
     }
   };
 
@@ -551,7 +598,7 @@ const ContactUsPage = () => {
           <>
             <RequestCompleteContentWrapper>
               <RequestExplanation style={{ textAlign: 'center', marginBottom: 30 }}>
-                문의가 정상적으로 접수되었습니다.
+                문의가 정상적으로 접수되었습니다. 이메일을 확인해주세요.
               </RequestExplanation>
               <RequestExplanation style={{ textAlign: 'center' }} fontSize='20px' fontFamily='Pretendard-Regular'>
                 담당자 배정 후 연락 드리겠습니다. 감사합니다.
@@ -582,6 +629,7 @@ const Container = styled.div`
   overflow-x: hidden;
   overflow-y: scroll;
   scroll-snap-type: y mandatory; // 수직 스냅
+  scroll-behavior: 'smooth';
   scrollbar-width: none; // 파이어폭스 스크롤바 숨김
   -ms-overflow-style: none; // 인터넷 익스플로러/엣지 스크롤바 숨김
   &::-webkit-scrollbar {
@@ -600,7 +648,7 @@ const IntroSection = styled.div`
 `;
 const IntroTitleWrapper = styled.div`
   display: flex;
-  flex-directrion: 'row';
+  flex-direction: 'row';
   justify-content: center;
 `;
 const IntroTitleCONTACT = styled.div`

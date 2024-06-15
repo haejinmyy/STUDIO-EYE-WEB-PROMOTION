@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import CheckBox from './CheckBox';
 import styled from 'styled-components';
+import { useSetRecoilState } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
 
 type ToggleSwitchType = {
   option1: string;
@@ -11,6 +13,7 @@ type ToggleSwitchType = {
 
 const ToggleSwitch = (props: ToggleSwitchType) => {
   const [isPublic, setIsPublic] = useState(props.selected);
+  const setIsEditing = useSetRecoilState(dataUpdateState);
 
   useEffect(() => {
     setIsPublic(props.selected);
@@ -18,6 +21,7 @@ const ToggleSwitch = (props: ToggleSwitchType) => {
 
   const handleToggle = (visibility: boolean) => {
     props.onToggle && props.onToggle(visibility);
+    setIsEditing(true);
   };
 
   return (
