@@ -39,5 +39,6 @@ jobs:
         echo "${{ secrets.SERVER_SSH_KEY }}" > private_key.pem
         chmod 600 private_key.pem
         ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-        sudo service nginx reload
+        cd /home/ubuntu/STUDIO-EYE-WEB-PROMOTION
+        sudo systemctl restart nginx
         EOF
