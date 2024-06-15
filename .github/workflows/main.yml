@@ -22,9 +22,8 @@ jobs:
       run: npm install
 
     - name: Build project
-      env:
-        CI: false # eslint error 임시 false 처리
-      run: npm run build
+      run: |
+        CI=false npm run build
 
     - name: Copy files via scp
       uses: appleboy/scp-action@master
@@ -37,8 +36,8 @@ jobs:
 
     - name: Restart Nginx
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+        echo "${{ secrets.SERVER_SSH_KEY }}" > private_key.pem
+        chmod 600 private_key.pem
+        ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
         sudo systemctl restart nginx
         EOF
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
