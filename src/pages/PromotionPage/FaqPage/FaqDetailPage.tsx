@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import styled from 'styled-components';
 
 const FaqDetailPage = () => {
@@ -9,7 +10,7 @@ const FaqDetailPage = () => {
 
   useEffect(() => {
     axios
-      .get(`http://3.35.54.100:8080/api/faq/${detailId}`)
+      .get(`${PROMOTION_BASIC_PATH}/api/faq/${detailId}`)
       .then((response) => {
         const data = response.data;
         const object = {
