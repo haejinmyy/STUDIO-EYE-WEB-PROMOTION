@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
+import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
+import { getCompanyDetailData } from '@/apis/PromotionAdmin/dataEdit';
 
 interface IWhatWeDoProps {
   isHighlighted: boolean;
@@ -23,27 +25,26 @@ const WhatWeDoPage = () => {
   const [highlighted, setHighlighted] = useState<number | null>(null);
 
   useEffect(() => {
-    axios
-      .get('http://3.36.95.109:8080/api/company/detail')
-      .then((response) => {
-        const responseData = response.data.data;
+    const fetchCompanyDetailData = async () => {
+      try {
+        const responseData = await getCompanyDetailData();
         if (responseData) {
-          const details: CompanyDetail[] = Array.isArray(responseData) ? responseData : [responseData];
+          const details = Array.isArray(responseData) ? responseData : [responseData];
           
-          // Extract keys and values from response data
-          const dataKeys: string[] = details.map(detail => detail.key);
-          const dataValues: string[] = details.map(detail => detail.value);
-
+          const dataKeys = details.map(detail => detail.key);
+          const dataValues = details.map(detail => detail.value);
+  
           setCompanyDetailDataTitle(dataKeys);
           setCompanyDetailData(dataValues);
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('데이터 수신 오류:', error);
-      });
+      }
+    };
+  
+    fetchCompanyDetailData();
   }, []);
   
-
   const { scrollY } = useScroll(); // 스크롤 위치 감지
 
   useMotionValueEvent(scrollY, 'change', (scrollValue) => {
