@@ -1,6 +1,7 @@
 import styled from 'styled-components';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import logo from '../../../assets/logo/Logo.png';
 import BackgroundYellowCircle from '@/components/BackgroundYellowCircle/BackgroundYellowCircle';
 import { PP_ROUTES } from '@/constants/routerConstants';
@@ -355,7 +356,7 @@ const ContactUsPage = () => {
       requestData.append('files', file);
     });
     axios
-      .post(`http://3.36.95.109:8080/api/requests`, requestData, {})
+      .post(`${PROMOTION_BASIC_PATH}/api/requests`, requestData, {})
       .then((response) => {
         console.log('response.data : ', response.data);
         setFormData({

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
-import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import { getCompanyDetailData } from '@/apis/PromotionAdmin/dataEdit';
 
 interface IWhatWeDoProps {
@@ -11,12 +9,6 @@ interface IWhatWeDoProps {
 
 interface IWhatWeDoInputProps {
   leftInput: boolean;
-}
-
-interface CompanyDetail {
-  id: number;
-  key: string;
-  value: string;
 }
 
 const WhatWeDoPage = () => {
@@ -30,10 +22,10 @@ const WhatWeDoPage = () => {
         const responseData = await getCompanyDetailData();
         if (responseData) {
           const details = Array.isArray(responseData) ? responseData : [responseData];
-          
-          const dataKeys = details.map(detail => detail.key);
-          const dataValues = details.map(detail => detail.value);
-  
+
+          const dataKeys = details.map((detail) => detail.key);
+          const dataValues = details.map((detail) => detail.value);
+
           setCompanyDetailDataTitle(dataKeys);
           setCompanyDetailData(dataValues);
         }
@@ -41,10 +33,10 @@ const WhatWeDoPage = () => {
         console.error('데이터 수신 오류:', error);
       }
     };
-  
+
     fetchCompanyDetailData();
   }, []);
-  
+
   const { scrollY } = useScroll(); // 스크롤 위치 감지
 
   useMotionValueEvent(scrollY, 'change', (scrollValue) => {
@@ -63,7 +55,7 @@ const WhatWeDoPage = () => {
 
     setHighlighted(closestSection);
   });
-  
+
   if (companyDetailData.length === 0) {
     return null; // 데이터 로딩 중이면 아무것도 렌더링하지 않음
   }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useMatch, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import { getRequestsData } from '@/apis/PromotionAdmin/request';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { useQuery } from 'react-query';
@@ -114,7 +115,7 @@ const RequestDetailPage = () => {
 
     if (window.confirm('답변 메일을 보내시겠습니까?')) {
       axios
-        .put(`http://3.36.95.109:8080/api/requests/${clickedRequest.id}/comment`, formData)
+        .put(`${PROMOTION_BASIC_PATH}/api/requests/${clickedRequest.id}/comment`, formData)
         .then((response) => {
           alert('메일 발송이 완료되었습니다.');
           setReplyState(replyState);
@@ -137,23 +138,23 @@ const RequestDetailPage = () => {
   const emailItems =
     clickedRequest && clickedRequest.answers
       ? clickedRequest.answers.map((answer: { id: number; createdAt: string; text: string; state: string }) => {
-        const createdAtDate = new Date(answer.createdAt);
-        const formattedDate = `${createdAtDate.getFullYear()}-${String(createdAtDate.getMonth() + 1).padStart(
-          2,
-          '0',
-        )}-${String(createdAtDate.getDate()).padStart(2, '0')} ${String(createdAtDate.getHours()).padStart(
-          2,
-          '0',
-        )}:${String(createdAtDate.getMinutes()).padStart(2, '0')}`;
+          const createdAtDate = new Date(answer.createdAt);
+          const formattedDate = `${createdAtDate.getFullYear()}-${String(createdAtDate.getMonth() + 1).padStart(
+            2,
+            '0',
+          )}-${String(createdAtDate.getDate()).padStart(2, '0')} ${String(createdAtDate.getHours()).padStart(
+            2,
+            '0',
+          )}:${String(createdAtDate.getMinutes()).padStart(2, '0')}`;
 
-        return {
-          id: answer.id,
-          subject: answer.text,
-          date: formattedDate,
-          content: answer.text,
-          state: answer.state,
-        };
-      })
+          return {
+            id: answer.id,
+            subject: answer.text,
+            date: formattedDate,
+            content: answer.text,
+            state: answer.state,
+          };
+        })
       : [];
 
   const emailItemsSliced = emailItems.slice(indexOfFirst, indexOfLast);
