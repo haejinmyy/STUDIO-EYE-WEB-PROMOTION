@@ -10,6 +10,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import ScrollToTop from '@/hooks/useScrollToTop';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import { linkCheck } from '@/components/ValidationRegEx/ValidationRegEx';
+import { useUnsavedChangesWarning } from '@/hooks/useUnsavedChangesWarning';
 
 const ArtworkDetail = () => {
   const [getModeMainImg, setGetModeMainImg] = useState('');
@@ -32,7 +33,7 @@ const ArtworkDetail = () => {
   const navigate = useNavigate();
   const [linkRegexMessage, setLinkRegexMessage] = useState('');
   const [isTopMainArtwork, setIsTopMainArtwork] = useState(false);
-
+  useUnsavedChangesWarning('You have unsaved changes. Are you sure you want to leave?', !isGetMode);
   const [putData, setPutData] = useState<UpdateArtwork>({
     request: {
       projectId: 0,
@@ -77,8 +78,6 @@ const ArtworkDetail = () => {
   useEffect(() => {
     fetchArtworkDetails();
     setIsGetMode(true);
-    console.log('읭', mainImage);
-    console.log('초기에 넣은 putData', putData);
   }, [artworkId]);
   useEffect(() => {
     setErrorMessage('');
