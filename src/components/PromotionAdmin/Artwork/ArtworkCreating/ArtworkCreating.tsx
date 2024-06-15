@@ -9,6 +9,7 @@ import { postArtwork } from '@/apis/PromotionAdmin/artwork';
 import { linkCheck } from '@/components/ValidationRegEx/ValidationRegEx';
 import { useNavigate } from 'react-router-dom';
 import { PA_ROUTES } from '@/constants/routerConstants';
+import { MSG } from '@/constants/messages';
 
 const ArtworkCreating = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -131,12 +132,12 @@ const ArtworkCreating = () => {
         setErrorMessage(response.message);
         return;
       }
-      alert('아트워크 등록 성공'); // * TODO alert component 변경
+      alert(MSG.ALERT_MSG.SAVE);
       setProducingIsOpened(false);
       console.log(response.data.id);
       navigate(`${PA_ROUTES.ARTWORK}/${response.data.id}?page=1`);
     } catch (error: any) {
-      console.log('Error creating artwork:', error);
+      alert(MSG.CONFIRM_MSG.FAILED);
     }
   };
 
