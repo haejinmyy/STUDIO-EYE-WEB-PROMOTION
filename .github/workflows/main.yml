@@ -3,7 +3,7 @@ name: Deploy to Server
 on:
   push:
     branches:
-      - main  # main 브랜치에 푸시될 때 트리거
+      - main
 
 jobs:
   build:
@@ -25,6 +25,11 @@ jobs:
       run: |
         CI=false npm run build
 
+    - name: Create private key file
+      run: |
+        echo "${{ secrets.SERVER_SSH_KEY }}" > private_key.pem
+        chmod 600 private_key.pem
+
     - name: Copy files via scp
       uses: appleboy/scp-action@master
       with:
@@ -32,12 +37,13 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         source: "build/*"
-        target: "/home/ubuntu/STUDIO-EYE-WEB-PROMOTION/build"  # Nginx의 루트 디렉토리
+        target: "/home/ubuntu/STUDIO-EYE-WEB-PROMOTION/build"
+
+    - name: List files in build directory
+      run: ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} ls -la /home/ubuntu/STUDIO-EYE-WEB-PROMOTION/build
 
     - name: Restart Nginx
       run: |
-        echo "${{ secrets.SERVER_SSH_KEY }}" > private_key.pem
-        chmod 600 private_key.pem
-        ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+        ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
         sudo systemctl restart nginx
         EOF
