@@ -56,7 +56,7 @@ const MainPage = () => {
 
   return (
     <>
-      {/* <style>{`
+      <style>{`
         body, html {
           overflow: hidden;
         }
@@ -65,9 +65,7 @@ const MainPage = () => {
         <ChakraProvider>
           <TopSection>
             {filteredTopData && filteredTopData.length > 0 ? (
-              filteredTopData.map((i, index) => (
-                <Top key={index} backgroundImg={i.mainImg} />
-              ))
+              filteredTopData.map((i, index) => <Top key={index} backgroundImg={i.mainImg} />)
             ) : (
               <Top backgroundImg={defaultTopImg} />
             )}
@@ -86,44 +84,41 @@ const MainPage = () => {
                 },
               }}
             >
-
               {isLoading ? (
                 <div>데이터 로딩 중...</div>
-              ) : (
-                (filteredMainData && filteredMainData.length > 0) ? (
-                  filteredMainData.map((item, index) => (
-                    <ArtworkList
-                      key={item.id}
-                      data={{
-                        backgroundImg: item.mainImg ? item.mainImg : '',
-                        title: item.name ? item.name : '',
-                        client: item.client ? item.client : '',
-                        overview: item.overView,
-                        link: item.link,
-                      }}
-                      count={filteredMainData.length}
-                      scrollToSection={scrollToSection}
-                      elementHeight={elementHeight}
-                      index={index}
-                      ref={(element) => (sectionsRef.current[index] = element as HTMLElement)}
-                    />
-                  ))
-                ) : (
+              ) : filteredMainData && filteredMainData.length > 0 ? (
+                filteredMainData.map((item, index) => (
                   <ArtworkList
-                    key={'default'}
+                    key={item.id}
                     data={{
-                      backgroundImg: defaultMainImg,
-                      title: '',
-                      client: '',
-                      overview: '😊 데이터가 존재하지 않습니다.',
+                      backgroundImg: item.mainImg ? item.mainImg : '',
+                      title: item.name ? item.name : '',
+                      client: item.client ? item.client : '',
+                      overview: item.overView,
+                      link: item.link,
                     }}
                     count={filteredMainData.length}
                     scrollToSection={scrollToSection}
                     elementHeight={elementHeight}
-                    index={0}
-                    ref={(element) => (sectionsRef.current[0] = element as HTMLElement)}
+                    index={index}
+                    ref={(element) => (sectionsRef.current[index] = element as HTMLElement)}
                   />
-                )
+                ))
+              ) : (
+                <ArtworkList
+                  key={'default'}
+                  data={{
+                    backgroundImg: defaultMainImg,
+                    title: '',
+                    client: '',
+                    overview: '😊 데이터가 존재하지 않습니다.',
+                  }}
+                  count={filteredMainData.length}
+                  scrollToSection={scrollToSection}
+                  elementHeight={elementHeight}
+                  index={0}
+                  ref={(element) => (sectionsRef.current[0] = element as HTMLElement)}
+                />
               )}
             </Box>
           </ArtworkSection>
@@ -132,8 +127,7 @@ const MainPage = () => {
             <Footer />
           </OutroSection>
         </ChakraProvider>
-      </div> */}
-      과격한 테스트
+      </div>
     </>
   );
 };
