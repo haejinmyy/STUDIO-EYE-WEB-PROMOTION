@@ -1,7 +1,7 @@
 import { getClientPaginateData } from '@/apis/PromotionAdmin/dataEdit';
 import { PA_ROUTES, PA_ROUTES_CHILD } from '@/constants/routerConstants';
 import { IClientPaginationData } from '@/types/PromotionAdmin/dataEdit';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { dataUpdateState } from '@/recoil/atoms';
@@ -25,18 +25,17 @@ const Client = () => {
   const { data, isLoading, error } = useQuery<IClientPaginationData, Error>(['client', currentPage, size], () =>
     getClientPaginateData(currentPage - 1, size),
   );
-  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
+    if (data?.totalPages === 0) return;
     if (data) {
-      setCurrentPage(data?.totalPages);
-      navigator(`?page=${data?.totalPages}`);
+      // 현재 페이지가 총 페이지 수보다 크면 마지막 페이지로 이동
+      if (currentPage > data.totalPages) {
+        setCurrentPage(data.totalPages);
+        navigator(`?page=${data.totalPages}`);
+      }
     }
-  }, [data && data.totalPages]);
+  }, [data, currentPage, navigator]);
 
   if (isLoading) return <>is Loading..</>;
   if (error) return <div>Error: {error.message}</div>;
