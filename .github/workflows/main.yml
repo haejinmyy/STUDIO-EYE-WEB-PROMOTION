@@ -22,8 +22,7 @@ jobs:
       run: npm install
 
     - name: Build project
-      run: |
-        CI=false npm run build
+      run: npm run build
 
     - name: Copy files via scp
       uses: appleboy/scp-action@master
@@ -34,11 +33,13 @@ jobs:
         source: "build/*"
         target: "/home/ubuntu/STUDIO-EYE-WEB-PROMOTION/build"
 
+    - name: List files in build directory
+      run: ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} ls -la /home/ubuntu/STUDIO-EYE-WEB-PROMOTION/build
+
     - name: Restart Nginx
       run: |
         echo "${{ secrets.SERVER_SSH_KEY }}" > private_key.pem
         chmod 600 private_key.pem
-        ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-        cd /home/ubuntu/STUDIO-EYE-WEB-PROMOTION
+        ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
         sudo systemctl restart nginx
         EOF
