@@ -21,10 +21,6 @@ const CircleBtns = [
     defaultIcon: defaultIcon,
     isNewIcon: isNewIcon,
   },
-  {
-    id: 'user',
-    defaultIcon: userIcon,
-  },
 ];
 
 const Index = () => {
@@ -103,7 +99,7 @@ const Index = () => {
       <Container>
         <LeftWrapper>
           <img src={slogan} alt='pa-header-slogan' />
-          <h1>오늘도 스튜디오 아이와 함께 좋은 하루 되세요, 엉금엉금님!</h1>
+          <h1>오늘도 스튜디오 아이와 함께 좋은 하루 되세요!</h1>
         </LeftWrapper>
         <RightWrapper>
           <OpenLinkWrapper href={PP_ADDRESS} target='_blank'>
