@@ -91,6 +91,11 @@ const RequestDetailPage = () => {
   }, [replyState]);
 
   const replyRequest = (state: string) => {
+    if (state === 'WAITING') {
+      alert('답변한 메일을 대기 중으로 둘 수 없습니다.');
+      return;
+    }
+
     if (!clickedRequest) {
       return;
     }
@@ -175,7 +180,7 @@ const RequestDetailPage = () => {
             <Box>
               <Wrapper>
                 <Tooltip
-                  description='대기: 아직 답장을 하지 않은 상태 / 논의: 승인할지 거절할지 생각해볼게염 / 승인: 문의 승인 / 거절: 문의 거절'
+                  description='대기: 아직 답장을 하지 않은 상태 / 논의: 내부적으로 승인과 거절 논의 중인 상태 / 승인: 문의를 승인한 상태 / 거절: 문의를 거절한 상태'
                   svgComponent={<InfoIcon width={18} height={18} />}
                 />
                 <DropDown onChange={(e) => setReplyState(e.target.value)} value={replyState}>

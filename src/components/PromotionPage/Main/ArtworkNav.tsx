@@ -35,7 +35,7 @@ font-family: 'pretendard';
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  right: 3%;
+  left: 3%;
   display: flex;
   flex-direction: column;
   z-index: 1000;
