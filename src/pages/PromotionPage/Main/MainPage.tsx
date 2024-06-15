@@ -37,7 +37,7 @@ const MainPage = () => {
       const index = sectionsRef.current.findIndex(
         (section) =>
           section.offsetTop <= currentScroll + window.innerHeight / 2 &&
-          section.offsetTop + section.offsetHeight > currentScroll + window.innerHeight / 2
+          section.offsetTop + section.offsetHeight > currentScroll + window.innerHeight / 2,
       );
       setActiveIndex(index !== -1 ? index : 0);
     };
@@ -56,7 +56,7 @@ const MainPage = () => {
 
   return (
     <>
-      <style>{`
+      {/* <style>{`
         body, html {
           overflow: hidden;
         }
@@ -132,8 +132,8 @@ const MainPage = () => {
             <Footer />
           </OutroSection>
         </ChakraProvider>
-      </div>
-
+      </div> */}
+      과격한 테스트
     </>
   );
 };
