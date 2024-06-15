@@ -157,6 +157,7 @@ const Container = styled.div`
   top: 0;
   left: 0;
   z-index: 20;
+  background-color: #ffffffba;
   backdrop-filter: blur(10px);
 `;
 

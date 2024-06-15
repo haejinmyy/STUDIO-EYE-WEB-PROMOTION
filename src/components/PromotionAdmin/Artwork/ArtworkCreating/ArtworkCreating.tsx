@@ -26,7 +26,7 @@ const ArtworkCreating = () => {
   const [linkRegexMessage, setLinkRegexMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isTopMainArtwork, setIsTopMainArtwork] = useState(false);
-  const [isGetMode, setIsGetMode] = useState<boolean>(true);
+
   const navigate = useNavigate();
   useEffect(() => {
     setSubmitButtonDisabled(
