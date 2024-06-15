@@ -27,7 +27,7 @@ const NotificationList = ({ requestId, onClick, onDelete, isRead, clientName, de
             <ClientWrapper>
               <span>{slicedClientName}</span>님께서 새로운 의뢰를 등록했어요.
             </ClientWrapper>
-            <div>
+            {/* <div>
               {isRead ? (
                 <IsReaded>
                   <img src={isReaded} alt='readed' />
@@ -37,7 +37,7 @@ const NotificationList = ({ requestId, onClick, onDelete, isRead, clientName, de
                   <img src={isNotReaded} alt='notReaded' />
                 </IsNotReaded>
               )}
-            </div>
+            </div> */}
           </TitleWrapper>
           <DetailWrapper>
             <div>
@@ -61,7 +61,7 @@ const Container = styled(Link)<{ isRead: boolean }>`
   flex-direction: column;
   justify-content: space-between;
   padding: 20px 30px;
-  width: 439px;
+  width: 100%;
   height: 120px;
   z-index: 100;
   box-sizing: border-box;

@@ -1,7 +1,7 @@
 import { getAllArtworks } from '@/apis/PromotionAdmin/artwork';
 import { PA_ROUTES } from '@/constants/routerConstants';
-import { ArtworkData } from '@/types/PromotionAdmin/artwork';
-import React, { useState, useEffect } from 'react';
+import { ArtworkData, projectType } from '@/types/PromotionAdmin/artwork';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -22,7 +22,21 @@ const Artwork = () => {
   const postsPerPage = 7;
   const location = useLocation();
   const navigate = useNavigate();
-  const [sortedByIdArtworks, setSortedByIdArtworks] = useState<ArtworkData[]>([]);
+  const [selectedProjectType, setSelectedProjectType] = useState<projectType | 'all'>('all');
+
+  const filteredAndSortedArtworks = useMemo(() => {
+    if (!data) return [];
+
+    return data
+      .filter((artwork) => {
+        const isMatchingSearch = artwork.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const isMatchingCategory = selectedCategory === '' || artwork.category.includes(selectedCategory);
+        const isMatchingProjectType = selectedProjectType === 'all' || artwork.projectType === selectedProjectType;
+        return isMatchingSearch && isMatchingCategory && isMatchingProjectType;
+      })
+      .sort((a, b) => b.id - a.id);
+  }, [data, searchQuery, selectedCategory, selectedProjectType]);
+
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const page = parseInt(queryParams.get('page') || '1', 10) - 1; // 페이지 인덱스를 0부터 시작하게 조정
@@ -30,29 +44,16 @@ const Artwork = () => {
   }, [location.search]);
 
   useEffect(() => {
-    navigate(PA_ROUTES.ARTWORK);
     setCurrentPage(0);
-  }, [selectedCategory]);
-
-  useEffect(() => {
-    if (data) {
-      const filteredArtworks = data.filter((artwork) => {
-        const isMatchingSearch = artwork.name.toLowerCase().includes(searchQuery.toLowerCase());
-        const isMatchingCategory = selectedCategory === '' || artwork.category.includes(selectedCategory);
-        return isMatchingSearch && isMatchingCategory;
-      });
-
-      setSortedByIdArtworks(filteredArtworks.sort((a, b) => b.id - a.id));
-      console.log(sortedByIdArtworks);
-    }
-  }, [data, searchQuery, selectedCategory]);
+    navigate(PA_ROUTES.ARTWORK);
+  }, [selectedCategory, selectedProjectType]);
 
   if (isLoading) return <LoadingWrapper>Loading...</LoadingWrapper>;
   if (error) return <div>Error: {error.message}</div>;
 
   const indexOfLastPost = (currentPage + 1) * postsPerPage;
   const indexOfFirstPost = currentPage * postsPerPage;
-  const currentArtworks = sortedByIdArtworks.slice(indexOfFirstPost, indexOfLastPost);
+  const currentArtworks = filteredAndSortedArtworks.slice(indexOfFirstPost, indexOfLastPost);
 
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber - 1); // 페이지 인덱스를 0부터 시작하게 조정
@@ -76,11 +77,18 @@ const Artwork = () => {
               <CategoryDropDown setSelectedCategory={setSelectedCategory} />
             </CategoryWrapper>
           </UtilWrapper>
-          <ArtworkProducingWrapper onClick={() => setProducingIsOpened(!producingIsOpend)}>
-            아트워크 생성하기
-          </ArtworkProducingWrapper>
+          <SecondWrapper>
+            <TypeContainer projectType={selectedProjectType}>
+              <div onClick={() => setSelectedProjectType('all')}>전체</div>
+              <div onClick={() => setSelectedProjectType('top')}>Top</div>
+              <div onClick={() => setSelectedProjectType('main')}>Main</div>
+            </TypeContainer>
+            <ArtworkProducingWrapper onClick={() => setProducingIsOpened(!producingIsOpend)}>
+              아트워크 생성하기
+            </ArtworkProducingWrapper>
+          </SecondWrapper>
 
-          {sortedByIdArtworks.length === 0 ? (
+          {filteredAndSortedArtworks.length === 0 ? (
             <NoDataWrapper>😊 아트워크 데이터가 존재하지 않습니다.</NoDataWrapper>
           ) : (
             <>
@@ -106,7 +114,7 @@ const Artwork = () => {
               ))}
             </>
           )}
-          <Pagination postsPerPage={postsPerPage} totalPosts={sortedByIdArtworks.length} paginate={paginate} />
+          <Pagination postsPerPage={postsPerPage} totalPosts={filteredAndSortedArtworks.length} paginate={paginate} />
         </ArtworkBoxWrapper>
         <Outlet />
       </Container>
@@ -149,8 +157,7 @@ const LoadingWrapper = styled.div`
 const SearchWrapper = styled.div`
   input {
     width: 300px;
-    height: 100%;
-    padding-left: 20px;
+    padding: 15px 20px;
     font-family: 'pretendard-medium';
     outline-style: none;
     border-radius: 5px;
@@ -180,7 +187,16 @@ const CategoryWrapper = styled.div`
   width: 200px;
 `;
 
+const SecondWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  justify-content: space-between;
+`;
+
 const UtilWrapper = styled.div`
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: space-between;
 `;
@@ -193,10 +209,66 @@ const ArtworkProducingWrapper = styled.div`
   background-color: #6c757d;
   color: white;
   border-radius: 5px;
-  margin-top: 15px;
-  margin-bottom: 30px;
 
   &:hover {
     background-color: #5a6268;
+  }
+`;
+
+const TypeContainer = styled.div<{ projectType: projectType | 'all' }>`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-family: 'pretendard-semibold';
+  background-color: #a3a3a360;
+  height: 40px;
+  border-radius: 20px;
+  position: relative;
+  width: 225px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 75px;
+    height: 100%;
+    background-color: #fcfcfce2;
+    border-radius: 20px;
+    transition: transform 0.3s ease-in-out;
+    transform: ${(props) => {
+      switch (props.projectType) {
+        case 'all':
+          return 'translateX(0)';
+        case 'top':
+          return 'translateX(75px)';
+        case 'main':
+          return 'translateX(150px)';
+        default:
+          return 'translateX(0)';
+      }
+    }};
+  }
+
+  div {
+    z-index: 1;
+    flex: 1;
+    text-align: center;
+    padding: 5px 0;
+    font-weight: normal;
+    color: grey;
+
+    &:nth-child(1) {
+      color: ${(props) => (props.projectType === 'all' ? 'black' : 'grey')};
+      font-weight: ${(props) => (props.projectType === 'all' ? 'bold' : 'normal')};
+    }
+
+    &:nth-child(2) {
+      color: ${(props) => (props.projectType === 'top' ? 'black' : 'grey')};
+      font-weight: ${(props) => (props.projectType === 'top' ? 'bold' : 'normal')};
+    }
+
+    &:nth-child(3) {
+      color: ${(props) => (props.projectType === 'main' ? 'black' : 'grey')};
+      font-weight: ${(props) => (props.projectType === 'main' ? 'bold' : 'normal')};
+    }
   }
 `;
