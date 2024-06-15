@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import LoginComponent from '@/components/PromotionPage/Login/Login';
 import { PA_ROUTES } from '@/constants/routerConstants';
 import BackgroundYellowCircle from '@/components/BackgroundYellowCircle/BackgroundYellowCircle';
+import { MSG } from '@/constants/messages';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -18,20 +19,19 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const formData = { email, pwd };
-      console.log('보내는 데이터', formData);
       const response = await login(formData);
 
       if (response.approved) {
         setAuth({ accessToken: response.accessToken, userId: response.id });
-        window.alert('로그인 성공');
+        window.alert(MSG.CONFIRM_MSG.LOGIN_SUCCESS);
         navigate(PA_ROUTES.HOME); // approved가 true일 경우에만 홈으로 이동합니다.
       } else {
+        window.alert(MSG.CONFIRM_MSG.LOGIN_NOTAPPROVED);
         // approved가 false일 경우
         throw new Error('승인되지 않은 계정입니다.');
       }
     } catch (error) {
-      const errorMessage = '로그인에 실패했습니다. 다시 시도해주세요.';
-      window.alert(errorMessage);
+      window.alert(MSG.CONFIRM_MSG.LOGIN_FAIL);
       console.log('Login 실패', error);
     }
   };
