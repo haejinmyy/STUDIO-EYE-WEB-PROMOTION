@@ -59,6 +59,16 @@ function ArtworkDetailPage() {
     return null;
   }
 
+  function formatDate(date:string) {
+    const d=Date.parse(date)
+    const parsedDate=new Date(d)
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+    const day = String(parsedDate.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
+}
+
   return (
     <>
       {isLoading ? (
@@ -107,7 +117,7 @@ function ArtworkDetailPage() {
                         y: { duration: 3 },
                       }}
                     >
-                      <p className='attribute'>Date</p> <p>{clickedArtwork.date}</p>
+                      <p className='attribute'>Date</p> <p>{formatDate(clickedArtwork.date)}</p>
                     </Info>
                   </InfoWrapper>
                 </Thumbnail>
