@@ -53,7 +53,7 @@ const Detail = ({ setEditDetail }: IDetailProps) => {
       }));
       reset({ detailInformation: detailInformationArray });
     }
-  }, [data, reset]);  
+  }, [data, reset]);
 
   // 글자수 확인
   const watchFields = watch('detailInformation');
@@ -71,9 +71,7 @@ const Detail = ({ setEditDetail }: IDetailProps) => {
     const requestBody = {
       detailInformation: data?.detailInformation,
     };
-  
-    console.log('test: ', requestBody);
-  
+    
     if (window.confirm(MSG.CONFIRM_MSG.SAVE)) {
       axios
         .put(`${PROMOTION_BASIC_PATH}/api/company/detail`, requestBody)
