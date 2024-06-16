@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import axios from 'axios';
+import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import { motion } from 'framer-motion';
 import BackgroundYellowCircle from '@/components/PromotionPage/BackgroundYellowCircle/BackgroundYellowCircle';
 
@@ -21,7 +22,7 @@ const FaqPage = () => {
 
   useEffect(() => {
     axios
-      .get(`http://3.36.95.109:8080/api/faq`)
+      .get(`${PROMOTION_BASIC_PATH}/api/faq`)
       .then((response) => {
         const filteredData = response.data.data.filter((item: any) => item.visibility === true);
         const objects = filteredData.map((item: any) => ({
@@ -153,7 +154,7 @@ const FaqPage = () => {
                 </FaqBrief>
                 {expandedItems.has(i) && (
                   <FaqDetailBox>
-                    <FaqDetailAnswer dangerouslySetInnerHTML={{ __html: item.answer }} />
+                    <FaqDetailAnswer>{item.answer}</FaqDetailAnswer>
                   </FaqDetailBox>
                 )}
               </FaqDetailButton>
@@ -302,6 +303,9 @@ const FaqDetailAnswer = styled.p`
   font-weight: 400;
   text-align: justify;
   color: white;
+  white-space: pre-line;
+  word-wrap: break-word;
+  word-break: break-word;
   a {
     color: #ffa900;
   }

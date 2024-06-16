@@ -14,6 +14,9 @@ import {
   DATAEDIT_NOTICE_COMPONENTS,
   DATAEDIT_TITLES_COMPONENTS,
 } from '../../../../components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import { useSetRecoilState, useRecoilValue } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
+import { MSG } from '@/constants/messages';
 
 interface IFormData {
   name: string;
@@ -21,6 +24,8 @@ interface IFormData {
 }
 
 const CEOEditPage = () => {
+  const setIsEditing = useSetRecoilState(dataUpdateState);
+  const isEditing = useRecoilValue(dataUpdateState);
   const navigator = useNavigate();
   const { data, isLoading, error, refetch } = useQuery<ICEOData, Error>(['ceo', 'id'], getCEOData);
   const [putData, setPutData] = useState({
@@ -47,6 +52,20 @@ const CEOEditPage = () => {
   useEffect(() => {
     refetch();
   }, [data, refetch]);
+
+  useEffect(() => {
+    if (isEditing) {
+      const handleBeforeUnload = (event: any) => {
+        const message = MSG.CONFIRM_MSG.EXIT;
+        event.returnValue = message;
+        return message;
+      };
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
+    }
+  }, [isEditing]);
 
   const onValid = (data: IFormData) => {
     handleSaveClick(data);
@@ -85,6 +104,7 @@ const CEOEditPage = () => {
             navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
           })
           .catch((error) => console.error('Error updating CEO:', error));
+        setIsEditing(false);
       } else {
         // 이미지를 변경하지 않은 경우
         axios
@@ -95,6 +115,7 @@ const CEOEditPage = () => {
             navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
           })
           .catch((error) => console.error('Error updating CEO:', error));
+        setIsEditing(false);
       }
     }
   };
@@ -111,6 +132,7 @@ const CEOEditPage = () => {
       };
       reader.readAsDataURL(file);
       setImgChange(true);
+      setIsEditing(true);
     }
   };
 
@@ -136,6 +158,35 @@ const CEOEditPage = () => {
       navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_CEO}`);
     }
   };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
+    setIsEditing(true);
+    const { name, value } = e.target;
+
+    if (/^\s|[~!@#$%^&*(),.?":{}|<>]/.test(value.charAt(0))) {
+      return;
+    }
+
+    let processedValue = value;
+
+    if (name === 'introduction') {
+      const lines = value.split('\n').length;
+      if (lines > 5) {
+        const linesArray = value.split('\n');
+        processedValue = linesArray.slice(0, 5).join('\n');
+      }
+    }
+
+    setPutData((prevData) => ({
+      ...prevData,
+      request: {
+        ...prevData.request,
+        [name]: processedValue,
+      },
+    }));
+  };
+
+  const currentLength = putData.request.introduction?.length || 0;
+  const maxLimit = 200; // 최대 글자 수
 
   if (isLoading) return <>is Loading..</>;
   if (error) return <>{error.message}</>;
@@ -157,22 +208,30 @@ const CEOEditPage = () => {
                   required: 'CEO 이름을 입력해주세요',
                 })}
                 placeholder='CEO 이름을 입력해주세요'
-                onChange={(e) => {
-                  if (e.target.value.length > 15) {
-                    e.target.value = e.target.value.slice(0, 15);
-                    console.log(e.target.value);
-                  }
-                }}
+                maxLength={30}
+                onChange={handleChange}
+                value={putData.request.name}
               />
               {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
-              <InputTitle>
+              <InputTitle style={{ justifyContent: 'space-between' }}>
                 <p>Introduction</p>
+                <div
+                  style={{
+                    fontSize: 12,
+                    paddingTop: 10,
+                  }}
+                >
+                  {currentLength}/{maxLimit}
+                </div>
               </InputTitle>
               <textarea
                 {...register('introduction', {
                   required: 'CEO 소개 (5줄, 200자 내로 작성해 주세요.)',
                 })}
                 placeholder='CEO 소개 (5줄, 200자 내로 작성해 주세요.)'
+                onChange={handleChange}
+                maxLength={200}
+                value={putData.request.introduction}
               />
               {errors.introduction && <ErrorMessage>{errors.introduction.message}</ErrorMessage>}
               <InputImgWrapper>
@@ -201,7 +260,7 @@ const CEOEditPage = () => {
 
 export default CEOEditPage;
 
-export const Wrapper = styled.div`
+const Wrapper = styled.div`
   display: flex;
   input,
   textarea {
@@ -215,7 +274,7 @@ export const Wrapper = styled.div`
   }
 `;
 
-export const ContentBlock = styled.div<{ width?: number; height?: number }>`
+const ContentBlock = styled.div<{ width?: number; height?: number }>`
   padding: 25px;
   background-color: ${(props) => props.theme.color.white.pale};
   position: relative;
@@ -228,7 +287,7 @@ export const ContentBlock = styled.div<{ width?: number; height?: number }>`
   height: ${(props) => (props.height ? props.height + 'px;' : 'fit-content;')};
 `;
 
-export const InputWrapper = styled.div`
+const InputWrapper = styled.div`
   display: flex;
   background-color: ${(props) => props.theme.color.white.light};
   flex-direction: column;
@@ -267,27 +326,28 @@ export const InputWrapper = styled.div`
   }
 `;
 
-export const InputImgWrapper = styled.div`
+const InputImgWrapper = styled.div`
   display: flex;
   width: 100%;
   justify-content: space-between;
 `;
 
-export const InputTitle = styled.div`
+const InputTitle = styled.div`
   display: flex;
   padding-top: 20px;
   align-items: center;
   height: 40px;
+  width: 70%;
   svg {
     cursor: pointer;
     margin-right: 10px;
   }
 `;
-export const Box = styled.div`
+const Box = styled.div`
   width: 100%;
 `;
 
-export const ImgBox = styled.div`
+const ImgBox = styled.div`
   display: flex;
   height: 200px;
   width: 80%;
@@ -297,7 +357,7 @@ export const ImgBox = styled.div`
   border-radius: 5px;
   margin-top: 15px;
 `;
-export const LogoWrapper = styled.div`
+const LogoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 30px;

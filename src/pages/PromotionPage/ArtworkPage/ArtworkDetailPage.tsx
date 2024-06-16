@@ -59,6 +59,16 @@ function ArtworkDetailPage() {
     return null;
   }
 
+  function formatDate(date:string) {
+    const d=Date.parse(date)
+    const parsedDate=new Date(d)
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+    const day = String(parsedDate.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
+}
+
   return (
     <>
       {isLoading ? (
@@ -107,7 +117,7 @@ function ArtworkDetailPage() {
                         y: { duration: 3 },
                       }}
                     >
-                      <p className='attribute'>Date</p> <p>{clickedArtwork.date}</p>
+                      <p className='attribute'>Date</p> <p>{formatDate(clickedArtwork.date)}</p>
                     </Info>
                   </InfoWrapper>
                 </Thumbnail>
@@ -145,7 +155,7 @@ function ArtworkDetailPage() {
                         }}
                       >
                         <PrevArrowIcon width={70} height={70} />
-                        <Nav>
+                        <Nav location={"left"}>
                           PREV PROJECT
                           <div className='nav_title' style={{whiteSpace:"nowrap",textOverflow:"ellipsis",overflow : "hidden"}}>
                             {filteredData[currentIndex - 1]?.name}</div>
@@ -159,7 +169,7 @@ function ArtworkDetailPage() {
                           navigator(`/${PP_ROUTES_CHILD.ARTWORK}/${nextIndex}`,{state:{category}});
                         }}
                       >
-                        <Nav>
+                        <Nav location={"right"}>
                           NEXT PROJECT
                           <div className='nav_title' style={{whiteSpace:"nowrap",textOverflow:"ellipsis",overflow : "hidden"}}>
                             {filteredData[currentIndex + 1]?.name}</div>
@@ -310,8 +320,9 @@ const CircleWrapper = styled.div`
   justify-content: center;
 `;
 
-const Nav = styled.div`
+const Nav = styled.div<{location:string}>`
   width: 70%;
+  text-align: ${(props)=>props.location==="left"?"right":"left"};
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow : hidden;

@@ -177,9 +177,9 @@ export const DATAEDIT_TITLES_COMPONENTS = {
   ),
 
   FAQ: (
-    <TitleWrapper>
+    <TitleWrapper style={{ marginBottom: 0 }}>
       <Tooltip description={DATAEDIT_COLUMNS.FAQ.description} svgComponent={<InfoIcon width={20} height={20} />} />
-      <Title description={DATAEDIT_COLUMNS.FAQ.title} />
+      {/* <Title description={DATAEDIT_COLUMNS.FAQ.title} /> */}
     </TitleWrapper>
   ),
 };

@@ -1,194 +1,303 @@
 import styled from 'styled-components';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
+import { theme } from '@/styles/theme';
 import { ContentBox } from '@/components/PromotionAdmin/FAQ/Components';
-import { IEditorData, IFAQData } from '../../../types/PromotionAdmin/faq';
+import { IFAQ } from '../../../types/PromotionAdmin/faq';
 import { PA_ROUTES } from '@/constants/routerConstants';
-import { EditorState, convertToRaw } from 'draft-js';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import draftToHtml from 'draftjs-to-html';
-import TextEditor from '@/components/PromotionAdmin/FAQ/TextEditor';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
-import { INPUT_MAX_LENGTH } from '@/components/PromotionAdmin/DataEdit/Company/StyleComponents';
+import { useSetRecoilState, useRecoilValue } from 'recoil';
+import { dataUpdateState } from '@/recoil/atoms';
+import { MSG } from '@/constants/messages';
 
 function FAQWritePage() {
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
-  const [blocks, setBlocks] = useState<IEditorData[]>([]);
+  const setIsEditing = useSetRecoilState(dataUpdateState);
+  const isEditing = useRecoilValue(dataUpdateState);
   const navigator = useNavigate();
-
-  const updateTextDescription = async (state: any) => {
-    await setEditorState(state);
-    setBlocks(convertToRaw(editorState.getCurrentContent()).blocks);
-  };
+  const [putData, setPutData] = useState({
+    question: '',
+    answer: '',
+  });
+  const questionLength = putData.question.length;
+  const answerLength = putData.answer.length;
+  const maxQuestionLength = 200;
+  const maxAnswerLength = 1500;
 
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
-  } = useForm<IFAQData>({
+    setValue,
+    watch,
+  } = useForm<IFAQ>({
     defaultValues: {
+      question: '',
+      answer: '',
       visibility: true,
     },
   });
 
-  // 글자수 제한
-  const [questionLength, setQuestionLength] = useState(0);
-  const handleQuestionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputLength = e.target.value.length;
-    if (inputLength <= INPUT_MAX_LENGTH.FAQ_QUESTION) {
-      setQuestionLength(inputLength);
-      setValue('question', e.target.value, { shouldValidate: true });
-    } else {
-      const trimmedValue = e.target.value.slice(0, INPUT_MAX_LENGTH.FAQ_QUESTION);
-      setQuestionLength(INPUT_MAX_LENGTH.FAQ_QUESTION);
-      setValue('question', trimmedValue, { shouldValidate: true });
+  const visibility = watch('visibility');
+
+  useEffect(() => {
+    if (isEditing) {
+      const handleBeforeUnload = (event: any) => {
+        const message = MSG.CONFIRM_MSG.EXIT;
+        event.returnValue = message;
+        return message;
+      };
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
     }
-  };
-  const checkIsEmpty = (editorState: EditorState, attribute: string) => {
-    const isEmpty = !editorState.getCurrentContent().hasText();
-    if (isEmpty) {
-      alert(`${attribute}을(를) 작성해주세요.`);
-      return true;
+  }, [isEditing]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
+    setIsEditing(true);
+    const { name, value } = e.target;
+    if (/^\s|[~!@#$%^&*(),.?":{}|<>]/.test(value.charAt(0))) {
+      return;
     }
-    return false;
+
+    setPutData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
-  const onValid = (data: IFAQData) => {
+
+  const handleChangeVisibility = (value: boolean) => {
+    setValue('visibility', value);
+  };
+
+  const onValid = (data: IFAQ) => {
     const formData = {
       question: data.question,
-      answer: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+      answer: data.answer,
       visibility: data.visibility,
     };
-
-    if (!checkIsEmpty(editorState, 'Answer')) {
+    if (!(data.question === '' || data.answer === '') && window.confirm('등록하시겠습니까?')) {
       axios
         .post(`${PROMOTION_BASIC_PATH}/api/faq`, formData)
         .then((response) => {
           alert('FAQ가 등록되었습니다.');
+          console.log(response);
+          setIsEditing(false);
           navigator(`${PA_ROUTES.FAQ}`);
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          console.log(error);
+          alert('FAQ 등록 중 오류가 발생했습니다.');
+        });
     }
   };
 
   return (
-    <ContentBox>
-      <TitleWrapper>
-        <Icon>
-          <svg width='20' height='20' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'>
-            <path
-              d='M5 12.2399L0.5 13.4999L1.76 8.9999L10 0.799898C10.0931 0.704652 10.2044 0.628973 10.3271 0.577306C10.4499 0.525638 10.5818 0.499023 10.715 0.499023C10.8482 0.499023 10.9801 0.525638 11.1029 0.577306C11.2256 0.628973 11.3369 0.704652 11.43 0.799898L13.2 2.5799C13.2937 2.67286 13.3681 2.78347 13.4189 2.90532C13.4697 3.02718 13.4958 3.15789 13.4958 3.2899C13.4958 3.42191 13.4697 3.55262 13.4189 3.67448C13.3681 3.79634 13.2937 3.90694 13.2 3.9999L5 12.2399Z'
-              stroke='#FFA900'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-            />
-          </svg>
-        </Icon>
-        <Title>FAQ 게시글 등록</Title>
-      </TitleWrapper>
-
-      <FormContainer onSubmit={handleSubmit(onValid)}>
-        <Content>
-          <Title>
-            <QAIcon>Q</QAIcon>
-            Question
-          </Title>
-          <QuestionInput
+    <form onSubmit={handleSubmit(onValid)}>
+      <ContentBox>
+        <TitleWrapper>
+          <Title>FAQ 게시글 등록</Title>
+        </TitleWrapper>
+        <InputWrapper>
+          <InputTitle style={{ justifyContent: 'space-between' }}>
+            <p>Question</p>
+            <div
+              style={{
+                fontSize: 12,
+                paddingTop: 10,
+              }}
+            >
+              {questionLength}/{maxQuestionLength}
+            </div>
+          </InputTitle>
+          <input
             {...register('question', {
-              required: '질문을 입력해주세요',
-              maxLength: INPUT_MAX_LENGTH.FAQ_QUESTION,
-              onChange: handleQuestionChange,
+              required: 'Question을 입력해주세요. (200자 내로 작성해 주세요.)',
             })}
-            placeholder='질문을 입력해주세요'
+            name='question'
+            value={putData.question}
+            onChange={handleChange}
+            maxLength={200}
+            placeholder='Question을 입력해주세요. (200자 내로 작성해 주세요.)'
           />
-          <p>{`글자수: ${questionLength} / ${INPUT_MAX_LENGTH.FAQ_QUESTION}`}</p>
-          {errors.question && <span>{errors.question.message}</span>}
-        </Content>
-
-        <Content>
-          <Title>
-            <QAIcon>A</QAIcon>
-            Answer
-          </Title>
-          <TextEditor editorState={editorState} onEditorStateChange={updateTextDescription} />
-
-          <VisibilityWrapper>
-            공개여부
-            <input type='checkbox' id='switch' defaultChecked {...register('visibility')} />
-          </VisibilityWrapper>
+          {errors.question && <ErrorMessage>{errors.question.message}</ErrorMessage>}
+          <InputTitle style={{ justifyContent: 'space-between' }}>
+            <p>Answer</p>
+            <div
+              style={{
+                fontSize: 12,
+                paddingTop: 10,
+              }}
+            >
+              {answerLength}/{maxAnswerLength}
+            </div>
+          </InputTitle>
+          <textarea
+            {...register('answer', {
+              required: 'Answer를 입력해주세요. (1500자 내로 작성해 주세요.)',
+            })}
+            name='answer'
+            value={putData.answer}
+            onChange={handleChange}
+            maxLength={1500}
+            placeholder='Answer를 입력해주세요. (1500자 내로 작성해 주세요.)'
+          />
+          {errors.answer && <ErrorMessage>{errors.answer.message}</ErrorMessage>}
+        </InputWrapper>
+        <RowWrapper>
+          {putData && (
+            <VisibilityWrapper>
+              <CheckBox onClick={() => handleChangeVisibility(true)} className='public' selected={visibility}>
+                공개
+              </CheckBox>
+              <CheckBox onClick={() => handleChangeVisibility(false)} className='private' selected={!visibility}>
+                비공개
+              </CheckBox>
+            </VisibilityWrapper>
+          )}
           <ButtonWrapper>
-            <Button type='submit'>등록하기</Button>
+            <ModifyButton>등록하기</ModifyButton>
           </ButtonWrapper>
-        </Content>
-      </FormContainer>
-    </ContentBox>
+        </RowWrapper>
+      </ContentBox>
+    </form>
   );
 }
 
 export default FAQWritePage;
 
-const VisibilityWrapper = styled.div`
-  font-size: 12px;
-`;
-
-const Wrapper = styled.div``;
-const Icon = styled.div`
-  padding-left: 1rem;
-  padding-right: 0.8rem;
-`;
 const TitleWrapper = styled.div`
   display: flex;
-  border-bottom: 1px solid #f1f1f1;
+  justify-content: space-between;
   align-items: center;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
 `;
 
 const Title = styled.div`
   display: flex;
   align-items: center;
-  height: 4rem;
-  font-size: 1.3rem;
+  align-content: center;
+
+  svg {
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  font-family: ${(props) => props.theme.font.bold};
+  font-size: 25px;
 `;
 
-const QAIcon = styled.div`
-  background-color: ${(props) => props.theme.color.yellow.light};
+const InputWrapper = styled.div`
+  display: flex;
+  background-color: ${(props) => props.theme.color.white.light};
+  flex-direction: column;
+  font-family: ${(props) => props.theme.font.semiBold};
+  p {
+    font-size: 18px;
+    padding-top: 7px;
+    padding-bottom: 3px;
+    margin-bottom: 10px;
+  }
+  input {
+    outline: none;
+    font-family: ${(props) => props.theme.font.regular};
+    font-size: 14px;
+    padding: 10px;
+    width: 95%;
+    height: 30px;
+    border: none;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  }
+  input:focus {
+    transition: 0.2s;
+    border-bottom: 3px solid ${(props) => props.theme.color.symbol};
+  }
+  textarea {
+    outline: none;
+    font-family: ${(props) => props.theme.font.regular};
+    font-size: 14px;
+    padding: 10px;
+    width: 95%;
+    min-height: 450px;
+    border: none;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    resize: none;
+  }
+  textarea:focus {
+    transition: 0.2s;
+    border-bottom: 3px solid ${(props) => props.theme.color.symbol};
+  }
+`;
+
+const InputTitle = styled.div`
+  display: flex;
+  padding-top: 20px;
+  align-items: center;
+  height: 40px;
+  width: 95%;
+  svg {
+    cursor: pointer;
+    margin-right: 10px;
+  }
+`;
+
+const RowWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+`;
+
+const VisibilityWrapper = styled.div`
+  display: flex;
+  margin-top: 20px;
+`;
+
+const CheckBox = styled.div<{ selected: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 1.8rem;
-  height: 1.8rem;
-  border-radius: 100%;
-  font-size: 1.1rem;
-  margin-right: 0.5rem;
-`;
-
-const Content = styled.div`
-  margin-left: 2rem;
-  margin-right: 2rem;
-`;
-
-const QuestionInput = styled.input`
-  padding-left: 1.3rem;
-  border: none;
-  width: 100%;
-  height: 2rem;
+  margin-right: 10px;
+  width: 6vw;
+  height: 40px;
+  font-size: 15px;
+  font-family: ${(props) => props.theme.font.medium};
   box-shadow: 1px 1px 4px 0.1px #c6c6c6;
+  background-color: ${(props) => (props.selected ? theme.color.yellow.light : 'none')};
+  cursor: pointer;
 `;
-
-const AnswerInput = styled.input``;
 
 const ButtonWrapper = styled.div`
   display: flex;
-  justify-content: flex-end;
-  padding: 10px;
+  margin-top: 20px;
 `;
 
-const Button = styled.button`
+const ModifyButton = styled.button`
   border: none;
-  background-color: ${(props) => props.theme.color.white.bold};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 6vw;
+  height: 40px;
+  margin-right: 20px;
+  font-size: 15px;
+  font-family: ${(props) => props.theme.font.medium};
   box-shadow: 1px 1px 4px 0.1px #c6c6c6;
-  padding: 0.4rem 1.4rem;
-  border-radius: 0.2rem;
+  background-color: ${(props) => props.theme.color.white.bold};
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background-color: ${(props) => props.theme.color.yellow.light};
+  }
 `;
-const FormContainer = styled.form``;
+
+const ErrorMessage = styled.div`
+  font-family: ${(props) => props.theme.font.light};
+  margin-top: 10px;
+  margin-left: 10px;
+  font-size: 13px;
+`;

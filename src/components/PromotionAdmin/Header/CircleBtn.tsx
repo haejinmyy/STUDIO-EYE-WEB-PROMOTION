@@ -6,8 +6,8 @@ import styled from 'styled-components';
 type Props = {
   id: string;
   defaultIcon: string;
-  isNewIcon?: string; // noti only
-  iconStatus?: boolean; // noti only, true-새로운 알림이 있는 상태, false-새로운 알림이 없는 상태
+  isNewIcon: string; // noti only
+  iconStatus: boolean; // noti only, true-새로운 알림이 있는 상태, false-새로운 알림이 없는 상태
 };
 
 const CircleBtn = ({ id, defaultIcon, isNewIcon, iconStatus }: Props) => {
@@ -19,7 +19,7 @@ const CircleBtn = ({ id, defaultIcon, isNewIcon, iconStatus }: Props) => {
   };
 
   return (
-    <Container>
+    <Container iconStatus={iconStatus}>
       {id === 'notification' ? (
         <NotiButton onClick={handleNotiButtonClick}>
           <img src={iconStatus ? isNewIcon : defaultIcon} alt='noti icon' />
@@ -33,11 +33,11 @@ const CircleBtn = ({ id, defaultIcon, isNewIcon, iconStatus }: Props) => {
 
 export default CircleBtn;
 
-const Container = styled.div`
+const Container = styled.div<{ iconStatus: boolean }>`
   width: 53px;
   height: 53px;
   border-radius: 50%;
-  background-color: #e2e2e2;
+  background-color: ${(props) => (props.iconStatus ? '#ffefcf' : '#e2e2e2')};
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -50,7 +50,7 @@ const Container = styled.div`
   }
 
   &:hover {
-    background-color: #ffefcf;
+    background-color: #fde6b8;
   }
   transition: all ease-in-out 300ms;
 `;
