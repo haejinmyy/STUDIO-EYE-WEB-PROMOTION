@@ -41,8 +41,7 @@ const Index = () => {
         setIsNotiOpened(false);
       }
     };
-    // 'mousedown' 대신 'click' 이벤트를 사용
-    // click 마우스를 눌렀다 땔 떄 발생, mousedown 마우스를 누를 때 발생, 이벤트 순서 알아두기
+
     document.addEventListener('click', handleClickOutside);
     return () => {
       document.removeEventListener('click', handleClickOutside);
