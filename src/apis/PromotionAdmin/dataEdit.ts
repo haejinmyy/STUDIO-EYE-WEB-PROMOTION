@@ -1,6 +1,5 @@
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 import axios from 'axios';
-import { resolve } from 'path';
 
 export const getCompanyData = async () => {
   try {
