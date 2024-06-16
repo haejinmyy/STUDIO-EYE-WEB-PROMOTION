@@ -93,7 +93,6 @@ const ImgWrapper = styled.div`
     width: 235px;
     height: 62px;
     object-fit: contain;
-    margin: 0 15px;
-    opacity: 0.6;
+    margin: 0 25px;
   }
 `;

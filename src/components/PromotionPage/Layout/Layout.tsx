@@ -57,4 +57,6 @@ const Container = styled.div`
   color: white;
 `;
 
-const BodyWrapper = styled.div``;
+const BodyWrapper = styled.div`
+  margin-bottom: 10rem;
+`;

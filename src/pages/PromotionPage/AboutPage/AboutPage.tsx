@@ -102,22 +102,23 @@ const AboutPage = () => {
             <CorpText>CORP</CorpText>
             <CorpLogoRowContainer>
               {corpInfoData.map((info) => (
-                <img
-                  key={info.partnerInfo.id}
-                  src={info.logoImg}
-                  alt='CORP Logo'
-                  style={{
-                    width: '300px',
-                    height: '150px',
-                    objectFit: 'contain',
-                    cursor: info.partnerInfo.link ? 'pointer' : 'default',
-                  }}
-                  onClick={() => {
-                    if (info.partnerInfo.link) {
-                      window.open(info.partnerInfo.link, '_blank');
-                    }
-                  }}
-                />
+                <CorpLogoItem key={info.partnerInfo.id}>
+                  <img
+                    src={info.logoImg}
+                    alt='CORP Logo'
+                    style={{
+                      width: '300px',
+                      height: '150px',
+                      objectFit: 'contain',
+                      cursor: info.partnerInfo.link ? 'pointer' : 'default',
+                    }}
+                    onClick={() => {
+                      if (info.partnerInfo.link) {
+                        window.open(info.partnerInfo.link, '_blank');
+                      }
+                    }}
+                  />
+                </CorpLogoItem>
               ))}
             </CorpLogoRowContainer>
           </CorpLogoContainer>
@@ -162,6 +163,7 @@ const CeoInfoContainer = styled.div`
 const CeoImageContainer = styled.div`
   padding-left: 70px;
 `;
+
 const CeoInfo = styled.div<IFontStyleProps>`
   white-space: pre-line;
   word-wrap: break-word;
@@ -172,7 +174,12 @@ const CeoInfo = styled.div<IFontStyleProps>`
   font-size: ${(props) => props.fontSize || '24px'};
   color: #ffffff;
 `;
-
+const CorpLogoItem = styled.div`
+  flex: 1 1 30%;
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+`;
 const CorpLogoContainer = styled.div`
   width: 100%;
   display: flex;
@@ -182,6 +189,7 @@ const CorpLogoContainer = styled.div`
 const CorpLogoRowContainer = styled.a`
   margin-bottom: 80px;
   width: 80%;
+
   display: flex;
   flex-direction: row;
   justify-content: space-around;

@@ -59,8 +59,7 @@ const Intro = () => {
           animate={{ opacity: desInView ? 1 : 0, y: desInView ? 0 : 100 }}
           transition={{ duration: 2, delay: 0.6 }}
           dangerouslySetInnerHTML={{ __html: companyCommitment || '<p>데이터 없음</p>' }}
-        >
-        </motion.div>
+        ></motion.div>
       </DesWrapper>
       <CircleWrapper ref={circleRef}>
         <motion.div
@@ -95,8 +94,8 @@ const IntroWrapper = styled.div`
   font-size: 48px;
   text-align: center;
 
-  width: 40rem;
-  max-height: 7rem;
+  width: 80rem;
+  max-height: 12rem;
   text-overflow: ellipsis;
   overflow: hidden;
 `;

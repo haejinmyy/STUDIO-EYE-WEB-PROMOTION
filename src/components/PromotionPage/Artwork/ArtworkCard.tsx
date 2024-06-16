@@ -17,14 +17,14 @@ function ArtworkCard({ id, name, client, mainImg, category }: IArtworkCardProps)
 
   return (
     <ArtworkItem
-      onClick={() => navigator(`/${PP_ROUTES_CHILD.ARTWORK}/${id}`,{state:{category}})}
+      onClick={() => navigator(`/${PP_ROUTES_CHILD.ARTWORK}/${id}`, { state: { category } })}
       variants={itemVariants}
       initial='initial'
       whileHover='hover'
     >
       <ArtworkImg key={mainImg} variants={imgVariants(mainImg)} ArtworkPhoto={mainImg}>
-        <img src={mainImg}/>
-        <div className='overlay'/>
+        <img src={mainImg} />
+        <div className='overlay' />
       </ArtworkImg>
       <Info>
         <motion.span variants={spanVariants} className='info_client'>
@@ -101,15 +101,15 @@ const ArtworkImg = styled(motion.div)<{ ArtworkPhoto: string }>`
   background-size: cover;
   background-position: center;
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(${(props) => props.ArtworkPhoto});
-  overflow:hidden;
-  margin:0 auto;
+  overflow: hidden;
+  margin: 0 auto;
 `;
 
 const Info = styled(motion.div)`
-  max-width:350px;
+  max-width: 350px;
   white-space: nowrap;
   text-overflow: ellipsis;
-  overflow : hidden;
+  overflow: hidden;
 
   padding-top: 10px;
   .info_client {
@@ -124,7 +124,7 @@ const Info = styled(motion.div)`
   .info_name {
     white-space: nowrap;
     text-overflow: ellipsis;
-    overflow : hidden;
+    overflow: hidden;
     font-size: 24px;
     color: ${(props) => props.theme.color.white.bold};
     font-family: ${(props) => props.theme.font.semiBold};

@@ -136,6 +136,7 @@ const WhatWeDo = styled(motion.div)<IWhatWeDoProps>`
   margin-bottom: 50px;
   transition: all 0.2s;
   opacity: ${({ isHighlighted }) => (isHighlighted ? 1 : 0.2)};
+  transition: all 300ms ease-in-out;
 `;
 
 const WhatWeDoInput = styled.div<IWhatWeDoInputProps>`
@@ -151,7 +152,6 @@ const WhatWeDoTitleInput = styled.div<IWhatWeDoInputProps>`
   word-wrap: break-word;
 `;
 const WhatWeDoContentInput = styled.div<IWhatWeDoInputProps>`
-  padding-left: 100px;
   margin-bottom: 8px;
   font-family: 'pretendard-regular';
   font-size: 24px;

@@ -61,7 +61,9 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #ffffff;
+  border-top: 0.1px solid #777777;
+  background-color: #ffffff11;
+  backdrop-filter: blur(20px);
   padding: 65px 52px;
   box-sizing: border-box;
 
@@ -69,7 +71,7 @@ const Container = styled.div`
   h2 {
     font-family: 'pretendard-bold';
     font-size: 20px;
-    color: #333333;
+    color: #777777;
   }
 
   h2 {
@@ -77,7 +79,7 @@ const Container = styled.div`
   }
 
   img {
-    opacity: 0.7;
+    opacity: 0.5;
     // width: 243px;
     height: 60px;
     object-fit: cover;
