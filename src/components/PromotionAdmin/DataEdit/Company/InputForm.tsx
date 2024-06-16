@@ -42,7 +42,12 @@ interface IFormData {
   fax?: string;
   introduction?: string;
   phone?: string;
-  detailInformation: { key: string; value: string }[];
+  detailInformation: IDetailInformation[];
+}
+
+interface IDetailInformation {
+  key: string;
+  value: string;
 }
 
 interface IBasicFormData {
@@ -142,7 +147,7 @@ const InputForm = () => {
   const [commitmentState, setCommitmentState] = useState('');
   const [introductionState, setIntroductionState] = useState('');
 
-  const [blocks, setBlocks] = useState<IEditorData[]>([]);
+  // const [blocks, setBlocks] = useState<IEditorData[]>([]);
 
   const updateMainOverview = (state: string) => {
     setMainOverviewState(state);
@@ -181,45 +186,42 @@ const InputForm = () => {
 
   const handleSaveClick = async (data: IFormData) => {
     const formData = new FormData();
-
-    const transformedDetailInformation = data.detailInformation.reduce(
-      (acc, item) => {
-        acc[item.key] = item.value;
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-
-    formData.append(
-      'request',
-      new Blob(
-        [
-          JSON.stringify({
-            address: data.address,
-            addressEnglish: data.addressEnglish,
-            phone: data.phone,
-            fax: data.fax,
-            mainOverview: mainOverviewState,
-            commitment: commitmentState,
-            introduction: introductionState,
-            detailInformation: transformedDetailInformation,
-          }),
-        ],
-        { type: 'application/json' },
-      ),
-    );
-
+  
+    const transformedDetailInformation = data.detailInformation.map(item => ({
+      key: item.key.toString(),
+      value: item.value.toString(),
+    }));
+  
+    const requestData = {
+      address: data.address,
+      addressEnglish: data.addressEnglish,
+      phone: data.phone,
+      fax: data.fax,
+      mainOverview: mainOverviewState,
+      commitment: commitmentState,
+      introduction: introductionState,
+      detailInformation: transformedDetailInformation,
+    };
+  
+    console.log("requestData: ", requestData);
+  
+    const json = JSON.stringify({
+      ...requestData,
+      detailInformation: transformedDetailInformation,
+    });
+    const blob = new Blob([json], { type: "application/json" });
+    formData.append("request", blob);
+  
     const isEmpty =
       checkIsEmpty(mainOverviewState, 'Main Overview') ||
       checkIsEmpty(commitmentState, 'Commitment') ||
       checkIsEmpty(introductionState, 'Introduction');
-
-    // 이미지 추가
+  
     const logoFile = await urlToFile(putData.logoImageUrl, 'Logo.png');
-    formData.append('logoImageUrl', logoFile);
+    formData.append("logoImageUrl", logoFile);
     const sloganFile = await urlToFile(putData.sloganImageUrl, 'Slogan.png');
-    formData.append('sloganImageUrl', sloganFile);
-
+    formData.append("sloganImageUrl", sloganFile);
+  
     if (!isEmpty && window.confirm(MSG.CONFIRM_MSG.POST)) {
       axios
         .post(`${PROMOTION_BASIC_PATH}/api/company/information`, formData)
@@ -229,9 +231,15 @@ const InputForm = () => {
           setIsEditing(false);
           navigator(`${PA_ROUTES.DATA_EDIT}/${PA_ROUTES_CHILD.DATA_EDIT_COMPANY}`);
         })
-        .catch((error) => console.error('Error post partner:', error));
-    }
+        .catch((error) => {
+          console.error('Error post partner:', error);
+        });
+    }  
+    // formData.forEach((value, key) => {
+    //   console.log(key, value);
+    // });
   };
+  
 
   const handleLogoImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -267,7 +275,7 @@ const InputForm = () => {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
-      console.log(blob);
+      // console.log(blob);
       return new File([blob], fileName);
     } catch (error) {
       console.error('Error URL to file:', error);
