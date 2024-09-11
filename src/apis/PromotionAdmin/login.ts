@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const login = async (formData: { email: string; pwd: string }): Promise<loginType> => {
   try {
-    const response = await axios.post(`/user-service/login`, formData, {
+    const response = await axios.post(`https://www.eureka-gateway.kro.kr/login`, formData, {
       withCredentials: true,
     });
     return response.data;
