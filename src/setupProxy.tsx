@@ -9,8 +9,7 @@ module.exports = function (app: any) {
   );
   app.use(
     createProxyMiddleware('/user', {
-      // target: 'http://13.125.37.8:8080', 기존
-      target: 'http://www.studioeye-user.kro.kr:8081',      
+      target: 'http://13.125.37.8:8080',
       changeOrigin: true,
     }),
   );
