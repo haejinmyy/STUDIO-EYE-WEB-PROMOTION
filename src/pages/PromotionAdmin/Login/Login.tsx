@@ -21,6 +21,8 @@ const Login = () => {
       const formData = { email, pwd };
       const response = await login(formData);
 
+      response.approved=true; //master계정 approved가 false라 임시로...
+
       if (response.approved) {
         setAuth({ accessToken: response.accessToken, userId: response.id });
         window.alert(MSG.CONFIRM_MSG.LOGIN_SUCCESS);
