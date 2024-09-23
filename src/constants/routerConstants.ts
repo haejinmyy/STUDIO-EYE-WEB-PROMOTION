@@ -33,6 +33,7 @@ export const PP_ROUTES_CHILD = {
   CONTACT: 'contact',
   FAQ: 'faq',
   LOGIN: 'login',
+  RECRUITMENT: 'recruitment', // 추가된 경로
 };
 
 export const PP_ROUTES = {
@@ -43,4 +44,5 @@ export const PP_ROUTES = {
   ARTWORK_DETAIL: 'artwork/:id',
   CONTACT: '/contact',
   FAQ: '/faq',
+  RECRUITMENT: '/recruitment', // 추가된 경로
 };
