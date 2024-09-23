@@ -7,6 +7,9 @@ import PADataEditPage from './pages/PromotionAdmin/DataEditPage/index';
 import PAStatisticsPage from './pages/PromotionAdmin/StatisticsPage/index';
 import PAFaqPage from './pages/PromotionAdmin/FaqPage/index';
 import PASettingPage from './pages/PromotionAdmin/SettingPage/index';
+import PANewsPage from './pages/PromotionAdmin/NewsPage/index';
+import PANewsWritePage from './pages/PromotionAdmin/NewsPage/NewsWritePage/NewsWritePage';
+import PANewsViewPage from './pages/PromotionAdmin/NewsPage/NewsViewPage/NewViewPage';
 import PALayout from './components/PromotionAdmin/Layout/Layout';
 import { PA_ROUTES, PA_ROUTES_CHILD, PP_ROUTES_CHILD } from '@/constants/routerConstants';
 import FAQWritePage from './pages/PromotionAdmin/FaqPage/FAQWritePage';
@@ -196,6 +199,20 @@ const router = createBrowserRouter([
             path: PA_ROUTES_CHILD.SETTING,
             element: <PASettingPage />,
           },
+          {
+            path: PA_ROUTES_CHILD.NEWS,
+            element: <PANewsPage/>,
+            children:[
+              {
+                path: `writing`,
+                element: <PANewsWritePage/>,
+              },
+              {
+                path:`:id`,
+                element: <PANewsViewPage/>
+              }
+            ]
+          }
         ],
       },
     ],
