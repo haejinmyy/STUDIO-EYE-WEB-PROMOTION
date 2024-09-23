@@ -39,6 +39,8 @@ import PartnerWritePage from './pages/PromotionAdmin/DataEditPage/PartnerPage/Pa
 import Login from './pages/PromotionAdmin/Login/Login';
 import ClientWritePage from './pages/PromotionAdmin/DataEditPage/ClientPage/ClientWritePage';
 import CEOEditPage from './pages/PromotionAdmin/DataEditPage/CEOPage/CEOEditPage';
+import NewsBoardPage from './pages/PromotionPage/NewsPage/NewsBoardPage';
+import NewsDetailPage from './pages/PromotionPage/NewsPage/NewsDetailPage';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -85,6 +87,14 @@ const router = createBrowserRouter([
           {
             path: PP_ROUTES_CHILD.LOGIN,
             element: <Login />,
+          },
+          {
+            path: PP_ROUTES_CHILD.NEWSBOARD,
+            element: <NewsBoardPage />,
+          },
+          {
+            path: PP_ROUTES_CHILD.NEWSBOARD_DETAIL,
+            element: <NewsDetailPage />,
           },
         ],
       },

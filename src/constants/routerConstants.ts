@@ -36,6 +36,8 @@ export const PP_ROUTES_CHILD = {
   CONTACT: 'contact',
   FAQ: 'faq',
   LOGIN: 'login',
+  NEWSBOARD: 'news',
+  NEWSBOARD_DETAIL: 'news/:id',
 };
 
 export const PP_ROUTES = {
