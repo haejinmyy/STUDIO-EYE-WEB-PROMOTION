@@ -6,10 +6,13 @@ import PAArtworkPage from './pages/PromotionAdmin/ArtworkPage/Artwork';
 import PADataEditPage from './pages/PromotionAdmin/DataEditPage/index';
 import PAStatisticsPage from './pages/PromotionAdmin/StatisticsPage/index';
 import PAFaqPage from './pages/PromotionAdmin/FaqPage/index';
+import PARecruitmentPage from './pages/PromotionAdmin/RecruitmentPage/index';
 import PASettingPage from './pages/PromotionAdmin/SettingPage/index';
 import PALayout from './components/PromotionAdmin/Layout/Layout';
 import { PA_ROUTES, PA_ROUTES_CHILD, PP_ROUTES_CHILD } from '@/constants/routerConstants';
 import FAQWritePage from './pages/PromotionAdmin/FaqPage/FAQWritePage';
+import RecruitmentManagePage from './pages/PromotionAdmin/RecruitmentPage/RecruitmentManagePage';
+import RecruitmentWritePage from './pages/PromotionAdmin/RecruitmentPage/RecruitmentWritePage';
 import FAQManagePage from './pages/PromotionAdmin/FaqPage/FAQManagePage';
 import PARequestDetailPage from '@/pages/PromotionAdmin/RequestPage/RequestCheckPage';
 import FAQCheckPage from './pages/PromotionAdmin/FaqPage/FAQCheckPage';
@@ -189,6 +192,20 @@ const router = createBrowserRouter([
               {
                 path: `${PA_ROUTES.FAQ}/write`,
                 element: <FAQWritePage />,
+              },
+            ],
+          },
+          {
+            path: PA_ROUTES_CHILD.RECRUITMENT,
+            element: <PARecruitmentPage />,
+            children: [
+              {
+                path: '',
+                element: <RecruitmentManagePage />,
+              },
+              {
+                path: `${PA_ROUTES.RECRUITMENT}/write`,
+                element: <RecruitmentWritePage />,
               },
             ],
           },
