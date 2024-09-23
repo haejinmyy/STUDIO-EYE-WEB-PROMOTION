@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
+// import { useHistory } from 'react-router-dom';
 import { PROMOTION_BASIC_PATH } from '@/constants/basicPathConstants';
 
 interface PostData {
@@ -12,14 +12,15 @@ interface PostData {
 
 const RecruitmentPage = () => {
   const [posts, setPosts] = useState<PostData[]>([]);
-  const history = useHistory();
+  // const history = useHistory();
 
   // Fetch recruitment posts
   useEffect(() => {
     axios
       .get(`${PROMOTION_BASIC_PATH}/api/recruitment`)
       .then((response) => {
-        setPosts(response.data.data); // Assuming the API returns an array of recruitment posts
+        setPosts(response.data.data.content); // Assuming the API returns an array of recruitment posts
+        console.log(response)
       })
       .catch((error) => {
         console.error(error);
@@ -28,7 +29,7 @@ const RecruitmentPage = () => {
 
   // Handle clicking a post to navigate to the detail page
   const handleClickPost = (post: PostData) => {
-    history.push(`/recruitment/${post.id}`);
+    // history.push(`/recruitment/${post.id}`);
   };
 
   return (

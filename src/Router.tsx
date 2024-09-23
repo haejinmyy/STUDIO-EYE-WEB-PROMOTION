@@ -27,6 +27,8 @@ import PPLayout from '@/components/PromotionPage/Layout/Layout';
 import AboutPage from '@/pages/PromotionPage/AboutPage/AboutPage';
 import ContactUsPage from './pages/PromotionPage/ContactPage/ContactUsPage';
 import FaqPage from './pages/PromotionPage/FaqPage/FaqPage';
+import RecruitmentPage from './pages/PromotionPage/RecruitmentPage/RecruitmentPage';
+import RecruitmentDetailPage from './pages/PromotionPage/RecruitmentPage/RecruitmentDetailPage'; 
 
 import CEOPage from './pages/PromotionAdmin/DataEditPage/CEOPage/CEOPage';
 import CompanyPage from './pages/PromotionAdmin/DataEditPage/CompanyPage/CompanyPage';
@@ -79,6 +81,16 @@ const router = createBrowserRouter([
           {
             path: PP_ROUTES_CHILD.CONTACT,
             element: <ContactUsPage />,
+          },
+          {
+            path: PP_ROUTES_CHILD.RECRUITMENT, // 채용 공고 페이지
+            element: <RecruitmentPage />,
+            // children: [
+            //   {
+            //     path: PP_ROUTES_CHILD.RECRUITMENT,
+            //     element: <RecruitmentDetailPage />,
+            //   },
+            // ],
           },
           {
             path: PP_ROUTES_CHILD.FAQ,
