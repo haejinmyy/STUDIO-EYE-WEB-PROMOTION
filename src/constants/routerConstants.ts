@@ -5,6 +5,7 @@ export const PA_ROUTES = {
   DATA_EDIT: '/promotion-admin/dataEdit',
   STATISTICS: '/promotion-admin/statistics',
   FAQ: '/promotion-admin/faq',
+  NEWS: '/promotion-admin/news',
   SETTING: '/promotion-admin/setting',
 };
 
@@ -21,6 +22,8 @@ export const PA_ROUTES_CHILD = {
   DATA_EDIT_CLIENT: 'client',
   STATISTICS: 'statistics',
   FAQ: 'faq',
+  NEWS: 'news',
+  NEWS_DETAIL: 'news/:id',
   SETTING: 'setting',
 };
 
@@ -34,6 +37,8 @@ export const PP_ROUTES_CHILD = {
   FAQ: 'faq',
   LOGIN: 'login',
   RECRUITMENT: 'recruitment', // 추가된 경로
+EWSBOARD: 'news',
+  NEWSBOARD_DETAIL: 'news/:id',
 };
 
 export const PP_ROUTES = {
