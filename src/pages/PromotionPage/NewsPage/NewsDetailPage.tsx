@@ -1,26 +1,63 @@
-import React from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { getNewsData } from '@/apis/PromotionPage/news';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-interface NewsCardProps {
+interface INewsCardProps {
   id: number;
   title: string;
   source: string;
   mainImg?: string;
-  category: string;
   content: string;
+  pubDate: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const NewsDetailPage: React.FC = () => {
-  const location = useLocation();
-  const newsItem = location.state?.news as NewsCardProps;
+  const { id } = useParams<{ id: string }>();
+  const [newsItem, setNewsItem] = useState<INewsCardProps | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (id) {
+          const response = await getNewsData(Number(id));
+          console.log('News data:', response); // 데구확
+          setNewsItem({
+            id: response.data.id,
+            title: response.data.title,
+            source: response.data.source,
+            mainImg: response.data.newsFiles.length > 0 ? response.data.newsFiles[0].filePath : undefined,
+            content: response.data.content,
+            pubDate: response.data.pubDate,
+            createdAt: response.data.createdAt,
+            updatedAt: response.data.updatedAt,
+          });
+        }
+      } catch (error) {
+        console.error(error);
+        setError('데이터를 로드할 수 없습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, [id]);  
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+  if (!newsItem) return <div>데이터를 로드할 수 없습니다.</div>;  
 
   return (
     <PageContainer>
       <Header>
         <Overlay>
           <Title>{newsItem.title}</Title>
-          <Source>{newsItem.source}</Source>
+          <Source>작성자 {newsItem.source} | 발행일 {newsItem.pubDate}</Source>
         </Overlay>
       </Header>
       <Content>
@@ -56,12 +93,12 @@ const Header = styled.div`
 const ImageWrapper = styled.div`
   width: 100%;
   max-width: 600px;
-  margin: 20px auto; /* 수직 방향으로 여백을 주고, 수평 방향으로 가운데 정렬 */
-  display: flex; /* flexbox 사용 */
-  justify-content: center; /* 내부 요소를 수평 중앙 정렬 */
+  margin: 20px auto;
+  display: flex;
+  justify-content: center;
   img {
-    max-width: 100%; /* 이미지의 최대 너비를 컨테이너의 너비에 맞춤 */
-    height: auto; /* 이미지 비율 유지 */
+    max-width: 100%;
+    height: auto;
     border-radius: 10px;
   }
 `;

@@ -1,64 +1,68 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { getAllNewsData } from '@/apis/PromotionPage/news';
 
-interface NewsCardProps {
+interface INewsCardProps {
   id: number;
   title: string;
   source: string;
   mainImg?: string;
-  category: string;
   content: string;
+  pubDate: string;
+  createdAt: Date;
+  updatedAt: Date;
   onClick?: () => void;
 }
 
 const NewsBoardPage: React.FC = () => {
+  const [newsData, setNewsData] = useState<INewsCardProps[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  const navigator = useNavigate();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const data = await getAllNewsData();
 
-  const handleCardClick = (news: NewsCardProps) => {
-    navigator(`/news/${news.id}`, { state: { news } });
+        const formattedData: INewsCardProps[] = data.data.map((news: any) => ({
+          id: news.id,
+          title: news.title,
+          source: news.source,
+          mainImg: news.newsFiles.length > 0 ? news.newsFiles[0].filePath : undefined, // 이미지 경로 설정
+          content: news.content,
+          pubDate: news.pubDate,
+          createdAt: news.createdAt,
+          updatedAt: news.updatedAt
+        }));
+
+        setNewsData(formattedData);
+      } catch (error) {
+        console.error('news' + error);
+        setError('데이터를 불러오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleCardClick = (news: INewsCardProps) => {
+    navigate(`/news/${news.id}`, { state: { news } });
   };
 
-  const dummyData: NewsCardProps[] = [
-    {
-      id: 1,
-      title: '에디터 추천',
-      source: '트렌드',
-      mainImg: 'https://via.placeholder.com/150',
-      category: '가구',
-      content: '20세기 동안 몽유의 시대가 도래하면서 가정용 가구에 대한 사람들의 관점도 점차 달라졌다. 20세기 동안 몽유의 시대가 도래하면서 가정용 가구에 대한 사람들의 관점도 점차 달라졌다.20세기 동안 몽유의 시대가 도래하면서 가정용 가구에 대한 사람들의 관점도 점차 달라졌다. 20세기 동안 몽유의 시대가 도래하면서 가정용 가구에 대한 사람들의 관점도 점차 달라졌다.20세기 동안 몽유의 시대가 도래하면서 가정용 가구에 대한 사람들의 관점도 점차 달라졌다.',
-    },
-    {
-      id: 2,
-      title: '편집디자인 트렌드 리포트',
-      source: '편집 매거진',
-      category: '디자인',
-      content: '누가 뭐래도 지금은 철저히 모바일 시대이지만, 인쇄물이라는 매체는 여전히 산업과 예술, 그리고 일상의 많은 부분을 차지하고 있다.',
-    },
-    {
-      id: 3,
-      title: 'Amazing Ideas on Graffiti Art',
-      source: '편집 매거진',
-      mainImg: 'https://via.placeholder.com/150',
-      category: '예술',
-      content: '누군가에겐 눈살을 찌푸리게 하는 낙서일 수도 있지만, 그래피티는 정차 \'거리의 예술\'로서 나름의 영역을 구축해가고 있다.',
-    },
-    {
-      id: 4,
-      title: '5 Things You Need to Know about...',
-      source: '편집 매거진',
-      category: '문화',
-      content: '브로그에서 리플처럼 메시지를 명확하게 전달하는 것이 무엇보다 중요하다.',
-    },
-  ];
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <Container>
       <Content>
         <Title>최근 소식 어쩌구</Title>
         <CardContainer>
-          {dummyData.map((news) => (
+          {newsData.map((news) => (
             <NewsCard key={news.id} onClick={() => handleCardClick(news)} {...news} />
           ))}
         </CardContainer>
@@ -67,7 +71,7 @@ const NewsBoardPage: React.FC = () => {
   );
 };
 
-const NewsCard: React.FC<NewsCardProps> = ({ title, source, mainImg, content, onClick }) => {
+const NewsCard: React.FC<INewsCardProps> = ({ title, source, mainImg, content, pubDate, onClick }) => {
   return (
     <Card onClick={onClick}>
       <TextContent>
