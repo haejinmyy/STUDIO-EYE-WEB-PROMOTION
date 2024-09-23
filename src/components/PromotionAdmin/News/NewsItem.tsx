@@ -1,9 +1,10 @@
+import { INEWS } from '@/types/PromotionAdmin/news';
 import { locale } from 'dayjs';
 import React from 'react';
 import { NavigateFunction } from 'react-router-dom';
 import styled from 'styled-components';
 
-const NewsItem = ({title,date,content}:{title:string,date:Date,content:string}) => {
+const NewsItem = ({data}:{data:INEWS}) => {
 
     const formatDate = (date: Date): string => {
         const year = date.getFullYear();
@@ -15,9 +16,9 @@ const NewsItem = ({title,date,content}:{title:string,date:Date,content:string}) 
 
     return (
     <Container>
-        <Title>{title}</Title>
-        <Day>{formatDate(date)}</Day>
-        <Content>{content}</Content>
+        <Title>{data.title}</Title>
+        <Day>{data.pubDate}</Day>
+        <Content>{data.content}</Content>
     </Container>
   );
 };

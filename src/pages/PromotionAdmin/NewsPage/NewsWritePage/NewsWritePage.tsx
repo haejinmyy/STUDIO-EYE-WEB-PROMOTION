@@ -9,6 +9,7 @@ import { theme } from '@/styles/theme';
 
 import ImageResize from 'quill-image-resize';
 import { NavigateFunction, useLocation, useNavigate } from 'react-router-dom';
+import { postNews } from '@/apis/PromotionAdmin/news';
 Quill.register('modules/ImageResize', ImageResize);
 
 const NewsWritePage = () => {
@@ -18,13 +19,14 @@ const NewsWritePage = () => {
   const listPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
 
   const setIsEditing = useSetRecoilState(dataUpdateState);
-  const [editorHtml, setEditorHtml] = useState("");
-  const {register,handleSubmit,formState: { errors },setValue,watch,
+  // const [editorHtml, setEditorHtml] = useState("");
+  const {register,handleSubmit,formState: { errors },getValues,setValue,watch,
   }= useForm<INEWS>({
     defaultValues: {
       title: '',
-      content: '',
       source: '',
+      pubDate: '',
+      content: '',
       visibility: true,
     },
   });
@@ -33,17 +35,49 @@ const NewsWritePage = () => {
 
   const [putData, setPutData] = useState({
     title: '',
+    source: '',
+    pubDate: '',
     content: '',
+    visibility: true,
   });
 
-  const handleCompleteWriting=()=>{
-    //전송하는 로직
+  const handleCompleteWriting=()=>{//전송하는 로직
+    sendNews();
+    // console.log(getValues());
     navigator(listPath);
   }
   const handleCancelWriting=()=>{
     //작성중인거 취소하겠냐고 물어보는 로직 필요
     navigator(listPath);
   }
+
+  const setEditorHtml=(content:string)=>{
+    setValue('content', content);
+  }
+
+  const sendNews = async () => {
+    const formData = new FormData();
+    const requestData = {
+      title: getValues('title'),
+      source: getValues('source'),
+      pubDate: getValues('pubDate'),
+      content: getValues('content'),
+      visibility: getValues('visibility'),
+    };
+    formData.append('dto', new Blob([JSON.stringify(requestData)], { type: 'application/json' }));
+    try {
+      const response = await postNews(formData);
+      if (response.code === 400 && response.data === null && response.message) {
+        // setErrorMessage(response.message);
+        return;
+      }
+      // alert(MSG.ALERT_MSG.SAVE);
+      console.log(response.data.id);
+    } catch (error: any) {
+      // alert(MSG.CONFIRM_MSG.FAILED);
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
     setIsEditing(true);
     const { name, value } = e.target;
@@ -68,6 +102,7 @@ const NewsWritePage = () => {
             <div style={{fontSize: 12,paddingTop: 10,}}></div>
           </InputTitle>
           <input
+          {...register('title')}
             name='title'
             value={putData.title}
             onChange={handleChange}
@@ -79,10 +114,20 @@ const NewsWritePage = () => {
           <InputTitle style={{marginTop:"10px", marginBottom:"10px"}}>
             <p style={{marginTop:"auto",marginBottom:"auto",fontSize: 16, padding:10,whiteSpace:"nowrap"}}>출처/작성자</p>
             <input
-            name='title'
-            value={putData.title}
+            {...register('source')}
+            name='source'
+            value={putData.source}
             onChange={handleChange}
             placeholder='출처 혹은 작성자 입력'
+            style={{borderRadius:"5px",fontFamily:"pretendard-semiBold",marginTop:"auto",marginBottom:"auto",}}
+            />
+            <p style={{marginTop:"auto",marginBottom:"auto",fontSize: 16, padding:10,whiteSpace:"nowrap"}}>원문 날짜</p>
+            <input
+            {...register('pubDate')}
+            name='pubDate'
+            value={putData.pubDate}
+            onChange={handleChange}
+            placeholder='기사 원문 날짜 입력'
             style={{borderRadius:"5px",fontFamily:"pretendard-semiBold",marginTop:"auto",marginBottom:"auto",}}
             />
             <p style={{marginTop:"auto",marginBottom:"auto",marginLeft:"10px",fontSize: 16, padding:10,whiteSpace:"nowrap"}}>공개 여부</p>
@@ -103,24 +148,25 @@ const NewsWritePage = () => {
             <div style={{fontSize: 12,paddingTop: 10,}}></div>
           </InputTitle>
           <CustomQuillEditor
-              value={editorHtml}
-              onChange={(html)=>{
-                setEditorHtml(html);
-                setIsEditing(true);
-              }}
-              modules={{
-                toolbar: [
-                  ["bold", "italic", "underline", "strike"],
-                  ['image', 'video'],
-                  [{color:[]},{background:[]}],
-                  [{align:[]}, { list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
-                  [{ size: ["small", false, "large", "huge"] }],
-                ],
-                ImageResize: {
-                  parchment: Quill.import('parchment')
-                }
-              }}
-            />
+            // value={editorHtml}
+            value={getValues('content')}
+            onChange={(html)=>{
+              setEditorHtml(html);
+              setIsEditing(true);
+            }}
+            modules={{
+              toolbar: [
+                ["bold", "italic", "underline", "strike"],
+                ['image', 'video'],
+                [{color:[]},{background:[]}],
+                [{align:[]}, { list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+                [{ size: ["small", false, "large", "huge"] }],
+              ],
+              ImageResize: {
+                parchment: Quill.import('parchment')
+              }
+            }}
+          />
         </InputWrapper>
     </Container>
   );
