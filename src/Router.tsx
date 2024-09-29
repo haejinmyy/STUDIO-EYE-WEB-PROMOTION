@@ -7,6 +7,10 @@ import PADataEditPage from './pages/PromotionAdmin/DataEditPage/index';
 import PAStatisticsPage from './pages/PromotionAdmin/StatisticsPage/index';
 import PAFaqPage from './pages/PromotionAdmin/FaqPage/index';
 import PASettingPage from './pages/PromotionAdmin/SettingPage/index';
+import PANewsPage from './pages/PromotionAdmin/NewsPage/index';
+import PANewsWritePage from './pages/PromotionAdmin/NewsPage/NewsWritePage/NewsWritePage';
+import PANewsViewPage from './pages/PromotionAdmin/NewsPage/NewsViewPage/NewsViewPage';
+import PANewsEditPage from './pages/PromotionAdmin/NewsPage/NewsViewPage/NewsEditPage';
 import PALayout from './components/PromotionAdmin/Layout/Layout';
 import { PA_ROUTES, PA_ROUTES_CHILD, PP_ROUTES_CHILD } from '@/constants/routerConstants';
 import FAQWritePage from './pages/PromotionAdmin/FaqPage/FAQWritePage';
@@ -36,6 +40,10 @@ import PartnerWritePage from './pages/PromotionAdmin/DataEditPage/PartnerPage/Pa
 import Login from './pages/PromotionAdmin/Login/Login';
 import ClientWritePage from './pages/PromotionAdmin/DataEditPage/ClientPage/ClientWritePage';
 import CEOEditPage from './pages/PromotionAdmin/DataEditPage/CEOPage/CEOEditPage';
+import NewsBoardPage from './pages/PromotionPage/NewsPage/NewsBoardPage';
+import NewsDetailPage from './pages/PromotionPage/NewsPage/NewsDetailPage';
+import RecruitmentPage from './pages/PromotionPage/RecruitmentPage/RecruitmentPage';
+import MenuPage from './pages/PromotionAdmin/DataEditPage/MenuPage/MenuPage';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -76,12 +84,34 @@ const router = createBrowserRouter([
             element: <ContactUsPage />,
           },
           {
+            path: PP_ROUTES_CHILD.RECRUITMENT, // 채용 공고 페이지
+            element: <RecruitmentPage />,
+            // children: [
+            //   {
+            //     path: PP_ROUTES_CHILD.RECRUITMENT,
+            //     element: <RecruitmentDetailPage />,
+            //   },
+            // ],
+          },
+          {
             path: PP_ROUTES_CHILD.FAQ,
             element: <FaqPage />,
           },
           {
             path: PP_ROUTES_CHILD.LOGIN,
             element: <Login />,
+          },
+          {
+            path: PP_ROUTES_CHILD.NEWSBOARD,
+            element: <NewsBoardPage />,
+          },
+          {
+            path: PP_ROUTES_CHILD.NEWSBOARD_DETAIL,
+            element: <NewsDetailPage />,
+          },
+          {
+            path: PP_ROUTES_CHILD.RECRUITMENT,
+            element: <RecruitmentPage />,
           },
         ],
       },
@@ -166,6 +196,10 @@ const router = createBrowserRouter([
                   },
                 ],
               },
+              {
+                path: `${PA_ROUTES.DATA_EDIT}/menu`,
+                element: <MenuPage />,
+              },
             ],
           },
           {
@@ -196,6 +230,26 @@ const router = createBrowserRouter([
             path: PA_ROUTES_CHILD.SETTING,
             element: <PASettingPage />,
           },
+          {
+            path: PA_ROUTES_CHILD.NEWS,
+            element: <PANewsPage/>,
+            children:[
+              {
+                path: `writing`,
+                element: <PANewsWritePage/>,
+              },
+              {
+                path:`:id`,
+                element: <PANewsViewPage/>,
+                children:[
+                  {
+                    path:`edit`,
+                    element: <PANewsEditPage/>
+                  }
+                ]
+              }
+            ]
+          }
         ],
       },
     ],
