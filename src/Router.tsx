@@ -76,6 +76,16 @@ const router = createBrowserRouter([
             element: <ContactUsPage />,
           },
           {
+            path: PP_ROUTES_CHILD.RECRUITMENT, // 채용 공고 페이지
+            element: <RecruitmentPage />,
+            // children: [
+            //   {
+            //     path: PP_ROUTES_CHILD.RECRUITMENT,
+            //     element: <RecruitmentDetailPage />,
+            //   },
+            // ],
+          },
+          {
             path: PP_ROUTES_CHILD.FAQ,
             element: <FaqPage />,
           },
